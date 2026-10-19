@@ -49,14 +49,16 @@
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Admin Email</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-envelope text-slate-500 w-6"></i>
-                        <input type="email" id="admin-email" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <input type="email" id="admin-email" autocomplete="off" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Password</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-lock text-slate-500 w-6"></i>
-                        <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <input type="password" id="admin-password" autocomplete="new-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2 pr-8">
+                        <!-- Password Eye Toggle Icon -->
+                        <i id="toggle-password-icon" class="fa-solid fa-eye-slash text-slate-500 absolute right-4 cursor-pointer hover:text-indigo-400 transition-colors" onclick="togglePassword()"></i>
                     </div>
                 </div>
             </div>
@@ -71,7 +73,6 @@
     <!-- ========================================== -->
     <div id="admin-app-container" class="w-full max-w-md h-full relative flex flex-col hidden bg-[#0f172a]">
         
-        <!-- Fake inputs to prevent browser autofill on other inputs -->
         <input type="text" style="display:none" autocomplete="username">
         <input type="password" style="display:none" autocomplete="current-password">
 
@@ -156,7 +157,7 @@
                                 </select>
                             </div>
 
-                            <!-- NEW: 2FA & Cookies Toggles -->
+                            <!-- 2FA & Cookies Toggles -->
                             <div class="flex gap-3 mt-2">
                                 <button type="button" id="btn-toggle-2fa" onclick="toggleTaskRequirement('2fa')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
                                     <i class="fa-solid fa-shield-halved mr-1"></i> Require 2FA
@@ -230,7 +231,22 @@
         // ==========================================
         // 🔒 ADMIN SECURITY CONFIGURATION
         // ==========================================
-        const AUTHORIZED_ADMIN_EMAIL = "admin@example.com"; 
+        
+        // এখানে আপনার সঠিক অ্যাডমিন ইমেইলটি দেওয়া হলো
+        const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
+
+        // Password Visibility Toggle Function
+        function togglePassword() {
+            const passInput = document.getElementById('admin-password');
+            const icon = document.getElementById('toggle-password-icon');
+            if(passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                passInput.type = 'password';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+        }
 
         // State for New Task Requirements
         let req2FA = false;
@@ -260,7 +276,6 @@
             }
         }
 
-        // New Script for Grid Tabs
         function switchAdminTab(tabId) {
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
             document.getElementById('page-' + tabId).classList.add('active');
@@ -338,7 +353,10 @@
         window.loginAdmin = () => {
             const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
             if(!email || !password) return alert("Enter admin email and password!");
+            
+            // Check if user is typing correct admin email
             if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
+            
             setButtonLoading('btn-admin-login', true);
             signInWithEmailAndPassword(auth, email, password).catch((error) => {
                 setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
@@ -379,7 +397,7 @@
                 }
             });
 
-            // 3. TASKS LIVE (Now includes tags for 2FA/Cookies)
+            // 3. TASKS LIVE
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 document.getElementById('stat-tasks').innerText = snapshot.size;
@@ -436,7 +454,6 @@
             if(!title || !desc || !reward) return alert("Fill all fields!");
             
             try { 
-                // Using the global state variables (req2FA, reqCookies)
                 await addDoc(collection(db, "tasks"), { 
                     title, desc, reward: Number(reward), platform, 
                     require2FA: req2FA, requireCookies: reqCookies,
@@ -446,7 +463,6 @@
                 alert("Task Added Live!"); 
                 document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; 
                 
-                // Reset Toggles
                 if(req2FA) toggleTaskRequirement('2fa');
                 if(reqCookies) toggleTaskRequirement('cookies');
 
