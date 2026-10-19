@@ -14,11 +14,10 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        /* Hide scrollbar but allow scrolling */
         ::-webkit-scrollbar { display: none; } 
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .nav-active { border-bottom: 2px solid #6366f1; color: #818cf8; }
+        
         .admin-page { display: none; }
         .admin-page.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
     </style>
@@ -32,7 +31,9 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- 1. ADMIN LOGIN SECTION -->
+    <!-- ========================================== -->
     <div id="auth-container" class="hidden w-full max-w-md h-full flex-col justify-center px-6 relative z-40 fade-in">
         <div class="flex flex-col items-center mb-8">
             <div class="h-16 w-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
@@ -48,14 +49,15 @@
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Admin Email</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-envelope text-slate-500 w-6"></i>
-                        <input type="email" id="admin-email" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <!-- Autocomplete off to prevent bad autofills -->
+                        <input type="email" id="admin-email" autocomplete="off" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Password</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-lock text-slate-500 w-6"></i>
-                        <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <input type="password" id="admin-password" autocomplete="new-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
             </div>
@@ -65,7 +67,9 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- 2. MAIN ADMIN DASHBOARD -->
+    <!-- ========================================== -->
     <div id="admin-app-container" class="w-full max-w-md h-full relative flex flex-col hidden bg-[#0f172a]">
         
         <!-- Header -->
@@ -77,14 +81,28 @@
             <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
         </header>
 
-        <!-- Dynamic Horizontal Tabs -->
-        <div class="flex bg-[#1e293b] border-b border-slate-800 px-2 pt-2 overflow-x-auto snap-x">
-            <button onclick="switchAdminTab('dashboard')" class="admin-nav-item nav-active flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-chart-pie mr-1"></i> Dash</button>
-            <button onclick="switchAdminTab('kyc')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-id-card mr-1"></i> KYC <span id="kyc-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-rose-500 rounded-full"></span></button>
-            <button onclick="switchAdminTab('withdraw')" class="admin-nav-item flex-none min-w-[90px] py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw <span id="withdraw-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-amber-500 rounded-full"></span></button>
-            <button onclick="switchAdminTab('tasks')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-briefcase mr-1"></i> Tasks</button>
-            <button onclick="switchAdminTab('notices')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-bell mr-1"></i> Notice</button>
-            <button onclick="switchAdminTab('payments')" class="admin-nav-item flex-none min-w-[90px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-wallet mr-1"></i> Payments</button>
+        <!-- Dynamic Grid Buttons (New Design) -->
+        <div class="grid grid-cols-3 gap-3 p-4 bg-[#1e293b] border-b border-slate-800 shadow-md z-10 rounded-b-3xl">
+            <button id="nav-dashboard" onclick="switchAdminTab('dashboard')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all active:scale-95">
+                <i class="fa-solid fa-chart-pie mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Dash</span>
+            </button>
+            <button id="nav-kyc" onclick="switchAdminTab('kyc')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 relative">
+                <i class="fa-solid fa-id-card mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">KYC</span>
+                <span id="kyc-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-rose-500 border-2 border-[#0f172a] rounded-full"></span>
+            </button>
+            <button id="nav-withdraw" onclick="switchAdminTab('withdraw')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 relative">
+                <i class="fa-solid fa-money-bill-transfer mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Withdraw</span>
+                <span id="withdraw-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-amber-500 border-2 border-[#0f172a] rounded-full"></span>
+            </button>
+            <button id="nav-tasks" onclick="switchAdminTab('tasks')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
+                <i class="fa-solid fa-briefcase mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Tasks</span>
+            </button>
+            <button id="nav-notices" onclick="switchAdminTab('notices')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
+                <i class="fa-solid fa-bell mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Notice</span>
+            </button>
+            <button id="nav-payments" onclick="switchAdminTab('payments')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
+                <i class="fa-solid fa-wallet mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Payments</span>
+            </button>
         </div>
 
         <main class="flex-1 overflow-y-auto px-5 pt-5 pb-10 relative">
@@ -121,10 +139,10 @@
                 <h2 class="font-bold text-lg mb-4 text-white">Create New Task</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
                     <div class="space-y-3 mb-4">
-                        <input type="text" id="task-title" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                        <textarea id="task-desc" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                        <input type="text" id="task-title" autocomplete="off" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <textarea id="task-desc" autocomplete="off" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
                         <div class="flex gap-3">
-                            <input type="number" id="task-reward" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                            <input type="number" id="task-reward" autocomplete="off" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                             <select id="task-platform" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
                                 <option value="facebook">Facebook</option>
                                 <option value="youtube">YouTube</option>
@@ -145,8 +163,8 @@
                 <h2 class="font-bold text-lg mb-4 text-white">Send Notification</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
                     <div class="space-y-3 mb-4">
-                        <input type="text" id="notice-title" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                        <textarea id="notice-msg" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                        <input type="text" id="notice-title" autocomplete="off" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <textarea id="notice-msg" autocomplete="off" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
                         <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
                             <option value="cyan">Cyan (System Update)</option>
                             <option value="emerald">Emerald (Success)</option>
@@ -165,7 +183,7 @@
             <section id="page-payments" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Add Payment Method</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6 flex gap-3">
-                    <input type="text" id="pay-method-name" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                    <input type="text" id="pay-method-name" autocomplete="off" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                     <button onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus"></i></button>
                 </div>
 
@@ -194,17 +212,36 @@
         // ==========================================
         const AUTHORIZED_ADMIN_EMAIL = "admin@example.com"; 
 
+        // New Script for Grid Tabs
         function switchAdminTab(tabId) {
+            // Hide all pages
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
+            // Show selected page
             document.getElementById('page-' + tabId).classList.add('active');
-            document.querySelectorAll('.admin-nav-item').forEach(item => { item.classList.remove('nav-active'); item.classList.add('text-slate-400'); });
-            event.currentTarget.classList.add('nav-active'); event.currentTarget.classList.remove('text-slate-400');
+            
+            // Reset all buttons to default dark state
+            document.querySelectorAll('.admin-nav-item').forEach(item => {
+                item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
+                item.classList.add('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
+            });
+            
+            // Highlight active button
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
+                activeBtn.classList.add('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
+            }
         }
 
         function setButtonLoading(id, isLoading, defaultText, iconClass) {
             const btn = document.getElementById(id);
-            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Wait...</span>`; } 
-            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
+            if (isLoading) { 
+                btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); 
+                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; 
+            } else { 
+                btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); 
+                btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; 
+            }
         }
     </script>
 
@@ -293,7 +330,7 @@
                     badge.classList.remove('hidden'); let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid</button></div>`;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -345,7 +382,7 @@
         }
 
         // ==========================================
-        // NEW: ADD/DELETE DATA FUNCTIONS
+        // ADD/DELETE DATA FUNCTIONS
         // ==========================================
         window.addTaskDB = async () => {
             const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value;
@@ -377,7 +414,6 @@
             try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); }
         }
 
-        // KYC & Withdraw Functions
         window.approveKycDB = async (uid) => { try { await updateDoc(doc(db, "users", uid), { kycVerified: true }); await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Approved!"); } catch(e) { alert("Error: " + e.message); } }
         window.rejectKycDB = async (uid) => { try { await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Rejected!"); } catch(e) { alert("Error: " + e.message); } }
         window.approveWithdrawDB = async (docId) => { try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); alert("Withdrawal marked as Paid!"); } catch(e) { alert("Error: " + e.message); } }
