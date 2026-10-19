@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Panel - MicroTask Pro</title>
+    <title>Super Admin - MicroTask Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -14,7 +14,8 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        ::-webkit-scrollbar { display: none; }
+        /* Hide scrollbar but allow scrolling */
+        ::-webkit-scrollbar { display: none; } 
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .nav-active { border-bottom: 2px solid #6366f1; color: #818cf8; }
@@ -27,7 +28,7 @@
     <div id="global-loader" class="fixed inset-0 z-[200] bg-[#0f172a] flex items-center justify-center">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-spinner animate-spin text-4xl text-indigo-500 mb-3"></i>
-            <p class="text-sm font-bold text-slate-400">Verifying Admin Database Access...</p>
+            <p class="text-sm font-bold text-slate-400">Verifying Admin Access...</p>
         </div>
     </div>
 
@@ -37,7 +38,7 @@
             <div class="h-16 w-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
                 <i class="fa-solid fa-shield-halved text-3xl text-white"></i>
             </div>
-            <h1 class="text-2xl font-extrabold tracking-tight text-white">Admin Portal</h1>
+            <h1 class="text-2xl font-extrabold tracking-tight text-white">Super Admin</h1>
             <p class="text-sm text-slate-400 mt-1">Authorized Personnel Only</p>
         </div>
 
@@ -71,16 +72,19 @@
         <header class="p-5 flex justify-between items-center z-10 border-b border-slate-800 bg-[#1e293b]">
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400"><i class="fa-solid fa-user-shield"></i></div>
-                <div><h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1><p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Database Connected</p></div>
+                <div><h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1><p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p></div>
             </div>
             <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
         </header>
 
-        <!-- Tabs -->
-        <div class="flex bg-[#1e293b] border-b border-slate-800 px-2 pt-2">
-            <button onclick="switchAdminTab('dashboard')" class="admin-nav-item nav-active flex-1 py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-chart-pie mr-1"></i> Dash</button>
-            <button onclick="switchAdminTab('kyc')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-id-card mr-1"></i> KYC <span id="kyc-badge" class="hidden absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full"></span></button>
-            <button onclick="switchAdminTab('withdraw')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw <span id="withdraw-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-amber-500 rounded-full"></span></button>
+        <!-- Dynamic Horizontal Tabs -->
+        <div class="flex bg-[#1e293b] border-b border-slate-800 px-2 pt-2 overflow-x-auto snap-x">
+            <button onclick="switchAdminTab('dashboard')" class="admin-nav-item nav-active flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-chart-pie mr-1"></i> Dash</button>
+            <button onclick="switchAdminTab('kyc')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-id-card mr-1"></i> KYC <span id="kyc-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-rose-500 rounded-full"></span></button>
+            <button onclick="switchAdminTab('withdraw')" class="admin-nav-item flex-none min-w-[90px] py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw <span id="withdraw-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-amber-500 rounded-full"></span></button>
+            <button onclick="switchAdminTab('tasks')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-briefcase mr-1"></i> Tasks</button>
+            <button onclick="switchAdminTab('notices')" class="admin-nav-item flex-none min-w-[80px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-bell mr-1"></i> Notice</button>
+            <button onclick="switchAdminTab('payments')" class="admin-nav-item flex-none min-w-[90px] py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-wallet mr-1"></i> Payments</button>
         </div>
 
         <main class="flex-1 overflow-y-auto px-5 pt-5 pb-10 relative">
@@ -96,44 +100,110 @@
                     </div>
                     <div class="bg-[#1e293b] p-4 rounded-2xl border border-amber-900/30 shadow-sm text-center">
                         <i class="fa-solid fa-hand-holding-dollar text-amber-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdrawals</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdraw</p>
                         <p id="stat-withdraw" class="font-bold text-3xl text-amber-400 mt-1">0</p>
                     </div>
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-emerald-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-briefcase text-emerald-400 mb-2 text-2xl"></i>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Tasks</p>
+                        <p id="stat-tasks" class="font-bold text-3xl text-emerald-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-cyan-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-wallet text-cyan-400 mb-2 text-2xl"></i>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Methods</p>
+                        <p id="stat-payments" class="font-bold text-3xl text-cyan-400 mt-1">0</p>
+                    </div>
                 </div>
+            </section>
+
+            <!-- TASKS MANAGEMENT PAGE -->
+            <section id="page-tasks" class="admin-page">
+                <h2 class="font-bold text-lg mb-4 text-white">Create New Task</h2>
+                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
+                    <div class="space-y-3 mb-4">
+                        <input type="text" id="task-title" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <textarea id="task-desc" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                        <div class="flex gap-3">
+                            <input type="number" id="task-reward" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                            <select id="task-platform" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                <option value="facebook">Facebook</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="addTaskDB()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus mr-1"></i> Publish Task</button>
+                </div>
+
+                <h2 class="font-bold text-lg mb-3 text-white">Live Tasks</h2>
+                <div id="admin-task-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p></div>
+            </section>
+
+            <!-- NOTICES MANAGEMENT PAGE -->
+            <section id="page-notices" class="admin-page">
+                <h2 class="font-bold text-lg mb-4 text-white">Send Notification</h2>
+                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
+                    <div class="space-y-3 mb-4">
+                        <input type="text" id="notice-title" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <textarea id="notice-msg" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                        <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                            <option value="cyan">Cyan (System Update)</option>
+                            <option value="emerald">Emerald (Success)</option>
+                            <option value="amber">Amber (Warning)</option>
+                            <option value="rose">Rose (Alert)</option>
+                        </select>
+                    </div>
+                    <button onclick="addNoticeDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-paper-plane mr-1"></i> Send Notice</button>
+                </div>
+
+                <h2 class="font-bold text-lg mb-3 text-white">Sent Notices</h2>
+                <div id="admin-notice-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p></div>
+            </section>
+
+            <!-- PAYMENT METHODS PAGE -->
+            <section id="page-payments" class="admin-page">
+                <h2 class="font-bold text-lg mb-4 text-white">Add Payment Method</h2>
+                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6 flex gap-3">
+                    <input type="text" id="pay-method-name" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                    <button onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus"></i></button>
+                </div>
+
+                <h2 class="font-bold text-lg mb-3 text-white">Manage Methods</h2>
+                <div id="admin-payment-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">Loading methods...</p></div>
             </section>
 
             <!-- KYC REVIEW PAGE -->
             <section id="page-kyc" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Pending KYC Requests</h2>
-                <div id="kyc-list" class="space-y-4">
-                    <p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests from Database.</p>
-                </div>
+                <div id="kyc-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests.</p></div>
             </section>
 
             <!-- WITHDRAW PAGE -->
             <section id="page-withdraw" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Withdrawal Requests</h2>
-                <div id="withdraw-list" class="space-y-4">
-                    <p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals from Database.</p>
-                </div>
+                <div id="withdraw-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p></div>
             </section>
 
         </main>
     </div>
 
-    <!-- Scripts for UI Tabs -->
     <script>
+        // ==========================================
+        // 🔒 ADMIN SECURITY CONFIGURATION
+        // ==========================================
+        const AUTHORIZED_ADMIN_EMAIL = "admin@example.com"; 
+
         function switchAdminTab(tabId) {
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
             document.getElementById('page-' + tabId).classList.add('active');
-            document.querySelectorAll('.admin-nav-item').forEach(item => {
-                item.classList.remove('nav-active'); item.classList.add('text-slate-400');
-            });
+            document.querySelectorAll('.admin-nav-item').forEach(item => { item.classList.remove('nav-active'); item.classList.add('text-slate-400'); });
             event.currentTarget.classList.add('nav-active'); event.currentTarget.classList.remove('text-slate-400');
         }
+
         function setButtonLoading(id, isLoading, defaultText, iconClass) {
             const btn = document.getElementById(id);
-            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; } 
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Wait...</span>`; } 
             else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
         }
     </script>
@@ -142,9 +212,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // মেইন অ্যাপের একই ফায়ারবেস কনফিগারেশন এখানে ব্যবহার করুন
         const firebaseConfig = {
             apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
             authDomain: "microtask-pro-bb3a0.firebaseapp.com",
@@ -159,24 +228,17 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Persistent Login & DB Rule Checker
+        // Access Control
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // এটি ডেটাবেস থেকে চেক করবে সে রুলসে দেওয়া অ্যাডমিন কি না!
                     const q = collection(db, "admin_check");
                     await getDocs(q); 
-                    
-                    // Error না দিলে সে আসল অ্যাডমিন!
                     document.getElementById('global-loader').style.display = 'none';
                     document.getElementById('auth-container').style.display = 'none';
                     document.getElementById('admin-app-container').classList.remove('hidden');
-                    
-                    // Load Live Data from Firestore
                     loadDatabaseLive();
-
                 } catch (error) {
-                    // ডাটাবেস এরর দিলে মানে সে হ্যাকার বা সাধারণ ইউজার! কিক আউট!
                     auth.signOut().then(() => {
                         document.getElementById('global-loader').style.display = 'none';
                         document.getElementById('auth-container').style.display = 'flex';
@@ -193,12 +255,10 @@
         window.logoutAdmin = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
         window.loginAdmin = () => {
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value.trim();
+            const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
             if(!email || !password) return alert("Enter admin email and password!");
-            
+            if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
             setButtonLoading('btn-admin-login', true);
-
             signInWithEmailAndPassword(auth, email, password).catch((error) => {
                 setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
                 alert("Login Failed: Incorrect credentials.");
@@ -209,96 +269,118 @@
         // REAL-TIME DATABASE FETCHING (Firestore)
         // ==========================================
         function loadDatabaseLive() {
-            // Live listener for KYC Requests
+            // 1. KYC LIVE
             onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
-                const list = document.getElementById('kyc-list');
-                const badge = document.getElementById('kyc-badge');
+                const list = document.getElementById('kyc-list'), badge = document.getElementById('kyc-badge');
                 document.getElementById('stat-kyc').innerText = snapshot.size;
-                
-                if(snapshot.empty) {
-                    list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests from Database.</p>`;
-                    badge.classList.add('hidden');
-                } else {
-                    badge.classList.remove('hidden');
-                    let html = '';
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests.</p>`; badge.classList.add('hidden'); } 
+                else {
+                    badge.classList.remove('hidden'); let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `
-                        <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in" id="kyc-card-${docSnap.id}">
-                            <div class="flex justify-between items-start mb-3">
-                                <div><h3 class="font-bold text-sm text-white">${data.name}</h3><p class="text-xs text-slate-400">${data.email}</p></div>
-                                <span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending DB</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="approveKycDB('${docSnap.id}')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button>
-                                <button onclick="rejectKycDB('${docSnap.id}')" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button>
-                            </div>
-                        </div>`;
-                    });
-                    list.innerHTML = html;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400">${data.email}</p></div><span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending DB</span></div><div class="flex gap-2"><button onclick="approveKycDB('${docSnap.id}')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button><button onclick="rejectKycDB('${docSnap.id}')" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button></div></div>`;
+                    }); list.innerHTML = html;
                 }
             });
 
-            // Live listener for Withdrawals
+            // 2. WITHDRAW LIVE
             const qWithdraw = query(collection(db, "withdrawals"), where("status", "==", "pending"));
             onSnapshot(qWithdraw, (snapshot) => {
-                const list = document.getElementById('withdraw-list');
-                const badge = document.getElementById('withdraw-badge');
+                const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
                 document.getElementById('stat-withdraw').innerText = snapshot.size;
-                
-                if(snapshot.empty) {
-                    list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals from Database.</p>`;
-                    badge.classList.add('hidden');
-                } else {
-                    badge.classList.remove('hidden');
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
+                else {
+                    badge.classList.remove('hidden'); let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid</button></div>`;
+                    }); list.innerHTML = html;
+                }
+            });
+
+            // 3. TASKS LIVE
+            onSnapshot(collection(db, "tasks"), (snapshot) => {
+                const list = document.getElementById('admin-task-list');
+                document.getElementById('stat-tasks').innerText = snapshot.size;
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
+                else {
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `
-                        <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in" id="wd-card-${docSnap.id}">
-                            <div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                                    <div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div>
-                                </div>
-                                <h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p>
-                                <p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p>
-                            </div>
-                            <button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button>
-                        </div>`;
-                    });
-                    list.innerHTML = html;
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-brands fa-${data.platform}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400">Reward: ৳${data.reward}</p></div></div><button onclick="deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
+                    }); list.innerHTML = html;
                 }
+            });
+
+            // 4. NOTICES LIVE
+            onSnapshot(collection(db, "notices"), (snapshot) => {
+                const list = document.getElementById('admin-notice-list');
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p>`; } 
+                else {
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400 truncate w-32">${data.msg}</p></div></div><button onclick="deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
+                    }); list.innerHTML = html;
+                }
+            });
+
+            // 5. PAYMENT METHODS LIVE
+            onSnapshot(collection(db, "payment_methods"), (snapshot) => {
+                const list = document.getElementById('admin-payment-list');
+                let activeCount = 0;
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No methods added.</p>`; } 
+                else {
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if(data.isActive) activeCount++;
+                        const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400 bg-slate-500/10';
+                        const toggleTxt = data.isActive ? 'Disable' : 'Enable';
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${toggleTxt}</button><button onclick="deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
+                    }); list.innerHTML = html;
+                }
+                document.getElementById('stat-payments').innerText = activeCount;
             });
         }
 
-        // Action Functions (Global for HTML buttons)
-        window.approveKycDB = async (uid) => {
-            try {
-                // মেইন ইউজার কালেকশনে KYC স্ট্যাটাস আপডেট করবে
-                await updateDoc(doc(db, "users", uid), { kycVerified: true });
-                // রিকোয়েস্ট লিস্ট থেকে মুছে ফেলবে
-                await deleteDoc(doc(db, "kyc_requests", uid));
-                alert("KYC Approved & Saved to Database!");
-            } catch(e) { alert("Error updating Database: " + e.message); }
+        // ==========================================
+        // NEW: ADD/DELETE DATA FUNCTIONS
+        // ==========================================
+        window.addTaskDB = async () => {
+            const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value;
+            if(!title || !desc || !reward) return alert("Fill all fields!");
+            try { await addDoc(collection(db, "tasks"), { title, desc, reward: Number(reward), platform, createdAt: serverTimestamp() }); alert("Task Added Live!"); document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; } 
+            catch(e) { alert("Error: " + e.message); }
         }
 
-        window.rejectKycDB = async (uid) => {
-            try {
-                await deleteDoc(doc(db, "kyc_requests", uid));
-                alert("KYC Rejected and deleted from Database.");
-            } catch(e) { alert("Error updating Database: " + e.message); }
+        window.addNoticeDB = async () => {
+            const title = document.getElementById('notice-title').value, msg = document.getElementById('notice-msg').value, theme = document.getElementById('notice-theme').value;
+            if(!title || !msg) return alert("Fill all fields!");
+            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Sent Live!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
+            catch(e) { alert("Error: " + e.message); }
         }
 
-        window.approveWithdrawDB = async (docId) => {
-            try {
-                await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' });
-                alert("Withdrawal marked as Paid in Database!");
-            } catch(e) { alert("Error updating Database: " + e.message); }
+        window.addPaymentMethodDB = async () => {
+            const name = document.getElementById('pay-method-name').value.trim();
+            if(!name) return alert("Enter method name!");
+            try { await addDoc(collection(db, "payment_methods"), { name, isActive: true }); document.getElementById('pay-method-name').value=''; } 
+            catch(e) { alert("Error: " + e.message); }
         }
+
+        window.togglePaymentDB = async (docId, newStatus) => {
+            try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { alert("Error: " + e.message); }
+        }
+
+        window.deleteDocDB = async (colName, docId) => {
+            if(!confirm("Are you sure you want to delete this?")) return;
+            try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); }
+        }
+
+        // KYC & Withdraw Functions
+        window.approveKycDB = async (uid) => { try { await updateDoc(doc(db, "users", uid), { kycVerified: true }); await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Approved!"); } catch(e) { alert("Error: " + e.message); } }
+        window.rejectKycDB = async (uid) => { try { await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Rejected!"); } catch(e) { alert("Error: " + e.message); } }
+        window.approveWithdrawDB = async (docId) => { try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); alert("Withdrawal marked as Paid!"); } catch(e) { alert("Error: " + e.message); } }
     </script>
 </body>
 </html>
