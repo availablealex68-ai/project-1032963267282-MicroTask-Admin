@@ -90,6 +90,12 @@
             <button id="nav-dashboard" onclick="switchAdminTab('dashboard')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all active:scale-95">
                 <i class="fa-solid fa-chart-pie mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Dash</span>
             </button>
+            <button id="nav-users" onclick="switchAdminTab('users')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
+                <i class="fa-solid fa-users mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Users</span>
+            </button>
+            <button id="nav-tasks" onclick="switchAdminTab('tasks')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
+                <i class="fa-solid fa-briefcase mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Tasks</span>
+            </button>
             <button id="nav-kyc" onclick="switchAdminTab('kyc')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 relative">
                 <i class="fa-solid fa-id-card mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">KYC</span>
                 <span id="kyc-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-rose-500 border-2 border-[#0f172a] rounded-full"></span>
@@ -98,14 +104,11 @@
                 <i class="fa-solid fa-money-bill-transfer mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Withdraw</span>
                 <span id="withdraw-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-amber-500 border-2 border-[#0f172a] rounded-full"></span>
             </button>
-            <button id="nav-tasks" onclick="switchAdminTab('tasks')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
-                <i class="fa-solid fa-briefcase mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Tasks</span>
-            </button>
             <button id="nav-notices" onclick="switchAdminTab('notices')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
                 <i class="fa-solid fa-bell mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Notice</span>
             </button>
-            <button id="nav-payments" onclick="switchAdminTab('payments')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
-                <i class="fa-solid fa-wallet mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Payments</span>
+            <button id="nav-payments" onclick="switchAdminTab('payments')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 col-span-3">
+                <i class="fa-solid fa-wallet mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Payments Config</span>
             </button>
         </div>
 
@@ -115,6 +118,16 @@
             <section id="page-dashboard" class="admin-page active">
                 <h2 class="font-bold text-lg mb-4 text-white">Live Database Stats</h2>
                 <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-indigo-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-users text-indigo-400 mb-2 text-2xl"></i>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
+                        <p id="stat-total-users" class="font-bold text-3xl text-indigo-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-emerald-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-briefcase text-emerald-400 mb-2 text-2xl"></i>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Tasks</p>
+                        <p id="stat-tasks" class="font-bold text-3xl text-emerald-400 mt-1">0</p>
+                    </div>
                     <div class="bg-[#1e293b] p-4 rounded-2xl border border-rose-900/30 shadow-sm text-center">
                         <i class="fa-solid fa-id-badge text-rose-400 mb-2 text-2xl"></i>
                         <p class="text-[10px] text-slate-400 font-bold uppercase">Pending KYC</p>
@@ -125,16 +138,18 @@
                         <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdraw</p>
                         <p id="stat-withdraw" class="font-bold text-3xl text-amber-400 mt-1">0</p>
                     </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-emerald-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-briefcase text-emerald-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Tasks</p>
-                        <p id="stat-tasks" class="font-bold text-3xl text-emerald-400 mt-1">0</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-cyan-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-wallet text-cyan-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Methods</p>
-                        <p id="stat-payments" class="font-bold text-3xl text-cyan-400 mt-1">0</p>
-                    </div>
+                </div>
+            </section>
+
+            <!-- USERS MANAGEMENT PAGE -->
+            <section id="page-users" class="admin-page">
+                <h2 class="font-bold text-lg mb-4 text-white">Manage Users</h2>
+                <div class="relative mb-4">
+                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-500"></i>
+                    <input type="text" id="search-user" oninput="filterUsers()" placeholder="Search by email or name..." class="w-full bg-[#1e293b] border border-slate-700 text-sm rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-indigo-500 text-white shadow-sm">
+                </div>
+                <div id="admin-user-list" class="space-y-3">
+                    <p class="text-sm text-slate-500 text-center mt-5">Loading users...</p>
                 </div>
             </section>
 
@@ -156,6 +171,9 @@
                                     <option value="other">Other</option>
                                 </select>
                             </div>
+                            
+                            <!-- Task Password Field -->
+                            <input type="text" id="task-password" autocomplete="new-password" placeholder="Set Task Default Password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
 
                             <!-- 2FA & Cookies Toggles -->
                             <div class="flex gap-3 mt-2">
@@ -171,7 +189,7 @@
                     </form>
                 </div>
 
-                <h2 class="font-bold text-lg mb-3 text-white">Live Tasks</h2>
+                <h2 class="font-bold text-lg mb-3 text-white">Live Tasks History</h2>
                 <div id="admin-task-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p></div>
             </section>
 
@@ -227,52 +245,77 @@
         </main>
     </div>
 
+    <!-- Edit Task Modal Overlay -->
+    <div id="edit-task-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 w-full max-w-md transform scale-95 transition-transform duration-300" id="edit-task-content">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-indigo-400"></i>Edit Task</h3>
+                <button onclick="closeEditTask()" class="text-slate-400 hover:text-rose-500 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-3 mb-5 max-h-[60vh] overflow-y-auto pr-2">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Task Title</label>
+                    <input type="text" id="edit-task-title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Description</label>
+                    <textarea id="edit-task-desc" class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Reward (৳)</label>
+                        <input type="number" id="edit-task-reward" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Platform</label>
+                        <select id="edit-task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                            <option value="facebook">Facebook</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Default Password</label>
+                    <input type="text" id="edit-task-password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button type="button" id="btn-edit-toggle-2fa" onclick="toggleEditTaskReq('2fa')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Require 2FA
+                    </button>
+                    <button type="button" id="btn-edit-toggle-cookies" onclick="toggleEditTaskReq('cookies')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
+                        <i class="fa-solid fa-cookie mr-1"></i> Require Cookies
+                    </button>
+                </div>
+            </div>
+            <button onclick="saveEditTaskDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes</button>
+        </div>
+    </div>
+
     <script>
         // ==========================================
         // 🔒 ADMIN SECURITY CONFIGURATION
         // ==========================================
-        
-        // এখানে আপনার সঠিক অ্যাডমিন ইমেইলটি দেওয়া হলো
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
 
-        // Password Visibility Toggle Function
         function togglePassword() {
-            const passInput = document.getElementById('admin-password');
-            const icon = document.getElementById('toggle-password-icon');
-            if(passInput.type === 'password') {
-                passInput.type = 'text';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            } else {
-                passInput.type = 'password';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            }
+            const passInput = document.getElementById('admin-password'), icon = document.getElementById('toggle-password-icon');
+            if(passInput.type === 'password') { passInput.type = 'text'; icon.classList.replace('fa-eye-slash', 'fa-eye'); } 
+            else { passInput.type = 'password'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
         }
 
-        // State for New Task Requirements
-        let req2FA = false;
-        let reqCookies = false;
+        let req2FA = false, reqCookies = false;
 
         function toggleTaskRequirement(type) {
             if(type === '2fa') {
-                req2FA = !req2FA;
-                const btn = document.getElementById('btn-toggle-2fa');
-                if(req2FA) {
-                    btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
-                    btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
-                } else {
-                    btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
-                    btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
-                }
+                req2FA = !req2FA; const btn = document.getElementById('btn-toggle-2fa');
+                if(req2FA) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
+                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
             } else if(type === 'cookies') {
-                reqCookies = !reqCookies;
-                const btn = document.getElementById('btn-toggle-cookies');
-                if(reqCookies) {
-                    btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
-                    btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
-                } else {
-                    btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
-                    btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
-                }
+                reqCookies = !reqCookies; const btn = document.getElementById('btn-toggle-cookies');
+                if(reqCookies) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
+                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
             }
         }
 
@@ -294,14 +337,62 @@
 
         function setButtonLoading(id, isLoading, defaultText, iconClass) {
             const btn = document.getElementById(id);
-            if (isLoading) { 
-                btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); 
-                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; 
-            } else { 
-                btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); 
-                btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; 
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
+        }
+
+        // Search & Global State Variables for Users and Tasks
+        let allUsersData = [];
+        let allTasksData = [];
+        
+        window.filterUsers = () => {
+            const query = document.getElementById('search-user').value.toLowerCase();
+            const filtered = allUsersData.filter(u => 
+                (u.name && u.name.toLowerCase().includes(query)) || 
+                (u.email && u.email.toLowerCase().includes(query))
+            );
+            window.renderUsersList(filtered);
+        }
+
+        // Edit Task UI Handlers
+        let editingTaskId = null, editReq2FA = false, editReqCookies = false;
+
+        window.toggleEditTaskReq = (type) => {
+            if(type === '2fa') {
+                editReq2FA = !editReq2FA; const btn = document.getElementById('btn-edit-toggle-2fa');
+                if(editReq2FA) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
+                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
+            } else if(type === 'cookies') {
+                editReqCookies = !editReqCookies; const btn = document.getElementById('btn-edit-toggle-cookies');
+                if(editReqCookies) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
+                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
             }
         }
+
+        window.openEditTask = (taskId) => {
+            const t = allTasksData.find(x => x.id === taskId);
+            if(!t) return;
+            editingTaskId = taskId;
+            document.getElementById('edit-task-title').value = t.title || '';
+            document.getElementById('edit-task-desc').value = t.desc || '';
+            document.getElementById('edit-task-reward').value = t.reward || '';
+            document.getElementById('edit-task-platform').value = t.platform || 'facebook';
+            document.getElementById('edit-task-password').value = t.password || '';
+            
+            // Set Toggles properly
+            editReq2FA = !t.require2FA; toggleEditTaskReq('2fa'); // triggers true
+            editReqCookies = !t.requireCookies; toggleEditTaskReq('cookies'); // triggers true
+
+            document.getElementById('edit-task-modal').classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('edit-task-content').classList.remove('scale-95');
+        }
+
+        window.closeEditTask = () => {
+            document.getElementById('edit-task-modal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('edit-task-content').classList.add('scale-95');
+            editingTaskId = null;
+        }
+
     </script>
 
     <!-- FIREBASE DB & AUTH API SCRIPTS -->
@@ -324,7 +415,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Access Control
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -353,8 +443,6 @@
         window.loginAdmin = () => {
             const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
             if(!email || !password) return alert("Enter admin email and password!");
-            
-            // Check if user is typing correct admin email
             if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
             
             setButtonLoading('btn-admin-login', true);
@@ -364,11 +452,79 @@
             });
         };
 
-        // ==========================================
-        // REAL-TIME DATABASE FETCHING (Firestore)
-        // ==========================================
+        window.renderUsersList = (usersArray) => {
+            const list = document.getElementById('admin-user-list');
+            if(usersArray.length === 0) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No users found.</p>`; } 
+            else {
+                let html = '';
+                usersArray.forEach((u) => {
+                    const banBtnColor = u.isBanned ? 'emerald' : 'amber';
+                    const banBtnText = u.isBanned ? 'Unban User' : 'Ban User';
+                    const banBadge = u.isBanned ? `<span class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded ml-2 uppercase font-bold tracking-wider border border-rose-500/30">Banned</span>` : '';
+                    
+                    html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 bg-slate-800 rounded-full border border-slate-600 flex items-center justify-center text-slate-400"><i class="fa-solid fa-user"></i></div>
+                                <div><h3 class="font-bold text-sm text-white">${u.name || 'Unknown'} ${banBadge}</h3><p class="text-[11px] text-slate-400">${u.email}</p></div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Balance</p>
+                                <p class="font-bold text-emerald-400 text-sm">৳${u.balance || 0}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-3 border-t border-slate-800/50">
+                            <button onclick="toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors">${banBtnText}</button>
+                            <button onclick="deleteDocDB('users', '${u.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
+                        </div>
+                    </div>`;
+                }); 
+                list.innerHTML = html;
+            }
+        };
+
         function loadDatabaseLive() {
-            // 1. KYC LIVE
+            // USERS LIVE FETCH
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                allUsersData = [];
+                snapshot.forEach(docSnap => { allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
+                document.getElementById('stat-total-users').innerText = allUsersData.length;
+                window.filterUsers(); // Render list automatically based on search
+            });
+
+            // TASKS LIVE FETCH
+            onSnapshot(collection(db, "tasks"), (snapshot) => {
+                const list = document.getElementById('admin-task-list');
+                document.getElementById('stat-tasks').innerText = snapshot.size;
+                
+                allTasksData = [];
+                snapshot.forEach(docSnap => { allTasksData.push({id: docSnap.id, ...docSnap.data()}); });
+
+                if(allTasksData.length === 0) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
+                else {
+                    let html = '';
+                    allTasksData.forEach((data) => {
+                        const tag2FA = data.require2FA ? `<span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded ml-1">2FA</span>` : '';
+                        const tagCookie = data.requireCookies ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded ml-1">Cookie</span>` : '';
+                        
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in mb-3">
+                            <div class="flex justify-between items-center mb-3 border-b border-slate-800/50 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div>
+                                    <div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 mt-0.5">Reward: ৳${data.reward} ${tag2FA} ${tagCookie}</p></div>
+                                </div>
+                                <span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide select-all">${data.password || 'No Pass'}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openEditTask('${data.id}')" class="flex-1 bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 border border-indigo-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i> Edit</button>
+                                <button onclick="deleteDocDB('tasks', '${data.id}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 px-4 py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    }); list.innerHTML = html;
+                }
+            });
+
+            // KYC, WITHDRAW, NOTICES, PAYMENTS (Same as before)
             onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
                 const list = document.getElementById('kyc-list'), badge = document.getElementById('kyc-badge');
                 document.getElementById('stat-kyc').innerText = snapshot.size;
@@ -382,7 +538,6 @@
                 }
             });
 
-            // 2. WITHDRAW LIVE
             const qWithdraw = query(collection(db, "withdrawals"), where("status", "==", "pending"));
             onSnapshot(qWithdraw, (snapshot) => {
                 const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
@@ -397,24 +552,6 @@
                 }
             });
 
-            // 3. TASKS LIVE
-            onSnapshot(collection(db, "tasks"), (snapshot) => {
-                const list = document.getElementById('admin-task-list');
-                document.getElementById('stat-tasks').innerText = snapshot.size;
-                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
-                else {
-                    let html = '';
-                    snapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const tag2FA = data.require2FA ? `<span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded ml-1">2FA</span>` : '';
-                        const tagCookie = data.requireCookies ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded ml-1">Cookie</span>` : '';
-                        
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-brands fa-${data.platform}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400">Reward: ৳${data.reward} ${tag2FA} ${tagCookie}</p></div></div><button onclick="deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
-                    }); list.innerHTML = html;
-                }
-            });
-
-            // 4. NOTICES LIVE
             onSnapshot(collection(db, "notices"), (snapshot) => {
                 const list = document.getElementById('admin-notice-list');
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p>`; } 
@@ -427,7 +564,6 @@
                 }
             });
 
-            // 5. PAYMENT METHODS LIVE
             onSnapshot(collection(db, "payment_methods"), (snapshot) => {
                 const list = document.getElementById('admin-payment-list');
                 let activeCount = 0;
@@ -447,25 +583,45 @@
         }
 
         // ==========================================
-        // ADD/DELETE DATA FUNCTIONS
+        // ADD / UPDATE / DELETE DB FUNCTIONS
         // ==========================================
+        
+        window.toggleBanUserDB = async (uid, status) => {
+            if(!confirm(`Are you sure you want to ${status ? 'BAN' : 'UNBAN'} this user?`)) return;
+            try { await updateDoc(doc(db, "users", uid), { isBanned: status }); } catch(e) { alert("Error: " + e.message); }
+        }
+
         window.addTaskDB = async () => {
-            const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value;
-            if(!title || !desc || !reward) return alert("Fill all fields!");
+            const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value, password = document.getElementById('task-password').value;
+            if(!title || !desc || !reward || !password) return alert("Fill all fields including password!");
             
             try { 
                 await addDoc(collection(db, "tasks"), { 
-                    title, desc, reward: Number(reward), platform, 
+                    title, desc, reward: Number(reward), platform, password,
                     require2FA: req2FA, requireCookies: reqCookies,
                     createdAt: serverTimestamp() 
                 }); 
                 
                 alert("Task Added Live!"); 
-                document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; 
-                
+                document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; document.getElementById('task-password').value='';
                 if(req2FA) toggleTaskRequirement('2fa');
                 if(reqCookies) toggleTaskRequirement('cookies');
 
+            } catch(e) { alert("Error: " + e.message); }
+        }
+
+        window.saveEditTaskDB = async () => {
+            if(!editingTaskId) return;
+            const title = document.getElementById('edit-task-title').value, desc = document.getElementById('edit-task-desc').value, reward = document.getElementById('edit-task-reward').value, platform = document.getElementById('edit-task-platform').value, password = document.getElementById('edit-task-password').value;
+            if(!title || !desc || !reward || !password) return alert("Fill all fields!");
+            
+            try {
+                await updateDoc(doc(db, "tasks", editingTaskId), {
+                    title, desc, reward: Number(reward), platform, password,
+                    require2FA: editReq2FA, requireCookies: editReqCookies
+                });
+                alert("Task Updated Successfully!");
+                closeEditTask();
             } catch(e) { alert("Error: " + e.message); }
         }
 
@@ -483,15 +639,8 @@
             catch(e) { alert("Error: " + e.message); }
         }
 
-        window.togglePaymentDB = async (docId, newStatus) => {
-            try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { alert("Error: " + e.message); }
-        }
-
-        window.deleteDocDB = async (colName, docId) => {
-            if(!confirm("Are you sure you want to delete this?")) return;
-            try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); }
-        }
-
+        window.togglePaymentDB = async (docId, newStatus) => { try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { alert("Error: " + e.message); } }
+        window.deleteDocDB = async (colName, docId) => { if(!confirm("Are you sure you want to delete this?")) return; try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); } }
         window.approveKycDB = async (uid) => { try { await updateDoc(doc(db, "users", uid), { kycVerified: true }); await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Approved!"); } catch(e) { alert("Error: " + e.message); } }
         window.rejectKycDB = async (uid) => { try { await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Rejected!"); } catch(e) { alert("Error: " + e.message); } }
         window.approveWithdrawDB = async (docId) => { try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); alert("Withdrawal marked as Paid!"); } catch(e) { alert("Error: " + e.message); } }
