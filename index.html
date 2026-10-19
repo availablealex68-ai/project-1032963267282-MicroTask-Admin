@@ -49,15 +49,14 @@
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Admin Email</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-envelope text-slate-500 w-6"></i>
-                        <!-- Autocomplete off to prevent bad autofills -->
-                        <input type="email" id="admin-email" autocomplete="off" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <input type="email" id="admin-email" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Password</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-lock text-slate-500 w-6"></i>
-                        <input type="password" id="admin-password" autocomplete="new-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                        <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
             </div>
@@ -72,6 +71,10 @@
     <!-- ========================================== -->
     <div id="admin-app-container" class="w-full max-w-md h-full relative flex flex-col hidden bg-[#0f172a]">
         
+        <!-- Fake inputs to prevent browser autofill on other inputs -->
+        <input type="text" style="display:none" autocomplete="username">
+        <input type="password" style="display:none" autocomplete="current-password">
+
         <!-- Header -->
         <header class="p-5 flex justify-between items-center z-10 border-b border-slate-800 bg-[#1e293b]">
             <div class="flex items-center gap-3">
@@ -81,7 +84,7 @@
             <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
         </header>
 
-        <!-- Dynamic Grid Buttons (New Design) -->
+        <!-- Dynamic Grid Buttons -->
         <div class="grid grid-cols-3 gap-3 p-4 bg-[#1e293b] border-b border-slate-800 shadow-md z-10 rounded-b-3xl">
             <button id="nav-dashboard" onclick="switchAdminTab('dashboard')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all active:scale-95">
                 <i class="fa-solid fa-chart-pie mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Dash</span>
@@ -138,20 +141,33 @@
             <section id="page-tasks" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Create New Task</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
-                    <div class="space-y-3 mb-4">
-                        <input type="text" id="task-title" autocomplete="off" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                        <textarea id="task-desc" autocomplete="off" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
-                        <div class="flex gap-3">
-                            <input type="number" id="task-reward" autocomplete="off" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                            <select id="task-platform" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
-                                <option value="facebook">Facebook</option>
-                                <option value="youtube">YouTube</option>
-                                <option value="instagram">Instagram</option>
-                                <option value="other">Other</option>
-                            </select>
+                    <form autocomplete="off" onsubmit="event.preventDefault();">
+                        <div class="space-y-3 mb-4">
+                            <input type="text" id="task-title" autocomplete="new-password" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                            <textarea id="task-desc" autocomplete="new-password" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                            
+                            <div class="flex gap-3">
+                                <input type="number" id="task-reward" autocomplete="new-password" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                <select id="task-platform" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                    <option value="facebook">Facebook</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- NEW: 2FA & Cookies Toggles -->
+                            <div class="flex gap-3 mt-2">
+                                <button type="button" id="btn-toggle-2fa" onclick="toggleTaskRequirement('2fa')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
+                                    <i class="fa-solid fa-shield-halved mr-1"></i> Require 2FA
+                                </button>
+                                <button type="button" id="btn-toggle-cookies" onclick="toggleTaskRequirement('cookies')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
+                                    <i class="fa-solid fa-cookie mr-1"></i> Require Cookies
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <button onclick="addTaskDB()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus mr-1"></i> Publish Task</button>
+                        <button type="button" onclick="addTaskDB()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus mr-1"></i> Publish Task</button>
+                    </form>
                 </div>
 
                 <h2 class="font-bold text-lg mb-3 text-white">Live Tasks</h2>
@@ -162,17 +178,19 @@
             <section id="page-notices" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Send Notification</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
-                    <div class="space-y-3 mb-4">
-                        <input type="text" id="notice-title" autocomplete="off" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                        <textarea id="notice-msg" autocomplete="off" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
-                        <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
-                            <option value="cyan">Cyan (System Update)</option>
-                            <option value="emerald">Emerald (Success)</option>
-                            <option value="amber">Amber (Warning)</option>
-                            <option value="rose">Rose (Alert)</option>
-                        </select>
-                    </div>
-                    <button onclick="addNoticeDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-paper-plane mr-1"></i> Send Notice</button>
+                    <form autocomplete="off" onsubmit="event.preventDefault();">
+                        <div class="space-y-3 mb-4">
+                            <input type="text" id="notice-title" autocomplete="new-password" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                            <textarea id="notice-msg" autocomplete="new-password" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                            <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                <option value="cyan">Cyan (System Update)</option>
+                                <option value="emerald">Emerald (Success)</option>
+                                <option value="amber">Amber (Warning)</option>
+                                <option value="rose">Rose (Alert)</option>
+                            </select>
+                        </div>
+                        <button type="button" onclick="addNoticeDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-paper-plane mr-1"></i> Send Notice</button>
+                    </form>
                 </div>
 
                 <h2 class="font-bold text-lg mb-3 text-white">Sent Notices</h2>
@@ -183,8 +201,10 @@
             <section id="page-payments" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Add Payment Method</h2>
                 <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6 flex gap-3">
-                    <input type="text" id="pay-method-name" autocomplete="off" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                    <button onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus"></i></button>
+                    <form autocomplete="off" onsubmit="event.preventDefault();" class="flex-1 flex gap-3">
+                        <input type="text" id="pay-method-name" autocomplete="new-password" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <button type="button" onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus"></i></button>
+                    </form>
                 </div>
 
                 <h2 class="font-bold text-lg mb-3 text-white">Manage Methods</h2>
@@ -212,20 +232,44 @@
         // ==========================================
         const AUTHORIZED_ADMIN_EMAIL = "admin@example.com"; 
 
+        // State for New Task Requirements
+        let req2FA = false;
+        let reqCookies = false;
+
+        function toggleTaskRequirement(type) {
+            if(type === '2fa') {
+                req2FA = !req2FA;
+                const btn = document.getElementById('btn-toggle-2fa');
+                if(req2FA) {
+                    btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
+                    btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
+                } else {
+                    btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
+                    btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
+                }
+            } else if(type === 'cookies') {
+                reqCookies = !reqCookies;
+                const btn = document.getElementById('btn-toggle-cookies');
+                if(reqCookies) {
+                    btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
+                    btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
+                } else {
+                    btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50');
+                    btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700');
+                }
+            }
+        }
+
         // New Script for Grid Tabs
         function switchAdminTab(tabId) {
-            // Hide all pages
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
-            // Show selected page
             document.getElementById('page-' + tabId).classList.add('active');
             
-            // Reset all buttons to default dark state
             document.querySelectorAll('.admin-nav-item').forEach(item => {
                 item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
                 item.classList.add('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
             });
             
-            // Highlight active button
             const activeBtn = document.getElementById('nav-' + tabId);
             if(activeBtn) {
                 activeBtn.classList.remove('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
@@ -335,7 +379,7 @@
                 }
             });
 
-            // 3. TASKS LIVE
+            // 3. TASKS LIVE (Now includes tags for 2FA/Cookies)
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 document.getElementById('stat-tasks').innerText = snapshot.size;
@@ -344,7 +388,10 @@
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-brands fa-${data.platform}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400">Reward: ৳${data.reward}</p></div></div><button onclick="deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
+                        const tag2FA = data.require2FA ? `<span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded ml-1">2FA</span>` : '';
+                        const tagCookie = data.requireCookies ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded ml-1">Cookie</span>` : '';
+                        
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-brands fa-${data.platform}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400">Reward: ৳${data.reward} ${tag2FA} ${tagCookie}</p></div></div><button onclick="deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -387,8 +434,23 @@
         window.addTaskDB = async () => {
             const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value;
             if(!title || !desc || !reward) return alert("Fill all fields!");
-            try { await addDoc(collection(db, "tasks"), { title, desc, reward: Number(reward), platform, createdAt: serverTimestamp() }); alert("Task Added Live!"); document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; } 
-            catch(e) { alert("Error: " + e.message); }
+            
+            try { 
+                // Using the global state variables (req2FA, reqCookies)
+                await addDoc(collection(db, "tasks"), { 
+                    title, desc, reward: Number(reward), platform, 
+                    require2FA: req2FA, requireCookies: reqCookies,
+                    createdAt: serverTimestamp() 
+                }); 
+                
+                alert("Task Added Live!"); 
+                document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; 
+                
+                // Reset Toggles
+                if(req2FA) toggleTaskRequirement('2fa');
+                if(reqCookies) toggleTaskRequirement('cookies');
+
+            } catch(e) { alert("Error: " + e.message); }
         }
 
         window.addNoticeDB = async () => {
