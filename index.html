@@ -24,17 +24,14 @@
 </head>
 <body class="flex justify-center h-screen w-full overflow-hidden relative">
 
-    <!-- Global Loader -->
     <div id="global-loader" class="fixed inset-0 z-[200] bg-[#0f172a] flex items-center justify-center">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-spinner animate-spin text-4xl text-indigo-500 mb-3"></i>
-            <p class="text-sm font-bold text-slate-400">Verifying Admin Access...</p>
+            <p class="text-sm font-bold text-slate-400">Verifying Admin Database Access...</p>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 1. ADMIN LOGIN SECTION                     -->
-    <!-- ========================================== -->
+    <!-- 1. ADMIN LOGIN SECTION -->
     <div id="auth-container" class="hidden w-full max-w-md h-full flex-col justify-center px-6 relative z-40 fade-in">
         <div class="flex flex-col items-center mb-8">
             <div class="h-16 w-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
@@ -50,14 +47,14 @@
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Admin Email</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-envelope text-slate-500 w-6"></i>
-                        <input type="email" id="admin-email" placeholder="admin@example.com" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600">
+                        <input type="email" id="admin-email" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-400 mb-1 block">Password</label>
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-lock text-slate-500 w-6"></i>
-                        <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600">
+                        <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
             </div>
@@ -67,161 +64,87 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 2. MAIN ADMIN DASHBOARD                    -->
-    <!-- ========================================== -->
+    <!-- 2. MAIN ADMIN DASHBOARD -->
     <div id="admin-app-container" class="w-full max-w-md h-full relative flex flex-col hidden bg-[#0f172a]">
         
-        <!-- Top Header -->
+        <!-- Header -->
         <header class="p-5 flex justify-between items-center z-10 border-b border-slate-800 bg-[#1e293b]">
             <div class="flex items-center gap-3">
-                <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1>
-                    <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">MicroTask Pro</p>
-                </div>
+                <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400"><i class="fa-solid fa-user-shield"></i></div>
+                <div><h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1><p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Database Connected</p></div>
             </div>
-            <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors">
-                <i class="fa-solid fa-power-off mr-1"></i> Logout
-            </button>
+            <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
         </header>
 
-        <!-- Top Navigation Tabs -->
-        <div class="flex bg-[#1e293b] border-b border-slate-800 px-2 pt-2 overflow-x-auto">
-            <button onclick="switchAdminTab('dashboard')" class="admin-nav-item nav-active flex-1 py-3 text-xs font-bold text-slate-400 whitespace-nowrap transition-colors"><i class="fa-solid fa-chart-pie mr-1"></i> Dashboard</button>
-            <button onclick="switchAdminTab('kyc')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 whitespace-nowrap transition-colors relative"><i class="fa-solid fa-id-card mr-1"></i> KYC <span class="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full"></span></button>
-            <button onclick="switchAdminTab('withdraw')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 whitespace-nowrap transition-colors relative"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw</button>
+        <!-- Tabs -->
+        <div class="flex bg-[#1e293b] border-b border-slate-800 px-2 pt-2">
+            <button onclick="switchAdminTab('dashboard')" class="admin-nav-item nav-active flex-1 py-3 text-xs font-bold text-slate-400 transition-colors"><i class="fa-solid fa-chart-pie mr-1"></i> Dash</button>
+            <button onclick="switchAdminTab('kyc')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-id-card mr-1"></i> KYC <span id="kyc-badge" class="hidden absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full"></span></button>
+            <button onclick="switchAdminTab('withdraw')" class="admin-nav-item flex-1 py-3 text-xs font-bold text-slate-400 transition-colors relative"><i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw <span id="withdraw-badge" class="hidden absolute top-2 right-1 h-2 w-2 bg-amber-500 rounded-full"></span></button>
         </div>
 
-        <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto px-5 pt-5 pb-10 relative">
             
             <!-- DASHBOARD PAGE -->
             <section id="page-dashboard" class="admin-page active">
-                <h2 class="font-bold text-lg mb-4 text-white">Overview</h2>
+                <h2 class="font-bold text-lg mb-4 text-white">Live Database Stats</h2>
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm">
-                        <i class="fa-solid fa-users text-blue-400 mb-2 text-xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
-                        <p class="font-bold text-xl text-white">1,245</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm">
-                        <i class="fa-solid fa-money-bill-wave text-emerald-400 mb-2 text-xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Total Paid</p>
-                        <p class="font-bold text-xl text-white">৳ 45.2K</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-rose-900/30 shadow-sm">
-                        <i class="fa-solid fa-id-badge text-rose-400 mb-2 text-xl"></i>
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-rose-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-id-badge text-rose-400 mb-2 text-2xl"></i>
                         <p class="text-[10px] text-slate-400 font-bold uppercase">Pending KYC</p>
-                        <p class="font-bold text-xl text-rose-400">12</p>
+                        <p id="stat-kyc" class="font-bold text-3xl text-rose-400 mt-1">0</p>
                     </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-amber-900/30 shadow-sm">
-                        <i class="fa-solid fa-hand-holding-dollar text-amber-400 mb-2 text-xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdraw</p>
-                        <p class="font-bold text-xl text-amber-400">8</p>
+                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-amber-900/30 shadow-sm text-center">
+                        <i class="fa-solid fa-hand-holding-dollar text-amber-400 mb-2 text-2xl"></i>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdrawals</p>
+                        <p id="stat-withdraw" class="font-bold text-3xl text-amber-400 mt-1">0</p>
                     </div>
                 </div>
-
-                <button class="w-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 py-3.5 rounded-xl font-bold text-sm mb-4 active:scale-95 transition-transform flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-layer-group"></i> Upload Bulk Tasks
-                </button>
             </section>
 
             <!-- KYC REVIEW PAGE -->
             <section id="page-kyc" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Pending KYC Requests</h2>
-                <div class="space-y-4">
-                    <!-- Demo Request Card -->
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <h3 class="font-bold text-sm text-white">Alex Hunter</h3>
-                                <p class="text-xs text-slate-400">alex@example.com</p>
-                            </div>
-                            <span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending</span>
-                        </div>
-                        <div class="h-24 w-full bg-[#0f172a] rounded-lg border border-slate-700 flex items-center justify-center text-slate-500 mb-3 cursor-pointer">
-                            <i class="fa-solid fa-image text-2xl mr-2"></i> <span class="text-xs">View ID Card Image</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="alert('KYC Approved!')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button>
-                            <button onclick="alert('KYC Rejected!')" class="flex-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button>
-                        </div>
-                    </div>
+                <div id="kyc-list" class="space-y-4">
+                    <p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests from Database.</p>
                 </div>
             </section>
 
             <!-- WITHDRAW PAGE -->
             <section id="page-withdraw" class="admin-page">
                 <h2 class="font-bold text-lg mb-4 text-white">Withdrawal Requests</h2>
-                <div class="space-y-4">
-                    <!-- Demo Withdraw Card -->
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm">
-                        <div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-building-columns"></i></div>
-                                <div>
-                                    <h3 class="font-bold text-sm text-white">Anika Tabassum</h3>
-                                    <p class="text-xs text-slate-400">Current Balance: ৳ 450</p>
-                                </div>
-                            </div>
-                            <h2 class="text-lg font-bold text-white">৳ 500</h2>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white">bKash (Personal)</strong></p>
-                            <p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded cursor-pointer select-all">017XXXXXXXX</strong></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="alert('Payment Marked as Paid!')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid</button>
-                        </div>
-                    </div>
+                <div id="withdraw-list" class="space-y-4">
+                    <p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals from Database.</p>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts for UI Tabs -->
     <script>
-        // ==========================================
-        // 🔒 ADMIN SECURITY CONFIGURATION
-        // ==========================================
-        // এখানে আপনার নির্দিষ্ট অ্যাডমিন জিমেইলটি দিন। এই ইমেইল ছাড়া কেউ লগিন করতে পারবে না।
-        const AUTHORIZED_ADMIN_EMAIL = "admin@example.com"; 
-
         function switchAdminTab(tabId) {
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
             document.getElementById('page-' + tabId).classList.add('active');
-            
             document.querySelectorAll('.admin-nav-item').forEach(item => {
-                item.classList.remove('nav-active');
-                item.classList.remove('border-bottom', 'border-indigo-500', 'text-indigo-400');
-                item.classList.add('text-slate-400');
+                item.classList.remove('nav-active'); item.classList.add('text-slate-400');
             });
-            event.currentTarget.classList.add('nav-active');
-            event.currentTarget.classList.remove('text-slate-400');
+            event.currentTarget.classList.add('nav-active'); event.currentTarget.classList.remove('text-slate-400');
         }
-
         function setButtonLoading(id, isLoading, defaultText, iconClass) {
             const btn = document.getElementById(id);
-            if (isLoading) { 
-                btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); 
-                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; 
-            } else { 
-                btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); 
-                btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; 
-            }
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
         }
     </script>
 
-    <!-- FIREBASE AUTHENTICATION SCRIPTS -->
+    <!-- FIREBASE DB & AUTH API SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // মেইন অ্যাপের একই ফায়ারবেস কনফিগারেশন এখানে ব্যবহার করা হয়েছে
+        // মেইন অ্যাপের একই ফায়ারবেস কনফিগারেশন এখানে ব্যবহার করুন
         const firebaseConfig = {
             apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
             authDomain: "microtask-pro-bb3a0.firebaseapp.com",
@@ -234,60 +157,148 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Persistent Login Checker
-        onAuthStateChanged(auth, (user) => {
-            if (user && user.email === AUTHORIZED_ADMIN_EMAIL) {
-                // Verified Admin
-                document.getElementById('global-loader').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('admin-app-container').classList.remove('hidden');
-            } else if (user && user.email !== AUTHORIZED_ADMIN_EMAIL) {
-                // Someone logged in but is NOT the admin! Kick them out.
-                auth.signOut().then(() => {
-                    alert("Access Denied! You are not authorized to view the admin panel.");
-                    showAuthScreen();
-                });
+        // Persistent Login & DB Rule Checker
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    // এটি ডেটাবেস থেকে চেক করবে সে রুলসে দেওয়া অ্যাডমিন কি না!
+                    const q = collection(db, "admin_check");
+                    await getDocs(q); 
+                    
+                    // Error না দিলে সে আসল অ্যাডমিন!
+                    document.getElementById('global-loader').style.display = 'none';
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('admin-app-container').classList.remove('hidden');
+                    
+                    // Load Live Data from Firestore
+                    loadDatabaseLive();
+
+                } catch (error) {
+                    // ডাটাবেস এরর দিলে মানে সে হ্যাকার বা সাধারণ ইউজার! কিক আউট!
+                    auth.signOut().then(() => {
+                        document.getElementById('global-loader').style.display = 'none';
+                        document.getElementById('auth-container').style.display = 'flex';
+                        alert("Access Denied! You are not authorized by the Database Security Rules.");
+                    });
+                }
             } else {
-                // Not logged in
-                showAuthScreen();
+                document.getElementById('global-loader').style.display = 'none';
+                document.getElementById('admin-app-container').classList.add('hidden');
+                document.getElementById('auth-container').style.display = 'flex';
             }
         });
 
-        function showAuthScreen() {
-            document.getElementById('global-loader').style.display = 'none';
-            document.getElementById('admin-app-container').classList.add('hidden');
-            document.getElementById('auth-container').style.display = 'flex';
-        }
-
-        window.logoutAdmin = () => {
-            signOut(auth).then(() => {
-                window.location.reload();
-            });
-        };
+        window.logoutAdmin = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
         window.loginAdmin = () => {
             const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value.trim();
-            
             if(!email || !password) return alert("Enter admin email and password!");
             
-            // Frontend validation block (Extra security layer)
-            if(email !== AUTHORIZED_ADMIN_EMAIL) {
-                return alert("Access Denied! Unauthorized Email Address.");
-            }
-
             setButtonLoading('btn-admin-login', true);
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Auth state observer will handle the UI switch
-                    setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
-                }).catch((error) => {
-                    setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
-                    alert("Login Failed: Incorrect credentials.");
-                });
+            signInWithEmailAndPassword(auth, email, password).catch((error) => {
+                setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
+                alert("Login Failed: Incorrect credentials.");
+            });
         };
+
+        // ==========================================
+        // REAL-TIME DATABASE FETCHING (Firestore)
+        // ==========================================
+        function loadDatabaseLive() {
+            // Live listener for KYC Requests
+            onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
+                const list = document.getElementById('kyc-list');
+                const badge = document.getElementById('kyc-badge');
+                document.getElementById('stat-kyc').innerText = snapshot.size;
+                
+                if(snapshot.empty) {
+                    list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests from Database.</p>`;
+                    badge.classList.add('hidden');
+                } else {
+                    badge.classList.remove('hidden');
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        html += `
+                        <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in" id="kyc-card-${docSnap.id}">
+                            <div class="flex justify-between items-start mb-3">
+                                <div><h3 class="font-bold text-sm text-white">${data.name}</h3><p class="text-xs text-slate-400">${data.email}</p></div>
+                                <span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending DB</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="approveKycDB('${docSnap.id}')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button>
+                                <button onclick="rejectKycDB('${docSnap.id}')" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button>
+                            </div>
+                        </div>`;
+                    });
+                    list.innerHTML = html;
+                }
+            });
+
+            // Live listener for Withdrawals
+            const qWithdraw = query(collection(db, "withdrawals"), where("status", "==", "pending"));
+            onSnapshot(qWithdraw, (snapshot) => {
+                const list = document.getElementById('withdraw-list');
+                const badge = document.getElementById('withdraw-badge');
+                document.getElementById('stat-withdraw').innerText = snapshot.size;
+                
+                if(snapshot.empty) {
+                    list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals from Database.</p>`;
+                    badge.classList.add('hidden');
+                } else {
+                    badge.classList.remove('hidden');
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        html += `
+                        <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in" id="wd-card-${docSnap.id}">
+                            <div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                                    <div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div>
+                                </div>
+                                <h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p>
+                                <p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p>
+                            </div>
+                            <button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button>
+                        </div>`;
+                    });
+                    list.innerHTML = html;
+                }
+            });
+        }
+
+        // Action Functions (Global for HTML buttons)
+        window.approveKycDB = async (uid) => {
+            try {
+                // মেইন ইউজার কালেকশনে KYC স্ট্যাটাস আপডেট করবে
+                await updateDoc(doc(db, "users", uid), { kycVerified: true });
+                // রিকোয়েস্ট লিস্ট থেকে মুছে ফেলবে
+                await deleteDoc(doc(db, "kyc_requests", uid));
+                alert("KYC Approved & Saved to Database!");
+            } catch(e) { alert("Error updating Database: " + e.message); }
+        }
+
+        window.rejectKycDB = async (uid) => {
+            try {
+                await deleteDoc(doc(db, "kyc_requests", uid));
+                alert("KYC Rejected and deleted from Database.");
+            } catch(e) { alert("Error updating Database: " + e.message); }
+        }
+
+        window.approveWithdrawDB = async (docId) => {
+            try {
+                await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' });
+                alert("Withdrawal marked as Paid in Database!");
+            } catch(e) { alert("Error updating Database: " + e.message); }
+        }
     </script>
 </body>
 </html>
