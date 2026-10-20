@@ -7,52 +7,61 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { adminBg: '#0f172a', adminCard: '#1e293b', adminPrimary: '#6366f1' } } } }
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { adminBg: '#0b0f19', adminCard: '#111827', adminPrimary: '#4f46e5' } } } }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f8fafc; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { display: none; } 
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         .admin-page { display: none !important; }
         .admin-page.active { display: block !important; animation: fadeIn 0.3s ease-out forwards; }
         
         table { border-collapse: collapse; width: 100%; white-space: nowrap; }
-        th, td { border: 1px solid #334155; padding: 12px 16px; text-align: left; font-size: 12px; }
-        th { background-color: #0f172a; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
-        tr:hover { background-color: #0f172a; }
+        th, td { border: 1px solid #1f2937; padding: 14px 16px; text-align: left; font-size: 12px; }
+        th { background-color: #0f172a; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:hover { background-color: #1e293b; }
         
-        .format-tag { display: inline-flex; align-items: center; background-color: #4f46e5; color: white; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: bold; margin: 3px; border: 1px solid #6366f1; transition: all 0.2s; }
-        .format-tag span { cursor: pointer; margin-left: 8px; color: #cbd5e1; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; transition: all 0.2s; }
+        .format-tag { display: inline-flex; align-items: center; background: linear-gradient(135deg, #4f46e5, #3b82f6); color: white; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; margin: 4px; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); transition: transform 0.2s; }
+        .format-tag:hover { transform: translateY(-2px); }
+        .format-tag span { cursor: pointer; margin-left: 8px; color: #e2e8f0; background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 6px; transition: all 0.2s; }
         .format-tag span:hover { color: white; background: #e11d48; }
+
+        .glass-panel { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .premium-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3); }
+        .premium-hover { transition: all 0.3s ease; }
+        .premium-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); }
     </style>
 </head>
 <body class="flex justify-center h-screen w-full overflow-hidden relative">
 
     <!-- GLOBAL LOADER -->
-    <div id="global-loader" class="fixed inset-0 z-[200] bg-[#0f172a] flex items-center justify-center">
+    <div id="global-loader" class="fixed inset-0 z-[200] bg-[#0b0f19] flex items-center justify-center">
         <div class="flex flex-col items-center">
-            <i class="fa-solid fa-spinner animate-spin text-4xl text-indigo-500 mb-3"></i>
-            <p class="text-sm font-bold text-slate-400 mt-2">Connecting Database...</p>
+            <div class="relative h-16 w-16 mb-4">
+                <div class="absolute inset-0 rounded-full border-t-4 border-indigo-500 animate-spin"></div>
+                <div class="absolute inset-2 rounded-full border-t-4 border-cyan-400 animate-spin" style="animation-direction: reverse; animation-duration: 1s;"></div>
+            </div>
+            <p class="text-sm font-bold text-slate-300 tracking-widest uppercase">Connecting System...</p>
         </div>
     </div>
 
     <!-- SMART ALERT MODAL -->
-    <div id="smart-alert-modal" class="fixed inset-0 z-[500] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
-        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl w-full max-w-sm transform scale-95 transition-transform duration-300 text-center" id="smart-alert-content">
-            <div id="smart-alert-icon" class="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl"></div>
-            <h3 class="text-xl font-bold text-white mb-2" id="smart-alert-title">MicroTask Pro</h3>
-            <p class="text-sm text-slate-400 mb-6" id="smart-alert-message"></p>
+    <div id="smart-alert-modal" class="fixed inset-0 z-[500] flex items-center justify-center bg-[#0b0f19]/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="glass-panel p-8 rounded-3xl premium-shadow w-full max-w-sm transform scale-95 transition-transform duration-300 text-center border-t border-slate-700" id="smart-alert-content">
+            <div id="smart-alert-icon" class="mx-auto mb-5 h-20 w-20 rounded-full flex items-center justify-center text-4xl shadow-lg"></div>
+            <h3 class="text-2xl font-black text-white mb-2 tracking-tight" id="smart-alert-title">MicroTask Pro</h3>
+            <p class="text-sm text-slate-400 mb-8 leading-relaxed" id="smart-alert-message"></p>
             <div id="smart-prompt-area" class="hidden mb-6">
-                <input type="text" id="smart-prompt-input" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white text-center font-bold tracking-widest uppercase" autocomplete="off">
+                <input type="text" id="smart-prompt-input" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-4 focus:outline-none focus:border-indigo-500 text-white text-center font-bold tracking-widest uppercase shadow-inner" autocomplete="off">
             </div>
             <div class="flex gap-3 justify-center" id="smart-alert-buttons">
-                <button id="smart-btn-cancel" class="hidden flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3.5 rounded-xl transition-colors text-sm">Cancel</button>
-                <button id="smart-btn-confirm" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm">OK</button>
+                <button id="smart-btn-cancel" class="hidden flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl transition-colors text-sm border border-slate-700">Cancel</button>
+                <button id="smart-btn-confirm" class="flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all text-sm transform hover:-translate-y-0.5">Understood</button>
             </div>
         </div>
     </div>
@@ -61,33 +70,33 @@
     <!-- 1. ADMIN LOGIN SECTION -->
     <!-- ========================================== -->
     <div id="auth-container" class="hidden w-full max-w-md h-full flex-col justify-center px-6 relative z-40 fade-in">
-        <div class="flex flex-col items-center mb-8">
-            <div class="h-16 w-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
-                <i class="fa-solid fa-shield-halved text-3xl text-white"></i>
+        <div class="flex flex-col items-center mb-10">
+            <div class="h-20 w-20 rounded-3xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center shadow-[0_0_30px_rgba(79,70,229,0.4)] mb-5">
+                <i class="fa-solid fa-shield-halved text-4xl text-white drop-shadow-md"></i>
             </div>
-            <h1 class="text-2xl font-extrabold tracking-tight text-white">Super Admin</h1>
-            <p class="text-sm text-slate-400 mt-1">Authorized Personnel Only</p>
+            <h1 class="text-3xl font-black tracking-tight text-white">Super Admin</h1>
+            <p class="text-sm text-indigo-300 mt-1 uppercase tracking-widest font-semibold">Pro Level Access</p>
         </div>
 
-        <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 shadow-xl">
-            <form autocomplete="off" onsubmit="event.preventDefault(); window.loginAdmin();" class="space-y-4 mb-6">
+        <div class="glass-panel p-8 rounded-3xl premium-shadow">
+            <form autocomplete="off" onsubmit="event.preventDefault(); window.loginAdmin();" class="space-y-5 mb-2">
                 <div>
-                    <label class="text-xs font-bold text-slate-400 mb-1 block">Admin Email</label>
-                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
-                        <i class="fa-solid fa-envelope text-slate-500 w-6"></i>
-                        <input type="email" id="admin-email" autocomplete="off" placeholder="Database secured email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
+                    <label class="text-[10px] font-bold text-slate-400 mb-1.5 block uppercase tracking-wider">Admin Email</label>
+                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-indigo-500 transition-colors shadow-inner">
+                        <i class="fa-solid fa-envelope text-indigo-400 w-6"></i>
+                        <input type="email" id="admin-email" autocomplete="off" placeholder="Secured Database Email" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-400 mb-1 block">Password</label>
-                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
-                        <i class="fa-solid fa-lock text-slate-500 w-6"></i>
+                    <label class="text-[10px] font-bold text-slate-400 mb-1.5 block uppercase tracking-wider">Master Password</label>
+                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-indigo-500 transition-colors shadow-inner">
+                        <i class="fa-solid fa-lock text-indigo-400 w-6"></i>
                         <input type="password" id="admin-password" autocomplete="new-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2 pr-8">
                         <i id="toggle-password-icon" class="fa-solid fa-eye-slash text-slate-500 absolute right-4 cursor-pointer hover:text-indigo-400 transition-colors" onclick="window.togglePassword()"></i>
                     </div>
                 </div>
-                <button type="submit" id="btn-admin-login" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 mt-4">
-                    <i class="fa-solid fa-right-to-bracket"></i> <span>Secure Login</span>
+                <button type="submit" id="btn-admin-login" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/30 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 mt-6">
+                    <i class="fa-solid fa-fingerprint text-lg"></i> <span>Authenticate</span>
                 </button>
             </form>
         </div>
@@ -96,175 +105,178 @@
     <!-- ========================================== -->
     <!-- 2. MAIN ADMIN DASHBOARD -->
     <!-- ========================================== -->
-    <div id="admin-app-container" class="w-full max-w-[1200px] h-full relative flex flex-col hidden bg-[#0f172a] mx-auto border-x border-slate-800">
+    <div id="admin-app-container" class="w-full max-w-[1400px] h-full relative flex flex-col hidden bg-[#0b0f19] mx-auto border-x border-slate-800/50 shadow-2xl">
         
         <!-- Header -->
-        <header class="p-5 flex justify-between items-center z-10 border-b border-slate-800 bg-[#1e293b]">
-            <div class="flex items-center gap-3">
-                <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400"><i class="fa-solid fa-user-shield text-lg"></i></div>
+        <header class="p-5 flex justify-between items-center z-10 glass-panel border-b border-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 bg-gradient-to-tr from-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20"><i class="fa-solid fa-user-shield text-xl"></i></div>
                 <div>
-                    <h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1>
-                    <div class="flex items-center gap-2">
-                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p>
+                    <h1 class="text-base font-black text-white leading-tight tracking-wide">MicroTask Admin</h1>
+                    <div class="flex items-center gap-3 mt-1">
+                        <div class="flex items-center gap-1.5"><div class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></div><p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Live DB</p></div>
                         <!-- Global Task ON/OFF Toggle -->
-                        <label class="flex items-center cursor-pointer ml-3 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
-                            <span class="text-[9px] font-bold text-slate-300 mr-1.5 uppercase">Tasks</span>
+                        <label class="flex items-center cursor-pointer ml-2 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">
+                            <span class="text-[9px] font-bold text-slate-300 mr-2 uppercase tracking-wide">Tasks Status</span>
                             <div class="relative">
                                 <input type="checkbox" id="global-task-toggle" class="sr-only" onchange="window.toggleGlobalTasks(this.checked)">
-                                <div class="block bg-slate-600 w-6 h-3.5 rounded-full toggle-bg transition-colors duration-300"></div>
-                                <div class="dot absolute left-[2px] top-[2px] bg-white w-2.5 h-2.5 rounded-full transition transform duration-300"></div>
+                                <div class="block bg-slate-600 w-7 h-4 rounded-full toggle-bg transition-colors duration-300"></div>
+                                <div class="dot absolute left-[2px] top-[2px] bg-white w-3 h-3 rounded-full transition transform duration-300 shadow-sm"></div>
                             </div>
                         </label>
                         <style>
                             input:checked ~ .toggle-bg { background-color: #10b981; }
-                            input:checked ~ .dot { transform: translateX(10px); }
+                            input:checked ~ .dot { transform: translateX(12px); }
                         </style>
                     </div>
                 </div>
             </div>
-            <button onclick="window.logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
+            <button onclick="window.logoutAdmin()" class="h-10 px-4 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500 hover:text-white transition-all premium-shadow"><i class="fa-solid fa-power-off mr-2"></i> Terminate Session</button>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
-            <!-- Sidebar Navigation -->
-            <nav class="w-20 md:w-48 shrink-0 bg-[#1e293b] border-r border-slate-800 flex flex-col py-4 gap-2 overflow-y-auto">
-                <button id="nav-dashboard" onclick="window.switchAdminTab('dashboard')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-indigo-400 bg-indigo-500/10 border border-indigo-500/50 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all">
-                    <i class="fa-solid fa-chart-pie text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Dash</span>
+            <!-- Premium Sidebar Navigation -->
+            <nav class="w-20 md:w-56 shrink-0 bg-[#0f172a]/80 backdrop-blur-xl border-r border-slate-800 flex flex-col py-6 gap-2 overflow-y-auto">
+                <button id="nav-dashboard" onclick="window.switchAdminTab('dashboard')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.15)] transition-all group">
+                    <i class="fa-solid fa-chart-pie text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Overview</span>
                 </button>
-                <button id="nav-users" onclick="window.switchAdminTab('users')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
-                    <i class="fa-solid fa-users text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Users</span>
+                <button id="nav-users" onclick="window.switchAdminTab('users')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
+                    <i class="fa-solid fa-users text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Users</span>
                 </button>
-                <button id="nav-tasks" onclick="window.switchAdminTab('tasks')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
-                    <i class="fa-solid fa-briefcase text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Tasks</span>
+                <button id="nav-tasks" onclick="window.switchAdminTab('tasks')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
+                    <i class="fa-solid fa-briefcase text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Tasks</span>
                 </button>
-                <button id="nav-sheet" onclick="window.switchAdminTab('sheet')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
-                    <i class="fa-solid fa-file-excel text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-emerald-500"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Sheet</span>
-                    <span id="sheet-badge" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-5 min-w-[20px] px-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                <button id="nav-sheet" onclick="window.switchAdminTab('sheet')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all relative group">
+                    <i class="fa-solid fa-table text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform text-emerald-400"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Sheets</span>
+                    <span id="sheet-badge" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-5 min-w-[20px] px-1.5 bg-emerald-500 text-white text-[10px] font-bold rounded-md flex items-center justify-center shadow-lg shadow-emerald-500/30">0</span>
                 </button>
                 
-                <button id="nav-report" onclick="window.switchAdminTab('report')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
-                    <i class="fa-solid fa-clipboard-check text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-cyan-400"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Report</span>
+                <button id="nav-report" onclick="window.switchAdminTab('report')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
+                    <i class="fa-solid fa-clipboard-check text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform text-cyan-400"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Report</span>
                 </button>
 
-                <button id="nav-kyc" onclick="window.switchAdminTab('kyc')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
-                    <i class="fa-solid fa-id-card text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">KYC</span>
-                    <span id="kyc-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                <button id="nav-kyc" onclick="window.switchAdminTab('kyc')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all relative group">
+                    <i class="fa-solid fa-id-card-clip text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">KYC</span>
+                    <span id="kyc-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1.5 bg-rose-500 text-white text-[10px] font-bold rounded-md flex items-center justify-center shadow-lg shadow-rose-500/30"></span>
                 </button>
-                <button id="nav-withdraw" onclick="window.switchAdminTab('withdraw')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
-                    <i class="fa-solid fa-money-bill-transfer text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Withdraw</span>
-                    <span id="withdraw-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                <button id="nav-withdraw" onclick="window.switchAdminTab('withdraw')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all relative group">
+                    <i class="fa-solid fa-money-bill-transfer text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Withdraws</span>
+                    <span id="withdraw-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1.5 bg-amber-500 text-white text-[10px] font-bold rounded-md flex items-center justify-center shadow-lg shadow-amber-500/30"></span>
                 </button>
-                <button id="nav-notices" onclick="window.switchAdminTab('notices')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
-                    <i class="fa-solid fa-bell text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Notice</span>
+                <button id="nav-notices" onclick="window.switchAdminTab('notices')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
+                    <i class="fa-solid fa-bullhorn text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Notices</span>
                 </button>
-                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all mt-auto border-t border-slate-700 pt-4">
-                    <i class="fa-solid fa-wallet text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Payments</span>
+                
+                <!-- RENAMED TO SETTINGS -->
+                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all mt-auto border-t border-slate-700/50 pt-5 group">
+                    <i class="fa-solid fa-sliders text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Settings</span>
                 </button>
             </nav>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto px-6 py-6 relative pb-28">
+            <main class="flex-1 overflow-y-auto px-6 py-8 relative pb-28 custom-scrollbar">
+                <style>.custom-scrollbar::-webkit-scrollbar{width:6px;}.custom-scrollbar::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}</style>
                 
-                <!-- DASHBOARD PAGE (SMART STATS) -->
-                <section id="page-dashboard" class="admin-page active w-full max-w-4xl mx-auto">
-                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-chart-line mr-2 text-indigo-400"></i> Analytics Overview</h2>
+                <!-- DASHBOARD PAGE (PRO STATS) -->
+                <section id="page-dashboard" class="admin-page active w-full max-w-5xl mx-auto">
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-chart-line mr-3 text-indigo-400"></i> Analytics Overview</h2>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-indigo-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2"><i class="fa-solid fa-users"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
-                            <p id="stat-total-users" class="font-bold text-2xl text-white mt-1">0</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-indigo-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-users"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
+                            <p id="stat-total-users" class="font-black text-3xl text-white mt-1 tracking-tight">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2"><i class="fa-solid fa-user-check"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Verified Users</p>
-                            <p id="stat-verified-users" class="font-bold text-2xl text-emerald-400 mt-1">0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-emerald-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-user-check"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Verified Users</p>
+                            <p id="stat-verified-users" class="font-black text-3xl text-emerald-400 mt-1 tracking-tight">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-2"><i class="fa-solid fa-user-xmark"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Unverified</p>
-                            <p id="stat-unverified-users" class="font-bold text-2xl text-rose-400 mt-1">0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-rose-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-user-xmark"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Unverified</p>
+                            <p id="stat-unverified-users" class="font-black text-3xl text-rose-400 mt-1 tracking-tight">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-cyan-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-2"><i class="fa-solid fa-wallet"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">User Balance</p>
-                            <p id="stat-total-balance" class="font-bold text-2xl text-cyan-400 mt-1">৳0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-cyan-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-wallet"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">User Balances</p>
+                            <p id="stat-total-balance" class="font-black text-3xl text-cyan-400 mt-1 tracking-tight">৳0</p>
                         </div>
                         
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-2"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Withdrawn</p>
-                            <p id="stat-total-withdrawn" class="font-bold text-2xl text-amber-400 mt-1">৳0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-amber-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Withdrawn</p>
+                            <p id="stat-total-withdrawn" class="font-black text-3xl text-amber-400 mt-1 tracking-tight">৳0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2"><i class="fa-solid fa-check-double"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Approved Tasks</p>
-                            <p id="stat-approved-tasks" class="font-bold text-2xl text-emerald-400 mt-1">0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-emerald-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-check-double"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Approved Tasks</p>
+                            <p id="stat-approved-tasks" class="font-black text-3xl text-emerald-400 mt-1 tracking-tight">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-2"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pending Tasks</p>
-                            <p id="stat-pending-tasks" class="font-bold text-2xl text-amber-400 mt-1">0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-amber-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending Tasks</p>
+                            <p id="stat-pending-tasks" class="font-black text-3xl text-amber-400 mt-1 tracking-tight">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center text-center">
-                            <div class="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-2"><i class="fa-solid fa-ban"></i></div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rejected Tasks</p>
-                            <p id="stat-rejected-tasks" class="font-bold text-2xl text-rose-400 mt-1">0</p>
+                        <div class="bg-[#111827] p-6 rounded-3xl border border-rose-900/30 premium-shadow premium-hover flex flex-col justify-center items-center text-center">
+                            <div class="h-12 w-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 mb-3 text-2xl shadow-inner"><i class="fa-solid fa-ban"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Rejected Tasks</p>
+                            <p id="stat-rejected-tasks" class="font-black text-3xl text-rose-400 mt-1 tracking-tight">0</p>
                         </div>
                     </div>
 
-                    <h3 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">System Queue</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('sheet')">
-                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-file-excel"></i></div><p class="text-sm font-bold text-slate-300">Active Submissions</p></div>
-                            <p id="stat-sheet-count" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
+                    <h3 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2 flex items-center"><i class="fa-solid fa-layer-group mr-2 text-indigo-400"></i> Action Queue</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="bg-[#111827] p-5 rounded-2xl border border-slate-700 premium-shadow flex justify-between items-center cursor-pointer hover:bg-slate-800/80 transition-colors group" onclick="window.switchAdminTab('sheet')">
+                            <div class="flex items-center gap-4"><div class="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-file-excel"></i></div><p class="text-sm font-bold text-slate-300">Active Submissions</p></div>
+                            <p id="stat-sheet-count" class="font-black text-white bg-slate-700 px-3 py-1.5 rounded-lg text-sm shadow-inner">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('kyc')">
-                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div><p class="text-sm font-bold text-slate-300">Pending KYC</p></div>
-                            <p id="stat-kyc" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
+                        <div class="bg-[#111827] p-5 rounded-2xl border border-slate-700 premium-shadow flex justify-between items-center cursor-pointer hover:bg-slate-800/80 transition-colors group" onclick="window.switchAdminTab('kyc')">
+                            <div class="flex items-center gap-4"><div class="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-id-card"></i></div><p class="text-sm font-bold text-slate-300">Pending KYC</p></div>
+                            <p id="stat-kyc" class="font-black text-white bg-slate-700 px-3 py-1.5 rounded-lg text-sm shadow-inner">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('withdraw')">
-                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><p class="text-sm font-bold text-slate-300">Pending Withdraw</p></div>
-                            <p id="stat-withdraw" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
+                        <div class="bg-[#111827] p-5 rounded-2xl border border-slate-700 premium-shadow flex justify-between items-center cursor-pointer hover:bg-slate-800/80 transition-colors group" onclick="window.switchAdminTab('withdraw')">
+                            <div class="flex items-center gap-4"><div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-money-bill-transfer"></i></div><p class="text-sm font-bold text-slate-300">Pending Withdraw</p></div>
+                            <p id="stat-withdraw" class="font-black text-white bg-slate-700 px-3 py-1.5 rounded-lg text-sm shadow-inner">0</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- USERS MANAGEMENT PAGE -->
-                <section id="page-users" class="admin-page w-full max-w-3xl mx-auto">
-                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-users-gear mr-2 text-indigo-400"></i> Manage Users</h2>
-                    <div class="relative mb-5">
-                        <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-500"></i>
-                        <input type="text" id="search-user" oninput="window.filterUsers()" placeholder="Search by email or name..." class="w-full bg-[#1e293b] border border-slate-700 text-sm rounded-xl pl-10 pr-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-sm">
+                <section id="page-users" class="admin-page w-full max-w-4xl mx-auto">
+                    <h2 class="font-black text-2xl mb-5 text-white flex items-center tracking-tight"><i class="fa-solid fa-users-gear mr-3 text-indigo-400"></i> Manage Users</h2>
+                    <div class="relative mb-6 premium-shadow">
+                        <i class="fa-solid fa-search absolute left-5 top-4 text-slate-500 text-lg"></i>
+                        <input type="text" id="search-user" oninput="window.filterUsers()" placeholder="Search by email or name..." class="w-full bg-[#111827] border border-slate-700 text-sm rounded-2xl pl-12 pr-4 py-4 focus:outline-none focus:border-indigo-500 text-white shadow-inner transition-colors">
                     </div>
-                    <div id="admin-user-list" class="space-y-3">
+                    <div id="admin-user-list" class="space-y-4">
                         <p class="text-sm text-slate-500 text-center mt-10"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading users...</p>
                     </div>
                 </section>
 
                 <!-- TASKS MANAGEMENT PAGE -->
-                <section id="page-tasks" class="admin-page w-full max-w-2xl mx-auto">
-                    <div class="bg-[#1e293b] p-5 rounded-3xl border border-slate-700 shadow-lg mb-8">
-                        <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-3 flex items-center"><i class="fa-solid fa-plus-circle mr-2 text-emerald-500"></i> Create New Task</h2>
+                <section id="page-tasks" class="admin-page w-full max-w-3xl mx-auto">
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
+                        <h2 class="font-black text-xl mb-6 text-white border-b border-slate-800 pb-4 flex items-center tracking-tight"><i class="fa-solid fa-plus-circle mr-3 text-emerald-500 text-2xl"></i> Create New Task</h2>
                         <form autocomplete="off" onsubmit="event.preventDefault(); window.addTaskDB();">
-                            <div class="space-y-4 mb-5">
+                            <div class="space-y-5 mb-6">
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Title</label>
-                                    <input type="text" id="task-title" autocomplete="off" placeholder="e.g. FB Account Create" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Task Title</label>
+                                    <input type="text" id="task-title" autocomplete="off" placeholder="e.g. FB Account Create" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Instructions</label>
-                                    <textarea id="task-desc" autocomplete="off" placeholder="Write detailed instructions..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Task Instructions</label>
+                                    <textarea id="task-desc" autocomplete="off" placeholder="Write detailed instructions..." class="w-full h-28 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white resize-none shadow-inner"></textarea>
                                 </div>
                                 
-                                <div class="flex gap-4">
+                                <div class="flex gap-5">
                                     <div class="w-1/2">
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Reward (৳)</label>
-                                        <input type="number" step="any" id="task-reward" autocomplete="off" placeholder="Amount" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Reward (৳)</label>
+                                        <input type="number" step="any" id="task-reward" autocomplete="off" placeholder="Amount" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                                     </div>
                                     <div class="w-1/2">
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Platform</label>
-                                        <select id="task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Platform</label>
+                                        <select id="task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-slate-300 shadow-inner">
                                             <option value="facebook">Facebook</option>
                                             <option value="youtube">YouTube</option>
                                             <option value="instagram">Instagram</option>
@@ -276,173 +288,201 @@
                                 </div>
                                 
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Password (Injected Auto)</label>
-                                    <input type="text" id="task-password" autocomplete="off" placeholder="Pass@123..." class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Task Password (Injected Auto)</label>
+                                    <input type="text" id="task-password" autocomplete="off" placeholder="Pass@123..." class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                                 </div>
 
                                 <!-- SMARTER Format Builder -->
-                                <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700">
-                                    <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-3 block flex items-center">
+                                <div class="p-5 bg-[#0f172a] rounded-2xl border border-slate-700 shadow-inner">
+                                    <label class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-4 block flex items-center">
                                         <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns Setup (Strict Order)
                                     </label>
                                     
-                                    <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
-                                    <div class="flex flex-wrap gap-2 mb-4">
-                                        <button type="button" onclick="window.addFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
-                                        <button type="button" onclick="window.addFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
-                                        <button type="button" onclick="window.addFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
-                                        <button type="button" onclick="window.addFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
-                                        <button type="button" onclick="window.addFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
-                                        <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
-                                        <button type="button" onclick="window.addFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
+                                    <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
+                                    <div class="flex flex-wrap gap-2 mb-5">
+                                        <button type="button" onclick="window.addFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
+                                        <button type="button" onclick="window.addFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
+                                        <button type="button" onclick="window.addFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
+                                        <button type="button" onclick="window.addFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
+                                        <button type="button" onclick="window.addFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
+                                        <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
+                                        <button type="button" onclick="window.addFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
                                     </div>
                                     
-                                    <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
-                                    <div class="flex gap-2 mb-4">
-                                        <input type="text" id="custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none text-white">
-                                        <button type="button" onclick="window.addCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-xs font-bold transition-colors">Add</button>
+                                    <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
+                                    <div class="flex gap-3 mb-5">
+                                        <input type="text" id="custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-600 text-xs rounded-xl px-4 py-3 focus:outline-none text-white shadow-inner">
+                                        <button type="button" onclick="window.addCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 rounded-xl text-xs font-bold transition-colors">Add</button>
                                     </div>
 
-                                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
-                                    <div id="format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-1">
+                                    <p class="text-[10px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-4"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
+                                    <div id="format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-xl border border-slate-700 mb-1 shadow-inner">
                                         <!-- Default formats injected here -->
                                     </div>
                                 </div>
 
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-emerald-900/20"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Publish Task to Users</button>
+                            <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-900/50 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-cloud-arrow-up text-lg"></i> Publish Task to Users</button>
                         </form>
                     </div>
 
-                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-400"></i> Live Tasks History</h2>
+                    <h2 class="font-black text-xl mb-5 text-white border-b border-slate-800 pb-3 flex items-center tracking-tight"><i class="fa-solid fa-clock-rotate-left mr-3 text-indigo-400 text-2xl"></i> Live Tasks History</h2>
                     <div id="admin-task-list" class="space-y-4 pb-10">
                         <p class="text-sm text-slate-500 text-center mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading tasks...</p>
                     </div>
                 </section>
 
                 <!-- REPORT PAGE (Cross-check Live & History) -->
-                <section id="page-report" class="admin-page w-full max-w-3xl mx-auto">
-                    <h2 class="font-bold text-xl mb-6 text-white flex items-center"><i class="fa-solid fa-clipboard-check mr-2 text-cyan-400"></i> Task Reports / Actions</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <section id="page-report" class="admin-page w-full max-w-4xl mx-auto">
+                    <h2 class="font-black text-2xl mb-8 text-white flex items-center tracking-tight"><i class="fa-solid fa-clipboard-check mr-3 text-cyan-400"></i> Task Reports / Actions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         
                         <!-- Approve Box -->
-                        <div class="bg-[#1e293b] p-6 rounded-3xl border border-emerald-900/50 shadow-lg">
-                            <h3 class="text-emerald-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-check-circle mr-2"></i> Approve Tasks</h3>
-                            <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
-                            <textarea id="approve-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 text-white resize-none mb-4 font-mono uppercase" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
-                            <button id="btn-approve" onclick="window.processReport('approve')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-check-double text-lg"></i> Approve Selected</button>
+                        <div class="bg-[#111827] p-8 rounded-3xl border border-emerald-900/50 premium-shadow">
+                            <h3 class="text-emerald-400 font-black mb-2 flex items-center text-xl tracking-tight"><i class="fa-solid fa-check-circle mr-2 text-2xl"></i> Approve Tasks</h3>
+                            <p class="text-xs text-slate-400 mb-5 leading-relaxed">Paste Short Task IDs separated by comma, space or newline.</p>
+                            <textarea id="approve-ids" class="w-full h-48 bg-[#0f172a] border border-slate-700 text-sm rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 text-white resize-none mb-6 font-mono uppercase shadow-inner tracking-wider" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <button id="btn-approve" onclick="window.processReport('approve')" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-900/40 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-check-double text-lg"></i> Approve Selected</button>
                         </div>
                         
                         <!-- Reject Box -->
-                        <div class="bg-[#1e293b] p-6 rounded-3xl border border-rose-900/50 shadow-lg">
-                            <h3 class="text-rose-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-ban mr-2"></i> Reject Tasks</h3>
-                            <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
-                            <textarea id="reject-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-rose-500 text-white resize-none mb-4 font-mono uppercase" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
-                            <button id="btn-reject" onclick="window.processReport('reject')" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-trash-can text-lg"></i> Reject Selected</button>
+                        <div class="bg-[#111827] p-8 rounded-3xl border border-rose-900/50 premium-shadow">
+                            <h3 class="text-rose-400 font-black mb-2 flex items-center text-xl tracking-tight"><i class="fa-solid fa-ban mr-2 text-2xl"></i> Reject Tasks</h3>
+                            <p class="text-xs text-slate-400 mb-5 leading-relaxed">Paste Short Task IDs separated by comma, space or newline.</p>
+                            <textarea id="reject-ids" class="w-full h-48 bg-[#0f172a] border border-slate-700 text-sm rounded-2xl px-5 py-4 focus:outline-none focus:border-rose-500 text-white resize-none mb-6 font-mono uppercase shadow-inner tracking-wider" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <button id="btn-reject" onclick="window.processReport('reject')" class="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-900/40 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-trash-can text-lg"></i> Reject Selected</button>
                         </div>
 
                     </div>
                 </section>
 
                 <!-- TASK SHEET PAGE -->
-                <section id="page-sheet" class="admin-page w-full h-full">
-                    <div class="flex flex-col h-full">
-                        
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 shrink-0 gap-3">
-                            <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Active Submissions</h2>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <select id="sheet-task-filter" onchange="window.renderSheetTable()" class="bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 text-slate-300 outline-none max-w-[200px]">
-                                    <option value="" disabled selected>Select a specific Task...</option>
-                                    <!-- Options injected here -->
-                                </select>
-                                <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> CSV</button>
-                                <button id="btn-complete-today" onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
-                            </div>
+                <section id="page-sheet" class="admin-page w-full h-full flex flex-col">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 shrink-0 gap-4">
+                        <h2 class="font-black text-2xl text-white flex items-center tracking-tight"><i class="fa-solid fa-file-excel mr-3 text-emerald-400"></i> Active Submissions</h2>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="sheet-task-filter" onchange="window.renderSheetTable()" class="bg-[#111827] border border-slate-700 text-sm font-semibold rounded-xl px-4 py-2.5 text-slate-300 outline-none max-w-[250px] premium-shadow focus:border-indigo-500 transition-colors cursor-pointer">
+                                <option value="" disabled selected>Select a specific Task...</option>
+                                <!-- Options injected here -->
+                            </select>
+                            <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/30 px-4 py-2.5 rounded-xl text-sm font-bold transition-all premium-shadow flex items-center"><i class="fa-solid fa-download mr-2"></i> CSV</button>
+                            <button id="btn-complete-today" onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 px-4 py-2.5 rounded-xl text-sm font-bold transition-all premium-shadow flex items-center"><i class="fa-solid fa-check-double mr-2"></i> Complete Today</button>
                         </div>
-                        
-                        <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[300px] mb-8">
-                            <div class="overflow-x-auto overflow-y-auto flex-1 p-1">
-                                <table id="sheet-table" class="w-full text-left">
-                                    <thead>
-                                        <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
-                                            <th class="rounded-lg">Notice</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sheet-body" class="text-slate-300 text-sm">
-                                        <tr><td class="text-center py-10 text-slate-500 border-none">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    </div>
+                    
+                    <div class="flex-1 bg-[#111827] rounded-3xl border border-slate-700 premium-shadow overflow-hidden flex flex-col min-h-[350px] mb-8">
+                        <div class="overflow-x-auto overflow-y-auto flex-1 p-1 custom-scrollbar">
+                            <table id="sheet-table" class="w-full text-left">
+                                <thead>
+                                    <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase border-b border-slate-700">
+                                        <th class="rounded-tl-xl font-bold py-4">Notice</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sheet-body" class="text-slate-300 text-sm">
+                                    <tr><td class="text-center py-16 text-slate-500 border-none font-medium">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        <!-- Sheet History Section -->
-                        <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                            <h2 class="font-bold text-lg text-white flex items-center"><i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-400"></i> Sheet History</h2>
-                            <button onclick="window.deleteAllHistory()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
-                        </div>
-                        <div id="sheet-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-10">
-                            <p class="text-sm text-slate-500 text-center col-span-2 mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading history...</p>
-                        </div>
+                    <!-- Sheet History Section -->
+                    <div class="flex justify-between items-center mb-5 border-b border-slate-800 pb-3">
+                        <h2 class="font-black text-xl text-white flex items-center tracking-tight"><i class="fa-solid fa-clock-rotate-left mr-3 text-indigo-400"></i> Sheet History</h2>
+                        <button onclick="window.deleteAllHistory()" class="bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 px-4 py-2 rounded-lg text-xs font-bold transition-all"><i class="fa-solid fa-trash mr-1.5"></i> Delete All</button>
+                    </div>
+                    <div id="sheet-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 pb-10">
+                        <p class="text-sm text-slate-500 text-center col-span-2 mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading history...</p>
                     </div>
                 </section>
 
                 <!-- NOTICES MANAGEMENT PAGE -->
-                <section id="page-notices" class="admin-page w-full max-w-xl mx-auto">
-                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-bullhorn mr-2 text-amber-400"></i> Global Notice</h2>
-                    <div class="bg-[#1e293b] p-5 rounded-3xl border border-slate-700 shadow-lg mb-8">
+                <section id="page-notices" class="admin-page w-full max-w-2xl mx-auto">
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-bullhorn mr-3 text-amber-400"></i> Global Notice</h2>
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-10">
                         <form autocomplete="off" onsubmit="event.preventDefault(); window.addNoticeDB();">
-                            <div class="space-y-4 mb-5">
+                            <div class="space-y-5 mb-6">
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Notice Title</label>
-                                    <input type="text" id="notice-title" autocomplete="off" placeholder="Important Update" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Notice Title</label>
+                                    <input type="text" id="notice-title" autocomplete="off" placeholder="Important Update" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Message</label>
-                                    <textarea id="notice-msg" autocomplete="off" placeholder="Write the details here..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Message</label>
+                                    <textarea id="notice-msg" autocomplete="off" placeholder="Write the details here..." class="w-full h-28 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white resize-none shadow-inner"></textarea>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Color Theme</label>
-                                    <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
-                                        <option value="cyan">🔵 Cyan (Info Update)</option>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Color Theme</label>
+                                    <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-slate-300 shadow-inner">
+                                        <option value="indigo">🔵 Indigo (Standard Update)</option>
                                         <option value="emerald">🟢 Emerald (Success/Good News)</option>
                                         <option value="amber">🟡 Amber (Warning/Alert)</option>
                                         <option value="rose">🔴 Rose (Urgent/Danger)</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-paper-plane mr-2"></i> Broadcast Notice</button>
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/40 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-paper-plane text-lg"></i> Broadcast Notice</button>
                         </form>
                     </div>
 
                     <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Active Broadcasts</h2>
-                    <div id="admin-notice-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-10">No notices sent.</p></div>
+                    <div id="admin-notice-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No notices sent.</p></div>
                 </section>
 
-                <!-- PAYMENT METHODS PAGE -->
-                <section id="page-payments" class="admin-page w-full max-w-xl mx-auto">
-                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-building-columns mr-2 text-cyan-400"></i> Withdraw Settings</h2>
-                    <div class="bg-[#1e293b] p-5 rounded-2xl border border-slate-700 shadow-sm mb-8">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Add New Gateway</label>
-                        <form autocomplete="off" onsubmit="event.preventDefault(); window.addPaymentMethodDB();" class="flex gap-3">
-                            <input type="text" id="pay-method-name" autocomplete="off" placeholder="e.g. bKash Personal" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg"><i class="fa-solid fa-plus mr-1"></i> Add</button>
+                <!-- SETTINGS & PAYMENTS PAGE -->
+                <section id="page-payments" class="admin-page w-full max-w-2xl mx-auto">
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-sliders mr-3 text-cyan-400"></i> Settings & Payments</h2>
+                    
+                    <!-- Withdraw Settings -->
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
+                        <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i> Withdraw Rules</h3>
+                        <form autocomplete="off" onsubmit="event.preventDefault(); window.saveWithdrawRulesDB();">
+                            <div class="flex gap-4 mb-4">
+                                <div class="w-1/2">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Min Withdraw (৳)</label>
+                                    <input type="number" id="setting-min-with" placeholder="100" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white shadow-inner">
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Max Withdraw (৳)</label>
+                                    <input type="number" id="setting-max-with" placeholder="5000" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white shadow-inner">
+                                </div>
+                            </div>
+                            <div class="mb-5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Withdraw Instructions</label>
+                                <textarea id="setting-with-inst" placeholder="Write rules for users..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white resize-none shadow-inner"></textarea>
+                            </div>
+                            <button type="submit" id="btn-save-rules" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-cyan-900/30 flex justify-center items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Save Rules</button>
                         </form>
                     </div>
 
-                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Manage Gateways</h2>
-                    <div id="admin-payment-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-10"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading methods...</p></div>
+                    <!-- Payment Gateways -->
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3 block"><i class="fa-solid fa-plus-circle text-indigo-400 mr-1"></i> Add New Gateway</label>
+                        <form autocomplete="off" onsubmit="event.preventDefault(); window.addPaymentMethodDB();" class="flex gap-3 mb-6">
+                            <input type="text" id="pay-method-name" autocomplete="off" placeholder="e.g. bKash Personal" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-indigo-900/30"><i class="fa-solid fa-plus"></i></button>
+                        </form>
+                        <h2 class="font-bold text-sm mb-4 text-white border-b border-slate-800 pb-2">Manage Gateways</h2>
+                        <div id="admin-payment-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading methods...</p></div>
+                    </div>
+
+                    <!-- DANGER ZONE -->
+                    <div class="bg-rose-950/20 p-8 rounded-3xl border border-rose-900/50 premium-shadow">
+                        <h3 class="font-black text-rose-500 mb-2 flex items-center text-lg"><i class="fa-solid fa-triangle-exclamation mr-2 text-xl"></i> Danger Zone</h3>
+                        <p class="text-xs text-rose-300/70 mb-5 leading-relaxed">This action will permanently delete all Tasks, Submissions, Sheet History, KYC Requests, Withdrawals, and Notices. <strong class="text-white">Users and their Balances will remain intact.</strong></p>
+                        <button onclick="window.factoryResetDB()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-rose-900/50 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-skull text-lg"></i> Factory Reset (Format DB)</button>
+                    </div>
+
                 </section>
 
                 <!-- KYC REVIEW PAGE -->
-                <section id="page-kyc" class="admin-page w-full max-w-3xl mx-auto">
-                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-id-card-clip mr-2 text-rose-400"></i> Verification Requests</h2>
-                    <div id="kyc-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending KYC requests.</p></div>
+                <section id="page-kyc" class="admin-page w-full max-w-4xl mx-auto">
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-id-card-clip mr-3 text-rose-400"></i> Verification Requests</h2>
+                    <div id="kyc-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending KYC requests.</p></div>
                 </section>
 
                 <!-- WITHDRAW PAGE -->
-                <section id="page-withdraw" class="admin-page w-full max-w-3xl mx-auto">
-                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-money-bill-wave mr-2 text-amber-400"></i> Withdrawal Queue</h2>
-                    <div id="withdraw-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending withdrawals.</p></div>
+                <section id="page-withdraw" class="admin-page w-full max-w-4xl mx-auto">
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-money-bill-wave mr-3 text-amber-400"></i> Withdrawal Queue</h2>
+                    <div id="withdraw-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending withdrawals.</p></div>
                 </section>
 
             </main>
@@ -450,30 +490,29 @@
     </div>
 
     <!-- Edit Task Modal Overlay -->
-    <div id="edit-task-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 px-4">
-        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-300" id="edit-task-content">
-            <div class="flex justify-between items-center mb-5 border-b border-slate-800 pb-3">
-                <h3 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-pen-to-square mr-2 text-indigo-400"></i> Edit Configuration</h3>
-                <button onclick="window.closeEditTask()" class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+    <div id="edit-task-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#0b0f19]/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="glass-panel p-8 rounded-3xl premium-shadow w-full max-w-lg transform scale-95 transition-transform duration-300" id="edit-task-content">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-4">
+                <h3 class="text-xl font-black text-white flex items-center tracking-tight"><i class="fa-solid fa-pen-to-square mr-3 text-indigo-400"></i> Edit Configuration</h3>
+                <button onclick="window.closeEditTask()" class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-rose-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-4 mb-6 max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
-                <style>.custom-scrollbar::-webkit-scrollbar{width:4px;}.custom-scrollbar::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}</style>
+            <div class="space-y-5 mb-8 max-h-[65vh] overflow-y-auto pr-3 custom-scrollbar">
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Task Title</label>
-                    <input type="text" id="edit-task-title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Task Title</label>
+                    <input type="text" id="edit-task-title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Instructions</label>
-                    <textarea id="edit-task-desc" class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Instructions</label>
+                    <textarea id="edit-task-desc" class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white resize-none shadow-inner"></textarea>
                 </div>
                 <div class="flex gap-4">
                     <div class="w-1/2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Reward (৳)</label>
-                        <input type="number" step="any" id="edit-task-reward" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Reward (৳)</label>
+                        <input type="number" step="any" id="edit-task-reward" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                     </div>
                     <div class="w-1/2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Platform</label>
-                        <select id="edit-task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Platform</label>
+                        <select id="edit-task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-slate-300 shadow-inner">
                             <option value="facebook">Facebook</option>
                             <option value="youtube">YouTube</option>
                             <option value="instagram">Instagram</option>
@@ -484,35 +523,40 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Default Password to Copy</label>
-                    <input type="text" id="edit-task-password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Default Password to Copy</label>
+                    <input type="text" id="edit-task-password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                 </div>
 
-                <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700 border-dashed">
-                    <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-3 block flex items-center">
+                <!-- SMARTER Edit Format Builder -->
+                <div class="p-5 bg-[#0f172a] rounded-2xl border border-slate-700 shadow-inner">
+                    <label class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-4 block flex items-center">
                         <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns (Strict Order)
                     </label>
-                    <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <button type="button" onclick="window.addEditFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
-                        <button type="button" onclick="window.addEditFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
-                        <button type="button" onclick="window.addEditFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
-                        <button type="button" onclick="window.addEditFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
-                        <button type="button" onclick="window.addEditFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
-                        <button type="button" onclick="window.addEditFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
-                        <button type="button" onclick="window.addEditFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
+                    
+                    <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        <button type="button" onclick="window.addEditFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
+                        <button type="button" onclick="window.addEditFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
+                        <button type="button" onclick="window.addEditFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
+                        <button type="button" onclick="window.addEditFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
+                        <button type="button" onclick="window.addEditFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
+                        <button type="button" onclick="window.addEditFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
+                        <button type="button" onclick="window.addEditFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
                     </div>
-                    <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
-                    <div class="flex gap-2 mb-4">
-                        <input type="text" id="edit-custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none text-white">
-                        <button type="button" onclick="window.addEditCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-xs font-bold transition-colors">Add</button>
+
+                    <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
+                    <div class="flex gap-3 mb-5">
+                        <input type="text" id="edit-custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-600 text-xs rounded-xl px-4 py-3 focus:outline-none text-white shadow-inner">
+                        <button type="button" onclick="window.addEditCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 rounded-xl text-xs font-bold transition-colors">Add</button>
                     </div>
-                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
-                    <div id="edit-format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-1">
+
+                    <p class="text-[10px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-4"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
+                    <div id="edit-format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-xl border border-slate-700 mb-1 shadow-inner">
+                        <!-- Edit tags injected here -->
                     </div>
                 </div>
             </div>
-            <button onclick="window.saveEditTaskDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-floppy-disk mr-2"></i> Update Configuration</button>
+            <button onclick="window.saveEditTaskDB()" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/40 active:scale-95 transition-all text-sm flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-floppy-disk mr-2"></i> Update Configuration</button>
         </div>
     </div>
 
@@ -520,8 +564,8 @@
     <script>
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
 
-        // SMART ALERT SYSTEM
-        window.smartAlert = (msg, type = 'info') => {
+        // SMART ALERT SYSTEM (Premium UI)
+        window.smartAlert = (msg, type = 'info', expectedText = '') => {
             return new Promise((resolve) => {
                 const modal = document.getElementById('smart-alert-modal');
                 const content = document.getElementById('smart-alert-content');
@@ -538,32 +582,30 @@
                 input.value = '';
 
                 if (type === 'success') {
-                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-emerald-500/20 text-emerald-400';
+                    icon.className = 'mx-auto mb-5 h-20 w-20 rounded-full flex items-center justify-center text-4xl bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]';
                     icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-                    btnConfirm.className = 'flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                    btnConfirm.className = 'flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/40 transition-all text-sm transform hover:-translate-y-0.5';
                 } else if (type === 'error') {
-                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-rose-500/20 text-rose-400';
+                    icon.className = 'mx-auto mb-5 h-20 w-20 rounded-full flex items-center justify-center text-4xl bg-rose-500/10 text-rose-400 border-2 border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.2)]';
                     icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-                    btnConfirm.className = 'flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                    btnConfirm.className = 'flex-1 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-900/40 transition-all text-sm transform hover:-translate-y-0.5';
                 } else if (type === 'warning' || type === 'confirm' || type === 'prompt') {
-                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-amber-500/20 text-amber-400';
+                    icon.className = 'mx-auto mb-5 h-20 w-20 rounded-full flex items-center justify-center text-4xl bg-amber-500/10 text-amber-400 border-2 border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.2)]';
                     icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                    btnConfirm.className = 'flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                    btnConfirm.className = 'flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-900/40 transition-all text-sm transform hover:-translate-y-0.5';
                     btnCancel.classList.remove('hidden');
                 } else {
-                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-indigo-500/20 text-indigo-400';
+                    icon.className = 'mx-auto mb-5 h-20 w-20 rounded-full flex items-center justify-center text-4xl bg-indigo-500/10 text-indigo-400 border-2 border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.2)]';
                     icon.innerHTML = '<i class="fa-solid fa-bell"></i>';
-                    btnConfirm.className = 'flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                    btnConfirm.className = 'flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-900/40 transition-all text-sm transform hover:-translate-y-0.5';
                 }
 
                 title.innerText = 'MicroTask Pro';
                 message.innerText = msg;
 
-                let expectedValue = null;
                 if(type === 'prompt') {
                     promptArea.classList.remove('hidden');
-                    expectedValue = 'DELETE ALL'; 
-                    input.placeholder = "Type 'DELETE ALL'";
+                    input.placeholder = `Type '${expectedText}'`;
                 }
 
                 modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -578,7 +620,7 @@
 
                 btnConfirm.onclick = () => {
                     cleanup();
-                    if(type === 'prompt') { resolve(input.value === expectedValue); } 
+                    if(type === 'prompt') { resolve(input.value === expectedText); } 
                     else { resolve(true); }
                 };
 
@@ -601,20 +643,31 @@
             if(targetPage) { targetPage.classList.add('active'); }
             
             document.querySelectorAll('.admin-nav-item').forEach(item => {
-                item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]', 'bg-slate-800/50');
+                item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_15px_rgba(79,70,229,0.15)]');
                 item.classList.add('text-slate-400', 'border-transparent');
+                
+                const icon = item.querySelector('i');
+                if(icon) {
+                    if(item.id === 'nav-sheet') icon.classList.add('text-emerald-400');
+                    else if(item.id === 'nav-report') icon.classList.add('text-cyan-400');
+                }
             });
             const activeBtn = document.getElementById('nav-' + tabId);
             if(activeBtn) {
                 activeBtn.classList.remove('text-slate-400', 'border-transparent');
-                activeBtn.classList.add('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
+                activeBtn.classList.add('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_15px_rgba(79,70,229,0.15)]');
+                
+                const icon = activeBtn.querySelector('i');
+                if(icon) {
+                    icon.classList.remove('text-emerald-400', 'text-cyan-400');
+                }
             }
         }
 
         window.setButtonLoading = (id, isLoading, defaultText, iconClass) => {
             const btn = document.getElementById(id);
-            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> <span>Wait...</span>`; } 
-            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass} mr-1"></i> <span>${defaultText}</span>`; }
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> <span>Processing...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass} text-lg mr-2"></i> <span>${defaultText}</span>`; }
         }
 
         // Global State Variables
@@ -654,20 +707,34 @@
         }
 
         window.addFormatTag = (val) => {
-            if(!window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
+            if(!window.taskFormatArray.includes(val)) { 
+                window.taskFormatArray.push(val); 
+                window.renderFormatTags('format-tags-container', window.taskFormatArray); 
+            }
         }
         window.addCustomFormatTag = () => {
             const val = document.getElementById('custom-format-input').value.trim();
-            if(val && !window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); window.renderFormatTags('format-tags-container', window.taskFormatArray); document.getElementById('custom-format-input').value = ''; }
+            if(val && !window.taskFormatArray.includes(val)) { 
+                window.taskFormatArray.push(val); 
+                window.renderFormatTags('format-tags-container', window.taskFormatArray); 
+                document.getElementById('custom-format-input').value = '';
+            }
         }
         window.removeFormatTag = (index) => { window.taskFormatArray.splice(index, 1); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
 
         window.addEditFormatTag = (val) => {
-            if(!window.editFormatArray.includes(val)) { window.editFormatArray.push(val); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
+            if(!window.editFormatArray.includes(val)) { 
+                window.editFormatArray.push(val); 
+                window.renderFormatTags('edit-format-tags-container', window.editFormatArray); 
+            }
         }
         window.addEditCustomFormatTag = () => {
             const val = document.getElementById('edit-custom-format-input').value.trim();
-            if(val && !window.editFormatArray.includes(val)) { window.editFormatArray.push(val); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); document.getElementById('edit-custom-format-input').value = ''; }
+            if(val && !window.editFormatArray.includes(val)) { 
+                window.editFormatArray.push(val); 
+                window.renderFormatTags('edit-format-tags-container', window.editFormatArray); 
+                document.getElementById('edit-custom-format-input').value = '';
+            }
         }
         window.removeEditFormatTag = (index) => { window.editFormatArray.splice(index, 1); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
 
@@ -705,8 +772,8 @@
             const tbody = document.getElementById('sheet-body');
             
             if(!filterId) {
-                thead.innerHTML = `<th class="rounded-lg">Notice</th>`;
-                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>`;
+                thead.innerHTML = `<th class="rounded-lg py-4">Notice</th>`;
+                tbody.innerHTML = `<tr><td class="text-center py-16 text-slate-500 border-none font-medium">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>`;
                 return;
             }
 
@@ -714,38 +781,41 @@
             const task = window.allTasksData.find(t => t.id === filterId);
             
             if(submissions.length === 0) {
-                thead.innerHTML = `<th class="rounded-lg">Notice</th>`;
-                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">No active submissions for this task.</td></tr>`;
+                thead.innerHTML = `<th class="rounded-lg py-4">Notice</th>`;
+                tbody.innerHTML = `<tr><td class="text-center py-16 text-slate-500 border-none font-medium">No active submissions for this task.</td></tr>`;
                 return;
             }
 
+            // Extract EXACT headers order from Admin setup
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             
             let headHTML = '';
             headers.forEach((h, i) => { 
-                let classes = i === 0 ? 'rounded-tl-lg' : '';
-                headHTML += `<th class="${classes}">${h}</th>`; 
+                let classes = i === 0 ? 'rounded-tl-xl' : '';
+                headHTML += `<th class="${classes} py-4">${h}</th>`; 
             });
-            headHTML += `<th>Task ID</th>`;
-            headHTML += `<th class="rounded-tr-lg w-20">Action</th>`;
+            headHTML += `<th class="py-4 text-indigo-400">Task ID</th>`;
+            headHTML += `<th class="rounded-tr-xl w-20 py-4 text-rose-400">Action</th>`;
             thead.innerHTML = headHTML;
 
             let bodyHTML = '';
             submissions.forEach(sub => {
-                bodyHTML += `<tr class="border-b border-slate-800/50">`;
+                bodyHTML += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors">`;
                 headers.forEach(h => {
                     let val = '-';
+                    // Auto-inject Password if column requires it
                     if (h.toLowerCase() === 'password') {
                         val = task.password || '-';
                     } else if (sub.submissionData && sub.submissionData[h] !== undefined) {
                         val = sub.submissionData[h];
                     }
-                    bodyHTML += `<td><div class="max-w-[200px] truncate select-all" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
+                    bodyHTML += `<td><div class="max-w-[200px] truncate select-all font-medium" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
                 });
                 
+                // Smart Short Task ID (7 Chars)
                 const shortId = sub.id.substring(0, 7).toUpperCase();
-                bodyHTML += `<td><span class="text-[10px] text-indigo-400 bg-indigo-900/20 px-2 py-0.5 rounded font-mono select-all">${shortId}</span></td>`;
-                bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
+                bodyHTML += `<td><span class="text-[11px] text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-md font-mono select-all font-bold tracking-widest border border-indigo-500/30 shadow-inner">${shortId}</span></td>`;
+                bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-white hover:bg-rose-500 h-8 w-8 rounded-lg flex items-center justify-center transition-all"><i class="fa-solid fa-trash"></i></button></td>`;
                 bodyHTML += `</tr>`;
             });
             tbody.innerHTML = bodyHTML;
@@ -761,6 +831,7 @@
             const task = window.allTasksData.find(t => t.id === filterId);
             const taskName = task ? task.title.replace(/ /g, '_') : "Unknown_Task";
             
+            // Extract EXACT headers
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             let csvHeaders = [...headers, "Task ID"];
             let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
@@ -774,7 +845,8 @@
                 });
                 
                 const shortId = sub.id.substring(0, 7).toUpperCase();
-                row.push(`"${shortId}"`); 
+                row.push(`"${shortId}"`); // Append Task ID
+                
                 csvContent += row.join(",") + "\n";
             });
 
@@ -789,8 +861,10 @@
             const history = window.allHistoryData.find(h => h.id === historyId);
             if(!history || !history.submissions || history.submissions.length === 0) return await window.smartAlert("No data available.", "warning");
             
+            // Use saved format from history
             let headers = history.formatArray && history.formatArray.length > 0 ? history.formatArray : [];
             let csvHeaders = [...headers, "Task ID"];
+            
             let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
             
             history.submissions.forEach(sub => {
@@ -808,6 +882,10 @@
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", `History_${history.taskName.replace(/ /g, '_')}_${new Date().toLocaleDateString()}.csv`);
             document.body.appendChild(link); link.click(); link.remove();
+        }
+
+        window.copyText = (text) => {
+            navigator.clipboard.writeText(text);
         }
 
     </script>
@@ -861,20 +939,15 @@
             }
         });
 
-        window.logoutAdmin = async () => { 
-            const confirmed = await window.smartAlert("Are you sure you want to log out?", "confirm");
-            if(confirmed) { signOut(auth).then(() => { window.location.reload(); }); }
-        };
-
         window.loginAdmin = () => {
             const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
             if(!email || !password) return window.smartAlert("Enter admin email and password!", "warning");
             
             if(email !== AUTHORIZED_ADMIN_EMAIL) return window.smartAlert("Access Denied! Unauthorized Email Address.", "error");
             
-            window.setButtonLoading('btn-admin-login', true, 'Verifying...', 'fa-solid fa-spinner');
+            window.setButtonLoading('btn-admin-login', true, 'Authenticating...', 'fa-solid fa-spinner');
             signInWithEmailAndPassword(auth, email, password).catch(async (error) => {
-                window.setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
+                window.setButtonLoading('btn-admin-login', false, 'Authenticate', 'fa-solid fa-fingerprint');
                 await window.smartAlert("Login Failed: Incorrect credentials.", "error");
             });
         };
@@ -889,20 +962,20 @@
                     const banBtnText = u.isBanned ? 'Unban User' : 'Ban User';
                     const banBadge = u.isBanned ? `<span class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded ml-2 uppercase font-bold tracking-wider border border-rose-500/30">Banned</span>` : '';
                     
-                    html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 bg-slate-800 rounded-full border border-slate-600 flex items-center justify-center text-slate-400"><i class="fa-solid fa-user"></i></div>
-                                <div><h3 class="font-bold text-sm text-white">${u.name || 'Unknown'} ${banBadge}</h3><p class="text-[11px] text-slate-400">${u.email}</p></div>
+                    html += `<div class="bg-[#111827] p-5 rounded-3xl border border-slate-700 premium-shadow fade-in">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="h-12 w-12 bg-slate-800 rounded-full border-2 border-slate-600 flex items-center justify-center text-slate-400 text-xl"><i class="fa-solid fa-user"></i></div>
+                                <div><h3 class="font-bold text-sm text-white">${u.name || 'Unknown'} ${banBadge}</h3><p class="text-[11px] text-slate-400 mt-1">${u.email}</p></div>
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] text-slate-400 uppercase font-bold">Balance</p>
-                                <p class="font-bold text-emerald-400 text-sm">৳${u.balance || 0}</p>
+                                <p class="font-black text-emerald-400 text-lg tracking-tight">৳${u.balance || 0}</p>
                             </div>
                         </div>
-                        <div class="flex gap-2 pt-3 border-t border-slate-800/50">
-                            <button onclick="window.toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-user-slash mr-1"></i> ${banBtnText}</button>
-                            <button onclick="window.deleteDocDB('users', '${u.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
+                        <div class="flex gap-3 pt-4 border-t border-slate-700/50">
+                            <button onclick="window.toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-500/10 hover:bg-${banBtnColor}-500/20 text-${banBtnColor}-400 py-2.5 rounded-xl text-xs font-bold transition-all border border-${banBtnColor}-500/30"><i class="fa-solid fa-user-slash mr-1"></i> ${banBtnText}</button>
+                            <button onclick="window.deleteDocDB('users', '${u.id}')" class="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-2.5 rounded-xl text-xs font-bold transition-all border border-rose-500/30"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
                         </div>
                     </div>`;
                 }); 
@@ -913,6 +986,15 @@
         function loadDatabaseLive() {
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
                 if(docSnap.exists()) { document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true; }
+            });
+
+            onSnapshot(doc(db, "app_settings", "withdraw"), (docSnap) => {
+                if(docSnap.exists()) { 
+                    const data = docSnap.data();
+                    document.getElementById('setting-min-with').value = data.minAmount || '';
+                    document.getElementById('setting-max-with').value = data.maxAmount || '';
+                    document.getElementById('setting-with-inst').value = data.instructions || '';
+                }
             });
 
             onSnapshot(collection(db, "users"), (snapshot) => {
@@ -949,14 +1031,31 @@
                 document.getElementById('stat-withdraw').innerText = snapshot.size;
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
                 else {
-                    badge.classList.remove('hidden'); let html = '';
+                    badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="window.approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button></div>`;
+                        html += `<div class="bg-[#111827] p-5 rounded-3xl border border-slate-700 premium-shadow fade-in">
+                            <div class="flex justify-between items-start mb-4 border-b border-slate-700/50 pb-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="h-12 w-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                                    <div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider mt-1"><i class="fa-solid fa-hourglass-half mr-1"></i> Pending</p></div>
+                                </div>
+                                <h2 class="text-2xl font-black text-white tracking-tight">৳ ${data.amount}</h2>
+                            </div>
+                            <div class="mb-5 space-y-2">
+                                <p class="text-xs text-slate-400">Method: <strong class="text-white capitalize">${data.method}</strong></p>
+                                <p class="text-xs text-slate-400 flex items-center gap-2">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2.5 py-1 rounded-md tracking-wider border border-cyan-500/30">${data.account}</strong> <button onclick="window.copyText('${data.account}')" class="text-slate-500 hover:text-white transition-colors" title="Copy"><i class="fa-regular fa-copy"></i></button></p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="window.approveWithdrawDB('${docSnap.id}')" class="flex-1 bg-emerald-500/10 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500 hover:text-white border border-emerald-500/30 transition-all"><i class="fa-solid fa-check mr-1.5"></i> Approve</button>
+                                <button onclick="window.rejectWithdrawDB('${docSnap.id}', '${data.uid}', ${data.amount})" class="flex-1 bg-rose-500/10 text-rose-400 py-3 rounded-xl text-xs font-bold hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all"><i class="fa-solid fa-xmark mr-1.5"></i> Reject</button>
+                            </div>
+                        </div>`;
                     }); list.innerHTML = html;
                 }
             });
 
+            // TASKS LIVE
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 const filterEl = document.getElementById('sheet-task-filter');
@@ -981,10 +1080,23 @@
                             
                             let formatHtml = '';
                             if(data.formatArray && Array.isArray(data.formatArray)) {
-                                data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-800 text-slate-400 px-1 rounded mx-0.5 border border-slate-700">${f}</span>`; });
+                                data.formatArray.forEach(f => { formatHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md mx-0.5 border border-slate-600 shadow-inner">${f}</span>`; });
                             }
                             
-                            html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm fade-in mb-3"><div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title || 'Untitled'}</h3><p class="text-[11px] text-slate-400">Reward: ৳${data.reward}</p><div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div></div></div><span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide">${data.password || 'No Pass'}</span></div><div class="flex gap-2"><button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 p-2 rounded-lg hover:bg-indigo-500/20 text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit Task</button><button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20 px-4 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                            html += `<div class="bg-[#111827] p-5 rounded-3xl border border-slate-700 premium-shadow fade-in mb-4">
+                                <div class="flex justify-between items-center border-b border-slate-700/50 pb-4 mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/30"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div>
+                                        <div><h3 class="font-bold text-base text-white tracking-tight">${data.title || 'Untitled'}</h3><p class="text-[11px] text-slate-400 mt-0.5 font-semibold">Reward: <span class="text-emerald-400">৳${data.reward}</span></p></div>
+                                    </div>
+                                    <span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest shadow-inner">${data.password || 'No Pass'}</span>
+                                </div>
+                                <div class="mb-4 flex flex-wrap gap-1.5">${formatHtml}</div>
+                                <div class="flex gap-3">
+                                    <button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 py-2.5 rounded-xl hover:bg-indigo-500 hover:text-white text-xs font-bold transition-all"><i class="fa-solid fa-pen-to-square mr-1"></i> Edit Task</button>
+                                    <button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 py-2.5 rounded-xl border border-rose-500/30 hover:bg-rose-500 hover:text-white px-5 transition-all"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>`;
                         } catch(e) { console.error("Error parsing task:", e); }
                     }); 
                     if(list) list.innerHTML = html;
@@ -997,6 +1109,7 @@
                 window.renderSheetTable();
             });
 
+            // TASK SUBMISSIONS (SHEET)
             onSnapshot(query(collection(db, "task_submissions"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allSubmissionsData = [];
                 snapshot.forEach(docSnap => { window.allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
@@ -1005,6 +1118,7 @@
                 window.renderSheetTable();
             });
 
+            // SHEET HISTORY
             onSnapshot(query(collection(db, "sheet_history"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allHistoryData = [];
                 const list = document.getElementById('sheet-history-list');
@@ -1019,17 +1133,17 @@
                         
                         const dateStr = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Just Now';
                         
-                        html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 bg-emerald-500/10 rounded-lg text-emerald-400 flex items-center justify-center text-lg"><i class="fa-solid fa-file-csv"></i></div>
+                        html += `<div class="bg-[#111827] p-5 rounded-2xl border border-slate-700 flex justify-between items-center premium-shadow fade-in">
+                            <div class="flex items-center gap-4">
+                                <div class="h-12 w-12 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-file-csv"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-sm text-white">${data.taskName}</h3>
-                                    <p class="text-[10px] text-slate-400">Date: ${dateStr} • ${data.recordCount} records</p>
+                                    <h3 class="font-bold text-sm text-white tracking-tight">${data.taskName}</h3>
+                                    <p class="text-[10px] text-slate-400 mt-1 font-medium"><i class="fa-regular fa-calendar mr-1"></i>${dateStr} &nbsp;•&nbsp; <i class="fa-solid fa-database mr-1"></i>${data.recordCount} records</p>
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="window.downloadHistoryCSV('${data.id}')" class="bg-indigo-600/20 text-indigo-400 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600/30 transition-colors"><i class="fa-solid fa-download"></i></button>
-                                <button onclick="window.deleteDocDB('sheet_history', '${data.id}')" class="bg-rose-500/10 text-rose-400 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="window.downloadHistoryCSV('${data.id}')" class="bg-indigo-500/10 text-indigo-400 hover:bg-indigo-600 hover:text-white border border-indigo-500/20 h-10 w-10 rounded-xl font-bold transition-all"><i class="fa-solid fa-download"></i></button>
+                                <button onclick="window.deleteDocDB('sheet_history', '${data.id}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-600 hover:text-white border border-rose-500/20 h-10 w-10 rounded-xl font-bold transition-all"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>`;
                     });
@@ -1045,7 +1159,16 @@
                     badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col justify-between h-full"><div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400 mt-1">${data.email}</p></div><div class="h-8 w-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div></div><div class="flex gap-2 mt-auto"><button onclick="window.approveKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Approve</button><button onclick="window.rejectKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-xmark mr-1"></i> Reject</button></div></div>`;
+                        html += `<div class="bg-[#111827] p-5 rounded-3xl border border-slate-700 premium-shadow fade-in flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-start mb-5 border-b border-slate-700/50 pb-4">
+                                <div><h3 class="font-bold text-base text-white tracking-tight">${data.name || 'User'}</h3><p class="text-xs text-slate-400 mt-1">${data.email}</p></div>
+                                <div class="h-10 w-10 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-id-card"></i></div>
+                            </div>
+                            <div class="flex gap-3 mt-auto">
+                                <button onclick="window.approveKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-400 border border-emerald-500/30 py-3 rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-check mr-1.5"></i> Approve</button>
+                                <button onclick="window.rejectKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 py-3 rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-xmark mr-1.5"></i> Reject</button>
+                            </div>
+                        </div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -1057,7 +1180,13 @@
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-32">${data.msg}</p></div></div><button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div>`;
+                        html += `<div class="bg-[#111827] p-4 rounded-2xl border border-slate-700 flex justify-between items-center premium-shadow fade-in mb-3">
+                            <div class="flex items-center gap-4">
+                                <div class="h-10 w-10 rounded-xl bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-bell"></i></div>
+                                <div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-48 mt-0.5">${data.msg}</p></div>
+                            </div>
+                            <button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 h-9 w-9 rounded-lg hover:bg-rose-600 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -1073,9 +1202,18 @@
                         if(data.isActive) activeCount++;
                         const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-500 bg-slate-800 border-slate-700';
                         const toggleTxt = data.isActive ? 'Disable' : 'Enable';
-                        const toggleColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20' : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-500/20';
+                        const toggleColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500 hover:text-white' : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-600 hover:text-white';
                         
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
+                        html += `<div class="bg-[#111827] p-4 rounded-2xl border border-slate-700 flex justify-between items-center premium-shadow fade-in mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-xl ${statusColor} border shadow-inner flex items-center justify-center text-lg"><i class="fa-solid fa-wallet"></i></div>
+                                <h3 class="font-bold text-sm text-white capitalize">${data.name}</h3>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-[11px] px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-all">${toggleTxt}</button>
+                                <button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-600 hover:text-white transition-all"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -1132,6 +1270,18 @@
             } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
+        window.saveWithdrawRulesDB = async () => {
+            const minAmount = document.getElementById('setting-min-with').value;
+            const maxAmount = document.getElementById('setting-max-with').value;
+            const instructions = document.getElementById('setting-with-inst').value;
+
+            try {
+                const docRef = doc(db, "app_settings", "withdraw");
+                await setDoc(docRef, { minAmount: Number(minAmount), maxAmount: Number(maxAmount), instructions }, { merge: true });
+                await window.smartAlert("Withdraw Rules Updated Successfully!", "success");
+            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
+        }
+
         // ==========================================
         // SMART REPORT SYSTEM (APPROVE / REJECT)
         // ==========================================
@@ -1150,12 +1300,10 @@
                 let processedCount = 0;
 
                 for (const shortId of shortIds) {
-                    // Check Live Submissions
                     let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
                     let foundInHistory = null;
                     let historyDocId = null;
 
-                    // If not in live, check History
                     if (!foundInLive) {
                         for (const h of window.allHistoryData) {
                             const match = h.submissions.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
@@ -1186,6 +1334,8 @@
                                 title: "Task Approved 🟢",
                                 msg: `Task ID [${shortId}] submitted by you has been approved! Reward added.`,
                                 theme: "emerald",
+                                targetUid: sub.uid,
+                                isGlobal: false,
                                 createdAt: serverTimestamp()
                             });
                         } else {
@@ -1198,11 +1348,12 @@
                                 title: "Task Rejected 🔴",
                                 msg: `Task ID [${shortId}] was rejected due to incorrect submission details.`,
                                 theme: "rose",
+                                targetUid: sub.uid,
+                                isGlobal: false,
                                 createdAt: serverTimestamp()
                             });
                         }
                         
-                        // Delete logic
                         if(foundInLive) {
                             batch.delete(doc(db, "task_submissions", sub.id));
                         } else if(foundInHistory) {
@@ -1295,7 +1446,7 @@
         window.deleteAllHistory = async () => {
             if(window.allHistoryData.length === 0) return await window.smartAlert("History is already empty!", "warning");
             
-            const confirmed = await window.smartAlert("Type 'DELETE ALL' below to clear all history forever:", "prompt");
+            const confirmed = await window.smartAlert("Type 'DELETE ALL' below to clear all history forever:", "prompt", "DELETE ALL");
             if(!confirmed) return await window.smartAlert("Action Cancelled.", "info");
             
             try {
@@ -1306,10 +1457,83 @@
             } catch(e) { await window.smartAlert("Error deleting history: " + e.message, "error"); }
         }
 
+        // ==========================================
+        // DANGER ZONE (ALL DATA RESET)
+        // ==========================================
+        window.factoryResetDB = async () => {
+            const confirmed = await window.smartAlert("Type 'RESET ALL DATA' to permanently format tasks, sheets, notices & withdrawals. Users & Balances will remain.", "prompt", "RESET ALL DATA");
+            if(!confirmed) return await window.smartAlert("Database Reset Cancelled.", "info");
+
+            try {
+                // To safely reset, we fetch all relevant documents and batch delete them.
+                // We also update all users to reset pending/approved/rejected task stats.
+                document.getElementById('global-loader').style.display = 'flex';
+                const loaderText = document.getElementById('global-loader').querySelector('p');
+                loaderText.innerText = "Formatting Database...";
+
+                const batch = writeBatch(db);
+                
+                // 1. Delete Tasks
+                const tasksSnap = await getDocs(collection(db, "tasks"));
+                tasksSnap.forEach(d => batch.delete(d.ref));
+                
+                // 2. Delete Submissions
+                const subsSnap = await getDocs(collection(db, "task_submissions"));
+                subsSnap.forEach(d => batch.delete(d.ref));
+
+                // 3. Delete Sheet History
+                const histSnap = await getDocs(collection(db, "sheet_history"));
+                histSnap.forEach(d => batch.delete(d.ref));
+
+                // 4. Delete Notices
+                const notSnap = await getDocs(collection(db, "notices"));
+                notSnap.forEach(d => batch.delete(d.ref));
+
+                // 5. Delete Withdrawals
+                const withSnap = await getDocs(collection(db, "withdrawals"));
+                withSnap.forEach(d => batch.delete(d.ref));
+
+                // 6. Delete KYC Requests
+                const kycSnap = await getDocs(collection(db, "kyc_requests"));
+                kycSnap.forEach(d => batch.delete(d.ref));
+
+                // 7. Reset User Stats (Keeps balance, totalEarned, totalWithdrawn)
+                const usersSnap = await getDocs(collection(db, "users"));
+                usersSnap.forEach(d => {
+                    batch.update(d.ref, {
+                        pendingTasks: 0,
+                        approvedTasks: 0,
+                        rejectedTasks: 0,
+                        submittedTasks: [],
+                        kycVerified: false,
+                        kycStatus: 'unverified'
+                    });
+                });
+
+                await batch.commit();
+                
+                document.getElementById('global-loader').style.display = 'none';
+                await window.smartAlert("Factory Reset Complete! Database is fresh.", "success");
+
+            } catch (e) {
+                document.getElementById('global-loader').style.display = 'none';
+                await window.smartAlert("Error resetting DB: " + e.message, "error");
+            }
+        }
+
         window.addNoticeDB = async () => {
             const title = document.getElementById('notice-title').value, msg = document.getElementById('notice-msg').value, theme = document.getElementById('notice-theme').value;
             if(!title || !msg) return await window.smartAlert("Fill all fields!", "warning");
-            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); await window.smartAlert("Notice Broadcasted!", "success"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
+            try { 
+                await addDoc(collection(db, "notices"), { 
+                    title, msg, theme, 
+                    isGlobal: true, 
+                    createdAt: serverTimestamp() 
+                }); 
+                await window.smartAlert("Global Notice Broadcasted!", "success"); 
+                document.getElementById('notice-title').value=''; 
+                document.getElementById('notice-msg').value=''; 
+            } 
             catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
@@ -1336,10 +1560,36 @@
             try { await updateDoc(doc(db, "users", uid), { kycStatus: "unverified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); await window.smartAlert("KYC Rejected!", "success"); } 
             catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
+
         window.approveWithdrawDB = async (docId) => { 
             try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); await window.smartAlert("Withdrawal marked as Paid!", "success"); } 
             catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
+
+        window.rejectWithdrawDB = async (docId, uid, amount) => {
+            const confirmed = await window.smartAlert("Reject this withdrawal and refund balance?", "confirm");
+            if(!confirmed) return;
+            try {
+                const batch = writeBatch(db);
+                batch.update(doc(db, "withdrawals", docId), { status: 'rejected' });
+                batch.update(doc(db, "users", uid), {
+                    balance: increment(amount),
+                    totalWithdrawn: increment(-amount)
+                });
+                const noticeRef = doc(collection(db, "notices"));
+                batch.set(noticeRef, {
+                    title: "Withdrawal Rejected",
+                    msg: `Your withdrawal request for ৳${amount} was rejected. Balance has been refunded.`,
+                    theme: "rose",
+                    targetUid: uid,
+                    isGlobal: false,
+                    createdAt: serverTimestamp()
+                });
+                await batch.commit();
+                await window.smartAlert("Withdrawal Rejected & Refunded!", "success");
+            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
+        }
+
     </script>
 </body>
 </html>
