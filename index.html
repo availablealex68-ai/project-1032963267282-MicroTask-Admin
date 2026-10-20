@@ -18,8 +18,9 @@
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .admin-page { display: none; }
-        .admin-page.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
+        /* FIX: Ensure strictly only one page shows */
+        .admin-page { display: none !important; }
+        .admin-page.active { display: block !important; animation: fadeIn 0.3s ease-out forwards; }
         
         /* Table Styles for Sheet */
         table { border-collapse: collapse; width: 100%; white-space: nowrap; }
@@ -142,12 +143,13 @@
                 </button>
             </nav>
 
-            <main class="flex-1 overflow-y-auto px-6 py-6 relative">
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 relative">
                 
                 <!-- DASHBOARD PAGE -->
-                <section id="page-dashboard" class="admin-page active w-full max-w-2xl mx-auto">
+                <section id="page-dashboard" class="admin-page active w-full max-w-3xl mx-auto">
                     <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-chart-line mr-2 text-indigo-400"></i> Analytics Overview</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-[#1e293b] p-5 rounded-2xl border border-indigo-900/30 shadow-sm flex flex-col justify-center items-center">
                             <div class="h-12 w-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 text-xl"><i class="fa-solid fa-users"></i></div>
                             <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
@@ -246,9 +248,8 @@
                                         <button type="button" onclick="window.addFormatTag()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-plus"></i> Add</button>
                                     </div>
                                 </div>
-
                             </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-emerald-900/20"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Publish Task to Users</button>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-emerald-900/20"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Publish Task</button>
                         </form>
                     </div>
 
@@ -257,32 +258,33 @@
                 </section>
 
                 <!-- TASK SHEET (GOOGLE SHEET VIEW) PAGE -->
-                <section id="page-sheet" class="admin-page w-full h-full flex flex-col">
-                    <div class="flex justify-between items-center mb-5 shrink-0">
-                        <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Submissions Sheet</h2>
-                        <div class="flex gap-2">
-                            <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> Download CSV</button>
-                            <button onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
-                            <button onclick="window.deleteAllSubmissions()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
+                <section id="page-sheet" class="admin-page w-full h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 shrink-0 gap-3">
+                            <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Submissions Sheet</h2>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> Download CSV</button>
+                                <button onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
+                                <button onclick="window.deleteAllSubmissions()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[400px]">
-                        <div class="overflow-x-auto overflow-y-auto flex-1 p-1">
-                            <table id="sheet-table" class="w-full text-left">
-                                <thead>
-                                    <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
-                                        <th class="rounded-tl-lg">Task ID</th>
-                                        <th>User Email</th>
-                                        <th>Date</th>
-                                        <!-- Dynamic columns will inject here based on task format -->
-                                        <th class="rounded-tr-lg">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="sheet-body" class="text-slate-300 text-sm">
-                                    <tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">Loading submissions...</td></tr>
-                                </tbody>
-                            </table>
+                        
+                        <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[500px]">
+                            <div class="overflow-x-auto overflow-y-auto flex-1 p-1">
+                                <table id="sheet-table" class="w-full text-left">
+                                    <thead>
+                                        <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
+                                            <th class="rounded-tl-lg">Task ID</th>
+                                            <th>User Email</th>
+                                            <th>Date</th>
+                                            <th class="rounded-tr-lg">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sheet-body" class="text-slate-300 text-sm">
+                                        <tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">Loading submissions...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -415,63 +417,10 @@
         </div>
     </div>
 
-    <!-- UI Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
-            authDomain: "microtask-pro-bb3a0.firebaseapp.com",
-            projectId: "microtask-pro-bb3a0",
-            storageBucket: "microtask-pro-bb3a0.firebasestorage.app",
-            messagingSenderId: "1032963267282",
-            appId: "1:1032963267282:web:a5ec4fba2699c32922ab0b",
-            measurementId: "G-1H11MKMNLP"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
+    <!-- UI Scripts for Admin & Dynamic Forms -->
+    <script>
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
-        
-        // Failsafe Timer to un-stuck loader
-        setTimeout(() => {
-            const loader = document.getElementById('global-loader');
-            if(loader && loader.style.display !== 'none') {
-                loader.style.display = 'none';
-                document.getElementById('auth-container').style.display = 'flex';
-            }
-        }, 6000);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    // Quick check instead of full load to prevent crash if rules are mismatched
-                    await getDocs(query(collection(db, "tasks"), limit(1))); 
-                    
-                    document.getElementById('global-loader').style.display = 'none';
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('admin-app-container').classList.remove('hidden');
-                    loadDatabaseLive();
-                } catch (error) {
-                    console.error("Auth verify error:", error);
-                    auth.signOut().then(() => {
-                        document.getElementById('global-loader').style.display = 'none';
-                        document.getElementById('auth-container').style.display = 'flex';
-                        alert("Access Denied! You are not authorized. Check Firestore Security Rules.");
-                    });
-                }
-            } else {
-                document.getElementById('global-loader').style.display = 'none';
-                document.getElementById('admin-app-container').classList.add('hidden');
-                document.getElementById('auth-container').style.display = 'flex';
-            }
-        });
-
-        // Global functions attachment
         window.togglePassword = () => {
             const passInput = document.getElementById('admin-password'), icon = document.getElementById('toggle-password-icon');
             if(passInput.type === 'password') { passInput.type = 'text'; icon.classList.replace('fa-eye-slash', 'fa-eye'); } 
@@ -479,9 +428,18 @@
         }
 
         window.switchAdminTab = (tabId) => {
-            document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
-            document.getElementById('page-' + tabId).classList.add('active');
+            // Hide all pages completely to prevent overlapping
+            document.querySelectorAll('.admin-page').forEach(page => {
+                page.classList.remove('active');
+            });
             
+            // Show only the selected page
+            const targetPage = document.getElementById('page-' + tabId);
+            if(targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update sidebar buttons
             document.querySelectorAll('.admin-nav-item').forEach(item => {
                 item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]', 'bg-slate-800/50');
                 item.classList.add('text-slate-400', 'border-transparent');
@@ -494,31 +452,34 @@
             }
         }
 
-        window.logoutAdmin = () => { signOut(auth).then(() => { window.location.reload(); }); };
+        window.setButtonLoading = (id, isLoading, defaultText, iconClass) => {
+            const btn = document.getElementById(id);
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> <span>Verifying...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass} mr-1"></i> <span>${defaultText}</span>`; }
+        }
 
-        window.loginAdmin = () => {
-            const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
-            if(!email || !password) return alert("Enter admin email and password!");
-            if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
-            
-            const btn = document.getElementById('btn-admin-login');
-            btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`;
-            
-            signInWithEmailAndPassword(auth, email, password).catch((error) => {
-                btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>Secure Login</span>`;
-                alert("Login Failed: Incorrect credentials.");
-            });
-        };
+        // Global State Variables for Users and Tasks
+        window.allUsersData = [];
+        window.allTasksData = [];
+        window.allSubmissionsData = [];
 
-        let allUsersData = [];
-        let allTasksData = [];
-        let allSubmissionsData = [];
-        
-        window.taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; 
+        window.filterUsers = () => {
+            const query = document.getElementById('search-user').value.toLowerCase();
+            const filtered = window.allUsersData.filter(u => 
+                (u.name && u.name.toLowerCase().includes(query)) || 
+                (u.email && u.email.toLowerCase().includes(query))
+            );
+            window.renderUsersList(filtered);
+        }
+
+        // ==========================================
+        // DYNAMIC TASK FORMAT BUILDER LOGIC
+        // ==========================================
+        window.taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; // Default setup
         window.editFormatArray = [];
-        let editingTaskId = null;
+        window.editingTaskId = null;
 
-        function renderFormatTags(containerId, array) {
+        window.renderFormatTags = (containerId, array) => {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             if(array.length === 0) {
@@ -536,30 +497,30 @@
             const val = document.getElementById('format-selector').value;
             if(val === 'Custom') {
                 const custom = prompt("Enter custom field name (e.g. Recovery Email):");
-                if(custom && custom.trim()) { window.taskFormatArray.push(custom.trim()); renderFormatTags('format-tags-container', window.taskFormatArray); }
+                if(custom && custom.trim()) { window.taskFormatArray.push(custom.trim()); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
             } else {
-                if(!window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); renderFormatTags('format-tags-container', window.taskFormatArray); }
+                if(!window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
             }
         }
-        window.removeFormatTag = (index) => { window.taskFormatArray.splice(index, 1); renderFormatTags('format-tags-container', window.taskFormatArray); }
+        window.removeFormatTag = (index) => { window.taskFormatArray.splice(index, 1); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
 
         window.addEditFormatTag = () => {
             const val = document.getElementById('edit-format-selector').value;
             if(val === 'Custom') {
                 const custom = prompt("Enter custom field name:");
-                if(custom && custom.trim()) { window.editFormatArray.push(custom.trim()); renderFormatTags('edit-format-tags-container', window.editFormatArray); }
+                if(custom && custom.trim()) { window.editFormatArray.push(custom.trim()); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
             } else {
-                if(!window.editFormatArray.includes(val)) { window.editFormatArray.push(val); renderFormatTags('edit-format-tags-container', window.editFormatArray); }
+                if(!window.editFormatArray.includes(val)) { window.editFormatArray.push(val); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
             }
         }
-        window.removeEditFormatTag = (index) => { window.editFormatArray.splice(index, 1); renderFormatTags('edit-format-tags-container', window.editFormatArray); }
+        window.removeEditFormatTag = (index) => { window.editFormatArray.splice(index, 1); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
 
-        renderFormatTags('format-tags-container', window.taskFormatArray);
+        document.addEventListener('DOMContentLoaded', () => { window.renderFormatTags('format-tags-container', window.taskFormatArray); });
 
         window.openEditTask = (taskId) => {
-            const t = allTasksData.find(x => x.id === taskId);
+            const t = window.allTasksData.find(x => x.id === taskId);
             if(!t) return;
-            editingTaskId = taskId;
+            window.editingTaskId = taskId;
             document.getElementById('edit-task-title').value = t.title || '';
             document.getElementById('edit-task-desc').value = t.desc || '';
             document.getElementById('edit-task-reward').value = t.reward || '';
@@ -570,9 +531,9 @@
             if(window.editFormatArray.length === 0) { 
                 if(t.require2FA) window.editFormatArray.push('2FA');
                 if(t.requireCookies) window.editFormatArray.push('Cookies');
-                if(window.editFormatArray.length === 0) window.editFormatArray = ['Email', 'Password']; 
+                if(window.editFormatArray.length === 0) window.editFormatArray = ['Email', 'Password']; // fallback
             }
-            renderFormatTags('edit-format-tags-container', window.editFormatArray);
+            window.renderFormatTags('edit-format-tags-container', window.editFormatArray);
 
             document.getElementById('edit-task-modal').classList.remove('opacity-0', 'pointer-events-none');
             document.getElementById('edit-task-content').classList.remove('scale-95');
@@ -581,17 +542,106 @@
         window.closeEditTask = () => {
             document.getElementById('edit-task-modal').classList.add('opacity-0', 'pointer-events-none');
             document.getElementById('edit-task-content').classList.add('scale-95');
-            editingTaskId = null;
+            window.editingTaskId = null;
         }
 
-        window.filterUsers = () => {
-            const query = document.getElementById('search-user').value.toLowerCase();
-            const filtered = allUsersData.filter(u => 
-                (u.name && u.name.toLowerCase().includes(query)) || 
-                (u.email && u.email.toLowerCase().includes(query))
-            );
-            window.renderUsersList(filtered);
+        window.downloadCSV = () => {
+            if(window.allSubmissionsData.length === 0) return alert("Sheet is empty!");
+            
+            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
+            window.allSubmissionsData.forEach(sub => {
+                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
+            });
+            const headers = Array.from(headersSet);
+            
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            
+            window.allSubmissionsData.forEach(sub => {
+                let row = headers.map(header => {
+                    let val = '';
+                    if(header === 'Task ID') val = sub.taskId || '';
+                    else if(header === 'User Email') val = sub.email || '';
+                    else if(header === 'Date') val = sub.createdAt ? new Date(sub.createdAt.seconds * 1000).toLocaleString() : '';
+                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
+                    
+                    return `"${String(val).replace(/"/g, '""')}"`;
+                });
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `microtask_submissions_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
         }
+
+    </script>
+
+    <!-- FIREBASE DB & AUTH API SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
+            authDomain: "microtask-pro-bb3a0.firebaseapp.com",
+            projectId: "microtask-pro-bb3a0",
+            storageBucket: "microtask-pro-bb3a0.firebasestorage.app",
+            messagingSenderId: "1032963267282",
+            appId: "1:1032963267282:web:a5ec4fba2699c32922ab0b",
+            measurementId: "G-1H11MKMNLP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    // Check admin access safely
+                    const q = collection(db, "admin_check");
+                    await getDocs(q); 
+                    
+                    document.getElementById('global-loader').style.display = 'none';
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('admin-app-container').classList.remove('hidden');
+                    
+                    // Initialize Dashboard Tab
+                    window.switchAdminTab('dashboard');
+                    loadDatabaseLive();
+                } catch (error) {
+                    auth.signOut().then(() => {
+                        document.getElementById('global-loader').style.display = 'none';
+                        document.getElementById('auth-container').style.display = 'flex';
+                        alert("Access Denied! You are not authorized by the Database Security Rules.");
+                    });
+                }
+            } else {
+                document.getElementById('global-loader').style.display = 'none';
+                document.getElementById('admin-app-container').classList.add('hidden');
+                document.getElementById('auth-container').style.display = 'flex';
+            }
+        });
+
+        window.logoutAdmin = () => { signOut(auth).then(() => { window.location.reload(); }); };
+
+        window.loginAdmin = () => {
+            const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
+            if(!email || !password) return alert("Enter admin email and password!");
+            
+            if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
+            
+            window.setButtonLoading('btn-admin-login', true);
+            signInWithEmailAndPassword(auth, email, password).catch((error) => {
+                window.setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
+                alert("Login Failed: Incorrect credentials.");
+            });
+        };
 
         window.renderUsersList = (usersArray) => {
             const list = document.getElementById('admin-user-list');
@@ -615,7 +665,7 @@
                             </div>
                         </div>
                         <div class="flex gap-2 pt-3 border-t border-slate-800/50">
-                            <button onclick="window.toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-user-slash mr-1"></i> ${banBtnText}</button>
+                            <button onclick="window.toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors">${banBtnText}</button>
                             <button onclick="window.deleteDocDB('users', '${u.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
                         </div>
                     </div>`;
@@ -629,7 +679,7 @@
             const tbody = document.getElementById('sheet-body');
             
             if(submissions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">No submissions found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">No submissions found in the database.</td></tr>`;
                 return;
             }
 
@@ -667,125 +717,85 @@
             tbody.innerHTML = bodyHTML;
         }
 
-        window.downloadCSV = () => {
-            if(allSubmissionsData.length === 0) return alert("Sheet is empty!");
-            
-            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
-            allSubmissionsData.forEach(sub => {
-                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
-            });
-            const headers = Array.from(headersSet);
-            
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
-            
-            allSubmissionsData.forEach(sub => {
-                let row = headers.map(header => {
-                    let val = '';
-                    if(header === 'Task ID') val = sub.taskId || '';
-                    else if(header === 'User Email') val = sub.email || '';
-                    else if(header === 'Date') val = sub.createdAt ? new Date(sub.createdAt.seconds * 1000).toLocaleString() : '';
-                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
-                    return `"${String(val).replace(/"/g, '""')}"`;
-                });
-                csvContent += row.join(",") + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `submissions_${new Date().toLocaleDateString()}.csv`);
-            document.body.appendChild(link);
-            link.click(); link.remove();
-        }
-
         function loadDatabaseLive() {
+            // Task Toggle Sync
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
                 if(docSnap.exists()) {
-                    let st = docSnap.data().tasksEnabled ?? true;
-                    document.getElementById('global-task-toggle').checked = st;
-                } else {
-                    setDoc(doc(db, "app_settings", "global"), { tasksEnabled: true });
+                    document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true;
                 }
-            }, (err) => console.log(err));
+            });
 
+            // 1. USERS LIVE
             onSnapshot(collection(db, "users"), (snapshot) => {
-                allUsersData = [];
-                snapshot.forEach(docSnap => { allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
-                document.getElementById('stat-total-users').innerText = allUsersData.length;
+                window.allUsersData = [];
+                snapshot.forEach(docSnap => { window.allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
+                document.getElementById('stat-total-users').innerText = window.allUsersData.length;
                 window.filterUsers(); 
-            }, (err) => console.log(err));
+            });
 
+            // 2. WITHDRAW LIVE
+            const qWithdraw = query(collection(db, "withdrawals"), where("status", "==", "pending"));
+            onSnapshot(qWithdraw, (snapshot) => {
+                const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
+                document.getElementById('stat-withdraw').innerText = snapshot.size;
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
+                else {
+                    badge.classList.remove('hidden'); let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="window.approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button></div>`;
+                    }); list.innerHTML = html;
+                }
+            });
+
+            // 3. TASKS LIVE
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 document.getElementById('stat-tasks').innerText = snapshot.size;
+                window.allTasksData = [];
                 
-                allTasksData = [];
-                snapshot.forEach(docSnap => { allTasksData.push({id: docSnap.id, ...docSnap.data()}); });
-
-                if(allTasksData.length === 0) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
                 else {
                     let html = '';
-                    allTasksData.forEach((data) => {
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        data.id = docSnap.id;
+                        window.allTasksData.push(data);
+                        
                         let formatHtml = '';
                         if(data.formatArray && Array.isArray(data.formatArray)) {
                             data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-800 text-slate-400 px-1 rounded mx-0.5 border border-slate-700">${f}</span>`; });
                         }
-
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in mb-3">
-                            <div class="flex justify-between items-center mb-3 border-b border-slate-800/50 pb-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div>
-                                    <div>
-                                        <h3 class="font-bold text-sm text-white">${data.title}</h3>
-                                        <p class="text-[11px] text-slate-400 mt-0.5">Reward: ৳${data.reward}</p>
-                                        <div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div>
-                                    </div>
-                                </div>
-                                <span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide select-all">${data.password || 'No Pass'}</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="window.openEditTask('${data.id}')" class="flex-1 bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 border border-indigo-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i> Edit</button>
-                                <button onclick="window.deleteDocDB('tasks', '${data.id}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 px-4 py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>`;
+                        
+                        html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm fade-in mb-3"><div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400">Reward: ৳${data.reward}</p><div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div></div></div><span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide">${data.password || 'No Pass'}</span></div><div class="flex gap-2"><button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 p-2 rounded-lg hover:bg-indigo-500/20 text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit Task</button><button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20 px-4 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
-            }, (err) => console.log(err));
+            });
 
+            // 4. TASK SUBMISSIONS (SHEET)
             onSnapshot(query(collection(db, "task_submissions"), orderBy("createdAt", "desc")), (snapshot) => {
-                allSubmissionsData = [];
-                snapshot.forEach(docSnap => { allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
+                window.allSubmissionsData = [];
+                snapshot.forEach(docSnap => { window.allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
                 document.getElementById('stat-sheet-count').innerText = snapshot.size;
                 document.getElementById('sheet-badge').innerText = snapshot.size;
-                window.renderSheetTable(allSubmissionsData);
-            }, (err) => console.log(err));
+                window.renderSheetTable(window.allSubmissionsData);
+            });
 
+            // 5. KYC LIVE
             onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
                 const list = document.getElementById('kyc-list'), badge = document.getElementById('kyc-badge');
                 document.getElementById('stat-kyc').innerText = snapshot.size;
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending KYC requests.</p>`; badge.classList.add('hidden'); } 
                 else {
-                    badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
+                    badge.classList.remove('hidden'); let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col justify-between h-full"><div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400 mt-1">${data.email}</p></div><div class="h-8 w-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div></div><div class="flex gap-2 mt-auto"><button onclick="window.approveKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Approve</button><button onclick="window.rejectKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-xmark mr-1"></i> Reject</button></div></div>`;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col justify-between h-full"><div class="flex justify-between items-start mb-3 border-b border-slate-800 pb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400">${data.email}</p></div><span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending DB</span></div><div class="flex gap-2 mt-auto"><button onclick="window.approveKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button><button onclick="window.rejectKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button></div></div>`;
                     }); list.innerHTML = html;
                 }
-            }, (err) => console.log(err));
+            });
 
-            onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "pending")), (snapshot) => {
-                const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
-                document.getElementById('stat-withdraw').innerText = snapshot.size;
-                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
-                else {
-                    badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
-                    snapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col h-full"><div class="flex justify-between items-start mb-3 border-b border-slate-800 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-slate-400 mt-0.5">Method: <strong class="text-cyan-400 uppercase">${data.method}</strong></p></div></div><h2 class="text-xl font-black text-white">৳${data.amount}</h2></div><div class="mb-4 bg-[#0f172a] p-3 rounded-xl border border-slate-800"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Account Info</p><p class="text-sm font-bold text-white tracking-widest select-all">${data.account}</p></div><button onclick="window.approveWithdrawDB('${docSnap.id}')" class="w-full mt-auto bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check-circle mr-1"></i> Mark as Paid</button></div>`;
-                    }); list.innerHTML = html;
-                }
-            }, (err) => console.log(err));
-
+            // 6. NOTICES LIVE
             onSnapshot(collection(db, "notices"), (snapshot) => {
                 const list = document.getElementById('admin-notice-list');
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p>`; } 
@@ -793,11 +803,12 @@
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-xl bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-48 mt-0.5">${data.msg}</p></div></div><button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div>`;
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400 truncate w-32">${data.msg}</p></div></div><button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
                     }); list.innerHTML = html;
                 }
-            }, (err) => console.log(err));
+            });
 
+            // 7. PAYMENT METHODS LIVE
             onSnapshot(collection(db, "payment_methods"), (snapshot) => {
                 const list = document.getElementById('admin-payment-list');
                 let activeCount = 0;
@@ -807,20 +818,31 @@
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
                         if(data.isActive) activeCount++;
-                        const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-500 bg-slate-800 border-slate-700';
+                        const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-400 bg-slate-800 border-slate-700';
                         const toggleTxt = data.isActive ? 'Disable' : 'Enable';
-                        const toggleBtnColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20';
+                        const toggleColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
                         
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-xl ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3><p class="text-[10px] text-slate-500 mt-0.5">${data.isActive ? 'Active on User Panel' : 'Disabled'}</p></div></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 rounded-lg ${toggleBtnColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
                 document.getElementById('stat-payments').innerText = activeCount;
-            }, (err) => console.log(err));
+            });
         }
 
+        // ==========================================
+        // ADD / UPDATE / DELETE DB FUNCTIONS
+        // ==========================================
         window.toggleGlobalTasks = async (status) => {
-            try { await updateDoc(doc(db, "app_settings", "global"), { tasksEnabled: status }); } 
-            catch(e) { alert("Error changing global settings!"); document.getElementById('global-task-toggle').checked = !status; }
+            try { 
+                const docRef = doc(db, "app_settings", "global");
+                const snap = await getDoc(docRef);
+                if(snap.exists()){ await updateDoc(docRef, { tasksEnabled: status }); } 
+                else { await setDoc(docRef, { tasksEnabled: status }); }
+            } 
+            catch(e) { 
+                alert("Error changing global settings! " + e.message); 
+                document.getElementById('global-task-toggle').checked = !status; 
+            }
         }
 
         window.toggleBanUserDB = async (uid, status) => {
@@ -830,29 +852,28 @@
 
         window.addTaskDB = async () => {
             const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value, password = document.getElementById('task-password').value;
-            if(!title || !desc || !reward || !password || window.taskFormatArray.length === 0) return alert("Fill all fields and add at least one sheet format!");
+            if(!title || !desc || !reward || !password || window.taskFormatArray.length === 0) return alert("Fill all fields and add at least one format!");
             
             try { 
                 await addDoc(collection(db, "tasks"), { 
                     title, desc, reward: Number(reward), platform, password,
-                    formatArray: window.taskFormatArray, 
+                    formatArray: window.taskFormatArray,
                     createdAt: serverTimestamp() 
                 }); 
-                
                 alert("Task Added Live!"); 
                 document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; document.getElementById('task-password').value='';
                 window.taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; 
-                renderFormatTags('format-tags-container', window.taskFormatArray);
+                window.renderFormatTags('format-tags-container', window.taskFormatArray);
             } catch(e) { alert("Error: " + e.message); }
         }
 
         window.saveEditTaskDB = async () => {
-            if(!editingTaskId) return;
+            if(!window.editingTaskId) return;
             const title = document.getElementById('edit-task-title').value, desc = document.getElementById('edit-task-desc').value, reward = document.getElementById('edit-task-reward').value, platform = document.getElementById('edit-task-platform').value, password = document.getElementById('edit-task-password').value;
             if(!title || !desc || !reward || !password || window.editFormatArray.length === 0) return alert("Fill all fields and add at least one sheet format!");
             
             try {
-                await updateDoc(doc(db, "tasks", editingTaskId), {
+                await updateDoc(doc(db, "tasks", window.editingTaskId), {
                     title, desc, reward: Number(reward), platform, password,
                     formatArray: window.editFormatArray
                 });
@@ -862,25 +883,25 @@
         }
 
         window.deleteAllSubmissions = async () => {
-            if(allSubmissionsData.length === 0) return alert("Sheet is already empty!");
+            if(window.allSubmissionsData.length === 0) return alert("Sheet is already empty!");
             const authPass = prompt("Type 'DELETE ALL' to confirm deleting entire sheet permanently:");
             if(authPass !== 'DELETE ALL') return alert("Action Cancelled.");
             
             try {
                 const batch = writeBatch(db);
-                allSubmissionsData.forEach(sub => { batch.delete(doc(db, "task_submissions", sub.id)); });
+                window.allSubmissionsData.forEach(sub => { batch.delete(doc(db, "task_submissions", sub.id)); });
                 await batch.commit();
                 alert("All submissions deleted.");
             } catch(e) { alert("Error deleting: " + e.message); }
         }
 
         window.completeTodaySheet = async () => {
-            if(allSubmissionsData.length === 0) return alert("No active submissions to move.");
+            if(window.allSubmissionsData.length === 0) return alert("No active submissions to move.");
             if(!confirm("Move current submissions to History and clear active sheet?")) return;
             
             try {
                 const batch = writeBatch(db);
-                allSubmissionsData.forEach(sub => { 
+                window.allSubmissionsData.forEach(sub => { 
                     batch.set(doc(collection(db, "task_submissions_history")), { ...sub, archivedAt: serverTimestamp() });
                     batch.delete(doc(db, "task_submissions", sub.id)); 
                 });
@@ -892,7 +913,7 @@
         window.addNoticeDB = async () => {
             const title = document.getElementById('notice-title').value, msg = document.getElementById('notice-msg').value, theme = document.getElementById('notice-theme').value;
             if(!title || !msg) return alert("Fill all fields!");
-            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Broadcasted!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
+            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Sent Live!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
             catch(e) { alert("Error: " + e.message); }
         }
 
