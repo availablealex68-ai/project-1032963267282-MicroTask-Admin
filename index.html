@@ -266,25 +266,25 @@
                 <!-- TASK SHEET (GOOGLE SHEET VIEW) PAGE -->
                 <section id="page-sheet" class="admin-page w-full h-full">
                     <div class="flex flex-col h-full">
+                        
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 shrink-0 gap-3">
-                            <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Submissions Sheet</h2>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> Download CSV</button>
-                                <button onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
-                                <button onclick="window.deleteAllSubmissions()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
+                            <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Active Submissions</h2>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select id="sheet-task-filter" onchange="window.renderSheetTable()" class="bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 text-slate-300 outline-none max-w-[200px]">
+                                    <option value="ALL">All Active Tasks</option>
+                                    <!-- Options injected here -->
+                                </select>
+                                <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> CSV</button>
+                                <button id="btn-complete-today" onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
                             </div>
                         </div>
                         
-                        <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[500px]">
+                        <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[300px] mb-8">
                             <div class="overflow-x-auto overflow-y-auto flex-1 p-1">
                                 <table id="sheet-table" class="w-full text-left">
                                     <thead>
                                         <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
-                                            <th class="rounded-tl-lg">Task ID</th>
-                                            <th>User Email</th>
-                                            <th>Date</th>
-                                            <!-- Dynamic columns will inject here based on task format -->
-                                            <th class="rounded-tr-lg w-20">Action</th>
+                                            <!-- Dynamic Headers -->
                                         </tr>
                                     </thead>
                                     <tbody id="sheet-body" class="text-slate-300 text-sm">
@@ -292,6 +292,15 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+
+                        <!-- Sheet History Section -->
+                        <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                            <h2 class="font-bold text-lg text-white flex items-center"><i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-400"></i> Sheet History</h2>
+                            <button onclick="window.deleteAllHistory()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
+                        </div>
+                        <div id="sheet-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-10">
+                            <p class="text-sm text-slate-500 text-center col-span-2 mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading history...</p>
                         </div>
                     </div>
                 </section>
@@ -472,6 +481,7 @@
         window.allUsersData = [];
         window.allTasksData = [];
         window.allSubmissionsData = [];
+        window.allHistoryData = [];
 
         window.filterUsers = () => {
             const query = document.getElementById('search-user').value.toLowerCase();
@@ -567,25 +577,99 @@
             window.editingTaskId = null;
         }
 
-        window.downloadCSV = () => {
-            if(window.allSubmissionsData.length === 0) return alert("Sheet is empty!");
+        // ==========================================
+        // DYNAMIC SHEET RENDER & DOWNLOAD LOGIC
+        // ==========================================
+        window.renderSheetTable = () => {
+            const filterId = document.getElementById('sheet-task-filter').value;
+            let submissions = window.allSubmissionsData;
             
-            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
-            window.allSubmissionsData.forEach(sub => {
+            if(filterId !== 'ALL') {
+                submissions = submissions.filter(s => s.taskId === filterId);
+            }
+            
+            const thead = document.getElementById('sheet-headers');
+            const tbody = document.getElementById('sheet-body');
+            
+            if(submissions.length === 0) {
+                thead.innerHTML = `<th class="rounded-lg">No Data</th>`;
+                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">No active submissions.</td></tr>`;
+                return;
+            }
+
+            // Determine Headers (Admin Format only + Task ID at the end)
+            let headers = [];
+            if(filterId !== 'ALL') {
+                const task = window.allTasksData.find(t => t.id === filterId);
+                if(task && task.formatArray) headers = [...task.formatArray];
+            } else {
+                let headersSet = new Set();
+                submissions.forEach(sub => {
+                    if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
+                });
+                headers = Array.from(headersSet);
+            }
+            
+            let headHTML = '';
+            headers.forEach((h, i) => { 
+                let classes = i === 0 ? 'rounded-tl-lg' : '';
+                headHTML += `<th class="${classes}">${h}</th>`; 
+            });
+            headHTML += `<th>Task ID</th>`;
+            headHTML += `<th class="rounded-tr-lg w-20">Action</th>`;
+            thead.innerHTML = headHTML;
+
+            let bodyHTML = '';
+            submissions.forEach(sub => {
+                const task = window.allTasksData.find(t => t.id === sub.taskId);
+                
+                bodyHTML += `<tr class="border-b border-slate-800/50">`;
+                headers.forEach(h => {
+                    let val = '-';
+                    // Auto-inject Password from Admin Task if the column demands it
+                    if(h.toLowerCase() === 'password' && task && task.password) {
+                        val = task.password; 
+                    } else if(sub.submissionData && sub.submissionData[h]) {
+                        val = sub.submissionData[h];
+                    }
+                    bodyHTML += `<td><div class="max-w-[200px] truncate select-all" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
+                });
+                
+                bodyHTML += `<td><span class="text-[10px] text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded font-mono select-all">${sub.taskId || 'Unknown'}</span></td>`;
+                bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
+                bodyHTML += `</tr>`;
+            });
+            tbody.innerHTML = bodyHTML;
+        }
+
+        window.downloadCSV = () => {
+            const filterId = document.getElementById('sheet-task-filter').value;
+            let submissions = window.allSubmissionsData;
+            let taskName = "All_Active";
+            
+            if(filterId !== 'ALL') {
+                submissions = submissions.filter(s => s.taskId === filterId);
+                const t = window.allTasksData.find(x => x.id === filterId);
+                if(t) taskName = t.title.replace(/ /g, '_');
+            }
+            if(submissions.length === 0) return alert("Sheet is empty!");
+            
+            let headersSet = new Set();
+            submissions.forEach(sub => {
                 if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
             });
             const headers = Array.from(headersSet);
+            headers.push("Task ID");
             
             let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
             
-            window.allSubmissionsData.forEach(sub => {
+            submissions.forEach(sub => {
+                const task = window.allTasksData.find(t => t.id === sub.taskId);
                 let row = headers.map(header => {
                     let val = '';
                     if(header === 'Task ID') val = sub.taskId || '';
-                    else if(header === 'User Email') val = sub.email || '';
-                    else if(header === 'Date') val = sub.createdAt ? new Date(sub.createdAt.seconds * 1000).toLocaleString() : '';
+                    else if(header.toLowerCase() === 'password' && task && task.password) val = task.password;
                     else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
-                    
                     return `"${String(val).replace(/"/g, '""')}"`;
                 });
                 csvContent += row.join(",") + "\n";
@@ -594,10 +678,38 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `microtask_submissions_${new Date().toLocaleDateString()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            link.setAttribute("download", `Tasks_${taskName}_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link); link.click(); link.remove();
+        }
+
+        window.downloadHistoryCSV = (historyId) => {
+            const history = window.allHistoryData.find(h => h.id === historyId);
+            if(!history || !history.submissions || history.submissions.length === 0) return alert("No data available.");
+            
+            let headersSet = new Set();
+            history.submissions.forEach(sub => {
+                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
+            });
+            const headers = Array.from(headersSet);
+            headers.push("Task ID");
+            
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            
+            history.submissions.forEach(sub => {
+                let row = headers.map(header => {
+                    let val = '';
+                    if(header === 'Task ID') val = sub.taskId || '';
+                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
+                    return `"${String(val).replace(/"/g, '""')}"`;
+                });
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `History_${history.taskName.replace(/ /g, '_')}_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link); link.click(); link.remove();
         }
 
     </script>
@@ -605,7 +717,8 @@
     <!-- FIREBASE DB & AUTH API SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // Import setPersistence and browserLocalPersistence to fix auto logout issue
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -621,6 +734,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Apply Persistence to solve auto-logout bug
+        setPersistence(auth, browserLocalPersistence).catch(console.error);
 
         // Security check upon auth state change
         onAuthStateChanged(auth, async (user) => {
@@ -695,49 +811,6 @@
             }
         };
 
-        window.renderSheetTable = (submissions) => {
-            const thead = document.getElementById('sheet-headers');
-            const tbody = document.getElementById('sheet-body');
-            
-            if(submissions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">No submissions found in the database.</td></tr>`;
-                return;
-            }
-
-            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
-            submissions.forEach(sub => {
-                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
-            });
-            const headers = Array.from(headersSet);
-
-            let headHTML = '';
-            headers.forEach((h, i) => { 
-                let classes = i === 0 ? 'rounded-tl-lg' : '';
-                headHTML += `<th class="${classes}">${h}</th>`; 
-            });
-            headHTML += `<th class="rounded-tr-lg w-20">Action</th>`;
-            thead.innerHTML = headHTML;
-
-            let bodyHTML = '';
-            submissions.forEach(sub => {
-                bodyHTML += `<tr class="border-b border-slate-800/50">`;
-                headers.forEach(h => {
-                    let val = '';
-                    if(h === 'Task ID') val = `<span class="text-[10px] text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded font-mono select-all">${sub.taskId || 'Unknown'}</span>`;
-                    else if(h === 'User Email') val = sub.email || '';
-                    else if(h === 'Date') val = sub.createdAt ? `<span class="text-[10px] text-slate-500">${new Date(sub.createdAt.seconds * 1000).toLocaleString()}</span>` : '';
-                    else {
-                        const rawVal = (sub.submissionData && sub.submissionData[h]) ? sub.submissionData[h] : '-';
-                        val = `<div class="max-w-[200px] truncate select-all" title="${String(rawVal).replace(/"/g, '&quot;')}">${rawVal}</div>`;
-                    }
-                    bodyHTML += `<td>${val}</td>`;
-                });
-                bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
-                bodyHTML += `</tr>`;
-            });
-            tbody.innerHTML = bodyHTML;
-        }
-
         function loadDatabaseLive() {
             // Global Task Toggle Sync
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
@@ -769,14 +842,19 @@
                 }
             });
 
-            // 3. TASKS LIVE (FIXED)
+            // 3. TASKS LIVE (Updates Filter Dropdown Dynamically)
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
+                const filterEl = document.getElementById('sheet-task-filter');
+                const currentFilterVal = filterEl.value;
+                
                 window.allTasksData = [];
+                let filterHtml = '<option value="ALL">All Active Tasks</option>';
                 
                 if(snapshot.empty) { 
                     list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; 
                     document.getElementById('stat-tasks').innerText = "0";
+                    filterEl.innerHTML = filterHtml;
                 } 
                 else {
                     let html = '';
@@ -788,6 +866,8 @@
                             window.allTasksData.push(data);
                             validCount++;
                             
+                            filterHtml += `<option value="${data.id}">${data.title}</option>`;
+                            
                             let formatHtml = '';
                             if(data.formatArray && Array.isArray(data.formatArray)) {
                                 data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-800 text-slate-400 px-1 rounded mx-0.5 border border-slate-700">${f}</span>`; });
@@ -798,7 +878,11 @@
                     }); 
                     list.innerHTML = html;
                     document.getElementById('stat-tasks').innerText = validCount.toString();
+                    
+                    filterEl.innerHTML = filterHtml;
+                    if(window.allTasksData.some(t => t.id === currentFilterVal)) filterEl.value = currentFilterVal;
                 }
+                window.renderSheetTable();
             });
 
             // 4. TASK SUBMISSIONS (SHEET)
@@ -807,7 +891,40 @@
                 snapshot.forEach(docSnap => { window.allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
                 document.getElementById('stat-sheet-count').innerText = snapshot.size;
                 document.getElementById('sheet-badge').innerText = snapshot.size;
-                window.renderSheetTable(window.allSubmissionsData);
+                window.renderSheetTable();
+            });
+
+            // 4.1 SHEET HISTORY
+            onSnapshot(query(collection(db, "sheet_history"), orderBy("createdAt", "desc")), (snapshot) => {
+                window.allHistoryData = [];
+                const list = document.getElementById('sheet-history-list');
+                if(snapshot.empty) {
+                    list.innerHTML = `<p class="text-sm text-slate-500 text-center col-span-2 mt-5">No history available.</p>`;
+                } else {
+                    let html = '';
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        data.id = docSnap.id;
+                        window.allHistoryData.push(data);
+                        
+                        const dateStr = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Just Now';
+                        
+                        html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 bg-emerald-500/10 rounded-lg text-emerald-400 flex items-center justify-center text-lg"><i class="fa-solid fa-file-csv"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-white">${data.taskName}</h3>
+                                    <p class="text-[10px] text-slate-400">Date: ${dateStr} • ${data.recordCount} records</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.downloadHistoryCSV('${data.id}')" class="bg-indigo-600/20 text-indigo-400 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600/30 transition-colors"><i class="fa-solid fa-download"></i></button>
+                                <button onclick="window.deleteDocDB('sheet_history', '${data.id}')" class="bg-rose-500/10 text-rose-400 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    });
+                    list.innerHTML = html;
+                }
             });
 
             // 5. KYC LIVE
@@ -926,18 +1043,81 @@
         }
 
         window.completeTodaySheet = async () => {
-            if(window.allSubmissionsData.length === 0) return alert("No active submissions to move.");
-            if(!confirm("Move current submissions to History and clear active sheet?")) return;
+            const filterId = document.getElementById('sheet-task-filter').value;
+            let submissions = window.allSubmissionsData;
+            
+            if(filterId !== 'ALL') {
+                submissions = submissions.filter(s => s.taskId === filterId);
+            }
+            
+            if(submissions.length === 0) return alert("No active submissions to complete for this selection.");
+            
+            if(!confirm(`Group ${submissions.length} submissions and move them to History?`)) return;
+            
+            window.setButtonLoading('btn-complete-today', true, 'Completing...', 'fa-solid fa-spinner');
+            
+            try {
+                // Group submissions by taskId to create separate history files
+                const groupedData = {};
+                submissions.forEach(sub => {
+                    if(!groupedData[sub.taskId]) groupedData[sub.taskId] = [];
+                    groupedData[sub.taskId].push(sub);
+                });
+                
+                const batch = writeBatch(db);
+                
+                for(const tId in groupedData) {
+                    const task = window.allTasksData.find(t => t.id === tId);
+                    const tName = task ? task.title : 'Deleted Task';
+                    const subs = groupedData[tId];
+                    
+                    // Inject password into historical submissions if it's missing but required by format
+                    subs.forEach(s => {
+                        if(task && task.formatArray) {
+                            let passKey = task.formatArray.find(f => f.toLowerCase() === 'password');
+                            if(passKey && (!s.submissionData || !s.submissionData[passKey])) {
+                                if(!s.submissionData) s.submissionData = {};
+                                s.submissionData[passKey] = task.password || '';
+                            }
+                        }
+                    });
+
+                    // Create History Document
+                    const historyRef = doc(collection(db, "sheet_history"));
+                    batch.set(historyRef, {
+                        taskId: tId,
+                        taskName: tName,
+                        recordCount: subs.length,
+                        submissions: subs,
+                        createdAt: serverTimestamp()
+                    });
+                    
+                    // Delete Active Submissions
+                    subs.forEach(s => {
+                        batch.delete(doc(db, "task_submissions", s.id));
+                    });
+                }
+                
+                await batch.commit();
+                window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
+                alert("Successfully created History files and cleared the Active Sheet!");
+            } catch(e) { 
+                window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
+                alert("Error: " + e.message); 
+            }
+        }
+
+        window.deleteAllHistory = async () => {
+            if(window.allHistoryData.length === 0) return alert("History is already empty!");
+            const authPass = prompt("Type 'DELETE ALL' to confirm clearing all history:");
+            if(authPass !== 'DELETE ALL') return alert("Action Cancelled.");
             
             try {
                 const batch = writeBatch(db);
-                window.allSubmissionsData.forEach(sub => { 
-                    batch.set(doc(collection(db, "task_submissions_history")), { ...sub, archivedAt: serverTimestamp() });
-                    batch.delete(doc(db, "task_submissions", sub.id)); 
-                });
+                window.allHistoryData.forEach(h => { batch.delete(doc(db, "sheet_history", h.id)); });
                 await batch.commit();
-                alert("Sheet cleared and moved to history successfully!");
-            } catch(e) { alert("Error: " + e.message); }
+                alert("All history files deleted successfully.");
+            } catch(e) { alert("Error deleting history: " + e.message); }
         }
 
         window.addNoticeDB = async () => {
