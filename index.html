@@ -89,6 +89,7 @@
                     <h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1>
                     <div class="flex items-center gap-2">
                         <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p>
+                        <!-- Global Task ON/OFF Toggle -->
                         <label class="flex items-center cursor-pointer ml-3 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
                             <span class="text-[9px] font-bold text-slate-300 mr-1.5 uppercase">Tasks</span>
                             <div class="relative">
@@ -846,15 +847,16 @@
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 const filterEl = document.getElementById('sheet-task-filter');
-                const currentFilterVal = filterEl.value;
+                const currentFilterVal = filterEl ? filterEl.value : '';
                 
                 window.allTasksData = [];
                 let filterHtml = '<option value="" disabled selected>Select a specific Task...</option>';
                 
                 if(snapshot.empty) { 
-                    list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; 
-                    document.getElementById('stat-tasks').innerText = "0";
-                    filterEl.innerHTML = filterHtml;
+                    if(list) list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; 
+                    const statTasks = document.getElementById('stat-tasks');
+                    if(statTasks) statTasks.innerText = "0";
+                    if(filterEl) filterEl.innerHTML = filterHtml;
                 } 
                 else {
                     let html = '';
@@ -866,7 +868,7 @@
                             window.allTasksData.push(data);
                             validCount++;
                             
-                            filterHtml += `<option value="${data.id}">${data.title}</option>`;
+                            filterHtml += `<option value="${data.id}">${data.title || 'Untitled Task'}</option>`;
                             
                             let formatHtml = '';
                             if(data.formatArray && Array.isArray(data.formatArray)) {
@@ -876,11 +878,15 @@
                             html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm fade-in mb-3"><div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title || 'Untitled'}</h3><p class="text-[11px] text-slate-400">Reward: ৳${data.reward}</p><div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div></div></div><span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide">${data.password || 'No Pass'}</span></div><div class="flex gap-2"><button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 p-2 rounded-lg hover:bg-indigo-500/20 text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit Task</button><button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20 px-4 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
                         } catch(e) { console.error("Error parsing task:", e); }
                     }); 
-                    list.innerHTML = html;
-                    document.getElementById('stat-tasks').innerText = validCount.toString();
+                    if(list) list.innerHTML = html;
                     
-                    filterEl.innerHTML = filterHtml;
-                    if(window.allTasksData.some(t => t.id === currentFilterVal)) filterEl.value = currentFilterVal;
+                    const statTasks = document.getElementById('stat-tasks');
+                    if(statTasks) statTasks.innerText = validCount.toString();
+                    
+                    if(filterEl) {
+                        filterEl.innerHTML = filterHtml;
+                        if(window.allTasksData.some(t => t.id === currentFilterVal)) filterEl.value = currentFilterVal;
+                    }
                 }
                 window.renderSheetTable();
             });
@@ -968,7 +974,8 @@
                         html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
-                document.getElementById('stat-payments').innerText = activeCount;
+                const statPayments = document.getElementById('stat-payments');
+                if(statPayments) statPayments.innerText = activeCount;
             });
         }
 
@@ -1023,14 +1030,13 @@
         }
 
         // ==========================================
-        // NEW: REPORT SYSTEM (APPROVE / REJECT)
+        // REPORT SYSTEM (APPROVE / REJECT)
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
             const idsRaw = inputEl.value;
             if(!idsRaw.trim()) return alert("Please paste at least one Task ID.");
 
-            // Parse IDs separated by comma, space or newline
             const shortIds = idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0);
             if(shortIds.length === 0) return;
 
@@ -1041,7 +1047,6 @@
                 let processedCount = 0;
 
                 for (const shortId of shortIds) {
-                    // Match the short ID with the active submissions cache
                     const sub = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
                     
                     if (sub) {
@@ -1051,14 +1056,12 @@
 
                         if (action === 'approve') {
                             const reward = taskObj ? Number(taskObj.reward) : 0;
-                            // Update User Balances
                             batch.update(userRef, {
                                 pendingTasks: increment(-1),
                                 approvedTasks: increment(1),
                                 balance: increment(reward),
                                 totalEarned: increment(reward)
                             });
-                            // Global Success Notice mapped for specific user info
                             const noticeRef = doc(collection(db, "notices"));
                             batch.set(noticeRef, {
                                 title: "Task Approved 🟢",
@@ -1067,9 +1070,7 @@
                                 createdAt: serverTimestamp()
                             });
                         } else {
-                            // Reject Logic
                             batch.update(userRef, { pendingTasks: increment(-1) });
-                            // Global Reject Notice
                             const noticeRef = doc(collection(db, "notices"));
                             batch.set(noticeRef, {
                                 title: "Task Rejected 🔴",
