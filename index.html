@@ -89,7 +89,6 @@
                     <h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1>
                     <div class="flex items-center gap-2">
                         <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p>
-                        <!-- Global Task ON/OFF Toggle -->
                         <label class="flex items-center cursor-pointer ml-3 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
                             <span class="text-[9px] font-bold text-slate-300 mr-1.5 uppercase">Tasks</span>
                             <div class="relative">
@@ -124,6 +123,12 @@
                     <i class="fa-solid fa-file-excel text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-emerald-500"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Sheet</span>
                     <span id="sheet-badge" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-5 min-w-[20px] px-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
                 </button>
+                
+                <!-- NEW REPORT BUTTON -->
+                <button id="nav-report" onclick="window.switchAdminTab('report')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
+                    <i class="fa-solid fa-clipboard-check text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-cyan-400"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Report</span>
+                </button>
+
                 <button id="nav-kyc" onclick="window.switchAdminTab('kyc')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
                     <i class="fa-solid fa-id-card text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">KYC</span>
                     <span id="kyc-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
@@ -154,7 +159,7 @@
                         </div>
                         <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center">
                             <div class="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 text-xl"><i class="fa-solid fa-file-excel"></i></div>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Submissions</p>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Active Submissions</p>
                             <p id="stat-sheet-count" class="font-bold text-4xl text-white mt-1 tracking-tight">0</p>
                         </div>
                         <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center">
@@ -216,36 +221,34 @@
                                 </div>
                                 
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Default Password to Copy</label>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Password (Injected Auto)</label>
                                     <input type="text" id="task-password" autocomplete="off" placeholder="Pass@123..." class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                                 </div>
 
                                 <!-- SMARTER Format Builder -->
                                 <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700">
                                     <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-3 block flex items-center">
-                                        <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns (Submissions Format)
+                                        <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns Setup (Strict Order)
                                     </label>
                                     
-                                    <!-- Quick Add Badges -->
                                     <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
                                     <div class="flex flex-wrap gap-2 mb-4">
-                                        <button type="button" onclick="window.addFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
-                                        <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
+                                        <button type="button" onclick="window.addFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
                                         <button type="button" onclick="window.addFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
+                                        <button type="button" onclick="window.addFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
                                         <button type="button" onclick="window.addFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
                                         <button type="button" onclick="window.addFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
-                                        <button type="button" onclick="window.addFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
+                                        <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
                                         <button type="button" onclick="window.addFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
                                     </div>
                                     
-                                    <!-- Custom Text Input -->
                                     <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
                                     <div class="flex gap-2 mb-4">
                                         <input type="text" id="custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none text-white">
                                         <button type="button" onclick="window.addCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-xs font-bold transition-colors">Add</button>
                                     </div>
 
-                                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format:</p>
+                                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
                                     <div id="format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-1">
                                         <!-- Default formats injected here -->
                                     </div>
@@ -256,14 +259,37 @@
                         </form>
                     </div>
 
-                    <!-- FIXED: Live Tasks History -->
                     <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-400"></i> Live Tasks History</h2>
                     <div id="admin-task-list" class="space-y-4 pb-10">
                         <p class="text-sm text-slate-500 text-center mt-5"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading tasks...</p>
                     </div>
                 </section>
 
-                <!-- TASK SHEET (GOOGLE SHEET VIEW) PAGE -->
+                <!-- NEW REPORT PAGE -->
+                <section id="page-report" class="admin-page w-full max-w-3xl mx-auto">
+                    <h2 class="font-bold text-xl mb-6 text-white flex items-center"><i class="fa-solid fa-clipboard-check mr-2 text-cyan-400"></i> Task Reports / Actions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Approve Box -->
+                        <div class="bg-[#1e293b] p-6 rounded-3xl border border-emerald-900/50 shadow-lg">
+                            <h3 class="text-emerald-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-check-circle mr-2"></i> Approve Tasks</h3>
+                            <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
+                            <textarea id="approve-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 text-white resize-none mb-4 font-mono" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <button id="btn-approve" onclick="window.processReport('approve')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-check-double text-lg"></i> Approve Selected</button>
+                        </div>
+                        
+                        <!-- Reject Box -->
+                        <div class="bg-[#1e293b] p-6 rounded-3xl border border-rose-900/50 shadow-lg">
+                            <h3 class="text-rose-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-ban mr-2"></i> Reject Tasks</h3>
+                            <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
+                            <textarea id="reject-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-rose-500 text-white resize-none mb-4 font-mono" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <button id="btn-reject" onclick="window.processReport('reject')" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-trash-can text-lg"></i> Reject Selected</button>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- TASK SHEET PAGE -->
                 <section id="page-sheet" class="admin-page w-full h-full">
                     <div class="flex flex-col h-full">
                         
@@ -271,7 +297,7 @@
                             <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Active Submissions</h2>
                             <div class="flex flex-wrap items-center gap-2">
                                 <select id="sheet-task-filter" onchange="window.renderSheetTable()" class="bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 text-slate-300 outline-none max-w-[200px]">
-                                    <option value="ALL">All Active Tasks</option>
+                                    <option value="" disabled selected>Select a specific Task...</option>
                                     <!-- Options injected here -->
                                 </select>
                                 <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> CSV</button>
@@ -284,11 +310,11 @@
                                 <table id="sheet-table" class="w-full text-left">
                                     <thead>
                                         <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
-                                            <!-- Dynamic Headers -->
+                                            <th class="rounded-lg">Notice</th>
                                         </tr>
                                     </thead>
                                     <tbody id="sheet-body" class="text-slate-300 text-sm">
-                                        <tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">Loading submissions...</td></tr>
+                                        <tr><td class="text-center py-10 text-slate-500 border-none">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -410,17 +436,17 @@
                 <!-- SMARTER Edit Format Builder -->
                 <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700 border-dashed">
                     <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-3 block flex items-center">
-                        <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns (Submissions Format)
+                        <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns (Strict Order)
                     </label>
                     
                     <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <button type="button" onclick="window.addEditFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
-                        <button type="button" onclick="window.addEditFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
+                        <button type="button" onclick="window.addEditFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
                         <button type="button" onclick="window.addEditFormatTag('Password')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Password</button>
+                        <button type="button" onclick="window.addEditFormatTag('UID')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>UID</button>
                         <button type="button" onclick="window.addEditFormatTag('2FA')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>2FA</button>
                         <button type="button" onclick="window.addEditFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
-                        <button type="button" onclick="window.addEditFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
+                        <button type="button" onclick="window.addEditFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
                         <button type="button" onclick="window.addEditFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
                     </div>
 
@@ -430,7 +456,7 @@
                         <button type="button" onclick="window.addEditCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-xs font-bold transition-colors">Add</button>
                     </div>
 
-                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format:</p>
+                    <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
                     <div id="edit-format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-1">
                         <!-- Edit tags injected here -->
                     </div>
@@ -495,7 +521,7 @@
         // ==========================================
         // DYNAMIC TASK FORMAT BUILDER LOGIC
         // ==========================================
-        window.taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; 
+        window.taskFormatArray = ['Username', 'Password', 'UID', '2FA', 'Cookies']; 
         window.editFormatArray = [];
         window.editingTaskId = null;
 
@@ -513,7 +539,6 @@
             });
         }
 
-        // --- Create Task Adders ---
         window.addFormatTag = (val) => {
             if(!window.taskFormatArray.includes(val)) { 
                 window.taskFormatArray.push(val); 
@@ -530,7 +555,6 @@
         }
         window.removeFormatTag = (index) => { window.taskFormatArray.splice(index, 1); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
 
-        // --- Edit Task Adders ---
         window.addEditFormatTag = (val) => {
             if(!window.editFormatArray.includes(val)) { 
                 window.editFormatArray.push(val); 
@@ -560,11 +584,6 @@
             document.getElementById('edit-task-password').value = t.password || '';
             
             window.editFormatArray = t.formatArray && Array.isArray(t.formatArray) ? [...t.formatArray] : [];
-            if(window.editFormatArray.length === 0) { 
-                if(t.require2FA) window.editFormatArray.push('2FA');
-                if(t.requireCookies) window.editFormatArray.push('Cookies');
-                if(window.editFormatArray.length === 0) window.editFormatArray = ['Email', 'Password']; 
-            }
             window.renderFormatTags('edit-format-tags-container', window.editFormatArray);
 
             document.getElementById('edit-task-modal').classList.remove('opacity-0', 'pointer-events-none');
@@ -578,37 +597,30 @@
         }
 
         // ==========================================
-        // DYNAMIC SHEET RENDER & DOWNLOAD LOGIC
+        // STRICT DYNAMIC SHEET RENDER LOGIC
         // ==========================================
         window.renderSheetTable = () => {
             const filterId = document.getElementById('sheet-task-filter').value;
-            let submissions = window.allSubmissionsData;
-            
-            if(filterId !== 'ALL') {
-                submissions = submissions.filter(s => s.taskId === filterId);
-            }
-            
             const thead = document.getElementById('sheet-headers');
             const tbody = document.getElementById('sheet-body');
             
-            if(submissions.length === 0) {
-                thead.innerHTML = `<th class="rounded-lg">No Data</th>`;
-                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">No active submissions.</td></tr>`;
+            if(!filterId) {
+                thead.innerHTML = `<th class="rounded-lg">Notice</th>`;
+                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">Please select a specific task from the dropdown above to view isolated submissions.</td></tr>`;
                 return;
             }
 
-            // Determine Headers (Admin Format only + Task ID at the end)
-            let headers = [];
-            if(filterId !== 'ALL') {
-                const task = window.allTasksData.find(t => t.id === filterId);
-                if(task && task.formatArray) headers = [...task.formatArray];
-            } else {
-                let headersSet = new Set();
-                submissions.forEach(sub => {
-                    if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
-                });
-                headers = Array.from(headersSet);
+            let submissions = window.allSubmissionsData.filter(s => s.taskId === filterId);
+            const task = window.allTasksData.find(t => t.id === filterId);
+            
+            if(submissions.length === 0) {
+                thead.innerHTML = `<th class="rounded-lg">Notice</th>`;
+                tbody.innerHTML = `<tr><td class="text-center py-10 text-slate-500 border-none">No active submissions for this task.</td></tr>`;
+                return;
             }
+
+            // Extract EXACT headers order from Admin setup
+            let headers = task && task.formatArray ? [...task.formatArray] : [];
             
             let headHTML = '';
             headers.forEach((h, i) => { 
@@ -621,21 +633,21 @@
 
             let bodyHTML = '';
             submissions.forEach(sub => {
-                const task = window.allTasksData.find(t => t.id === sub.taskId);
-                
                 bodyHTML += `<tr class="border-b border-slate-800/50">`;
                 headers.forEach(h => {
                     let val = '-';
-                    // Auto-inject Password from Admin Task if the column demands it
-                    if(h.toLowerCase() === 'password' && task && task.password) {
-                        val = task.password; 
-                    } else if(sub.submissionData && sub.submissionData[h]) {
+                    // Auto-inject Password if column requires it
+                    if (h.toLowerCase() === 'password') {
+                        val = task.password || '-';
+                    } else if (sub.submissionData && sub.submissionData[h] !== undefined) {
                         val = sub.submissionData[h];
                     }
                     bodyHTML += `<td><div class="max-w-[200px] truncate select-all" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
                 });
                 
-                bodyHTML += `<td><span class="text-[10px] text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded font-mono select-all">${sub.taskId || 'Unknown'}</span></td>`;
+                // Smart Short Task ID (7 Chars)
+                const shortId = sub.id.substring(0, 7).toUpperCase();
+                bodyHTML += `<td><span class="text-[10px] text-indigo-400 bg-indigo-900/20 px-2 py-0.5 rounded font-mono select-all">${shortId}</span></td>`;
                 bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
                 bodyHTML += `</tr>`;
             });
@@ -644,34 +656,30 @@
 
         window.downloadCSV = () => {
             const filterId = document.getElementById('sheet-task-filter').value;
-            let submissions = window.allSubmissionsData;
-            let taskName = "All_Active";
+            if(!filterId) return alert("Please select a specific task to download CSV.");
             
-            if(filterId !== 'ALL') {
-                submissions = submissions.filter(s => s.taskId === filterId);
-                const t = window.allTasksData.find(x => x.id === filterId);
-                if(t) taskName = t.title.replace(/ /g, '_');
-            }
-            if(submissions.length === 0) return alert("Sheet is empty!");
+            let submissions = window.allSubmissionsData.filter(s => s.taskId === filterId);
+            if(submissions.length === 0) return alert("Sheet is empty for this task!");
             
-            let headersSet = new Set();
-            submissions.forEach(sub => {
-                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
-            });
-            const headers = Array.from(headersSet);
-            headers.push("Task ID");
+            const task = window.allTasksData.find(t => t.id === filterId);
+            const taskName = task ? task.title.replace(/ /g, '_') : "Unknown_Task";
             
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            // Extract EXACT headers
+            let headers = task && task.formatArray ? [...task.formatArray] : [];
+            let csvHeaders = [...headers, "Task ID"];
+            let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
             
             submissions.forEach(sub => {
-                const task = window.allTasksData.find(t => t.id === sub.taskId);
                 let row = headers.map(header => {
                     let val = '';
-                    if(header === 'Task ID') val = sub.taskId || '';
-                    else if(header.toLowerCase() === 'password' && task && task.password) val = task.password;
-                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
+                    if(header.toLowerCase() === 'password') val = task.password || '';
+                    else val = (sub.submissionData && sub.submissionData[header] !== undefined) ? sub.submissionData[header] : '';
                     return `"${String(val).replace(/"/g, '""')}"`;
                 });
+                
+                const shortId = sub.id.substring(0, 7).toUpperCase();
+                row.push(`"${shortId}"`); // Append Task ID
+                
                 csvContent += row.join(",") + "\n";
             });
 
@@ -686,22 +694,19 @@
             const history = window.allHistoryData.find(h => h.id === historyId);
             if(!history || !history.submissions || history.submissions.length === 0) return alert("No data available.");
             
-            let headersSet = new Set();
-            history.submissions.forEach(sub => {
-                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
-            });
-            const headers = Array.from(headersSet);
-            headers.push("Task ID");
+            // Use saved format from history
+            let headers = history.formatArray && history.formatArray.length > 0 ? history.formatArray : [];
+            let csvHeaders = [...headers, "Task ID"];
             
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
             
             history.submissions.forEach(sub => {
                 let row = headers.map(header => {
-                    let val = '';
-                    if(header === 'Task ID') val = sub.taskId || '';
-                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
+                    let val = (sub.submissionData && sub.submissionData[header] !== undefined) ? sub.submissionData[header] : '';
                     return `"${String(val).replace(/"/g, '""')}"`;
                 });
+                const shortId = sub.id.substring(0, 7).toUpperCase();
+                row.push(`"${shortId}"`);
                 csvContent += row.join(",") + "\n";
             });
 
@@ -717,9 +722,8 @@
     <!-- FIREBASE DB & AUTH API SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // Import setPersistence and browserLocalPersistence to fix auto logout issue
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, writeBatch, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
@@ -735,10 +739,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Apply Persistence to solve auto-logout bug
+        // Auto Logout FIX: Ensure browser persistence
         setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-        // Security check upon auth state change
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -812,14 +815,12 @@
         };
 
         function loadDatabaseLive() {
-            // Global Task Toggle Sync
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
                 if(docSnap.exists()) {
                     document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true;
                 }
             });
 
-            // 1. USERS LIVE
             onSnapshot(collection(db, "users"), (snapshot) => {
                 window.allUsersData = [];
                 snapshot.forEach(docSnap => { window.allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
@@ -827,7 +828,6 @@
                 window.filterUsers(); 
             });
 
-            // 2. WITHDRAW LIVE
             const qWithdraw = query(collection(db, "withdrawals"), where("status", "==", "pending"));
             onSnapshot(qWithdraw, (snapshot) => {
                 const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
@@ -842,14 +842,14 @@
                 }
             });
 
-            // 3. TASKS LIVE (Updates Filter Dropdown Dynamically)
+            // TASKS LIVE (Updates Filter Dropdown Dynamically)
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 const filterEl = document.getElementById('sheet-task-filter');
                 const currentFilterVal = filterEl.value;
                 
                 window.allTasksData = [];
-                let filterHtml = '<option value="ALL">All Active Tasks</option>';
+                let filterHtml = '<option value="" disabled selected>Select a specific Task...</option>';
                 
                 if(snapshot.empty) { 
                     list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; 
@@ -885,7 +885,7 @@
                 window.renderSheetTable();
             });
 
-            // 4. TASK SUBMISSIONS (SHEET)
+            // TASK SUBMISSIONS (SHEET)
             onSnapshot(query(collection(db, "task_submissions"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allSubmissionsData = [];
                 snapshot.forEach(docSnap => { window.allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
@@ -894,7 +894,7 @@
                 window.renderSheetTable();
             });
 
-            // 4.1 SHEET HISTORY
+            // SHEET HISTORY
             onSnapshot(query(collection(db, "sheet_history"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allHistoryData = [];
                 const list = document.getElementById('sheet-history-list');
@@ -927,7 +927,6 @@
                 }
             });
 
-            // 5. KYC LIVE
             onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
                 const list = document.getElementById('kyc-list'), badge = document.getElementById('kyc-badge');
                 document.getElementById('stat-kyc').innerText = snapshot.size;
@@ -941,7 +940,6 @@
                 }
             });
 
-            // 6. NOTICES LIVE
             onSnapshot(collection(db, "notices"), (snapshot) => {
                 const list = document.getElementById('admin-notice-list');
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p>`; } 
@@ -954,7 +952,6 @@
                 }
             });
 
-            // 7. PAYMENT METHODS LIVE
             onSnapshot(collection(db, "payment_methods"), (snapshot) => {
                 const list = document.getElementById('admin-payment-list');
                 let activeCount = 0;
@@ -985,11 +982,7 @@
                 const snap = await getDoc(docRef); 
                 if(snap.exists()){ await updateDoc(docRef, { tasksEnabled: status }); } 
                 else { await setDoc(docRef, { tasksEnabled: status }); }
-            } 
-            catch(e) { 
-                alert("Error changing global settings! " + e.message); 
-                document.getElementById('global-task-toggle').checked = !status; 
-            }
+            } catch(e) { alert("Error changing global settings! " + e.message); document.getElementById('global-task-toggle').checked = !status; }
         }
 
         window.toggleBanUserDB = async (uid, status) => {
@@ -1009,7 +1002,7 @@
                 }); 
                 alert("Task Added Live!"); 
                 document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; document.getElementById('task-password').value='';
-                window.taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; 
+                window.taskFormatArray = ['Username', 'Password', 'UID', '2FA', 'Cookies']; 
                 window.renderFormatTags('format-tags-container', window.taskFormatArray);
             } catch(e) { alert("Error: " + e.message); }
         }
@@ -1029,35 +1022,91 @@
             } catch(e) { alert("Error: " + e.message); }
         }
 
-        window.deleteAllSubmissions = async () => {
-            if(window.allSubmissionsData.length === 0) return alert("Sheet is already empty!");
-            const authPass = prompt("Type 'DELETE ALL' to confirm deleting entire sheet permanently:");
-            if(authPass !== 'DELETE ALL') return alert("Action Cancelled.");
-            
+        // ==========================================
+        // NEW: REPORT SYSTEM (APPROVE / REJECT)
+        // ==========================================
+        window.processReport = async (action) => {
+            const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
+            const idsRaw = inputEl.value;
+            if(!idsRaw.trim()) return alert("Please paste at least one Task ID.");
+
+            // Parse IDs separated by comma, space or newline
+            const shortIds = idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0);
+            if(shortIds.length === 0) return;
+
+            window.setButtonLoading(`btn-${action}`, true, 'Processing...', 'fa-solid fa-spinner');
+
             try {
                 const batch = writeBatch(db);
-                window.allSubmissionsData.forEach(sub => { batch.delete(doc(db, "task_submissions", sub.id)); });
-                await batch.commit();
-                alert("All submissions deleted.");
-            } catch(e) { alert("Error deleting: " + e.message); }
+                let processedCount = 0;
+
+                for (const shortId of shortIds) {
+                    // Match the short ID with the active submissions cache
+                    const sub = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
+                    
+                    if (sub) {
+                        const taskRef = doc(db, "task_submissions", sub.id);
+                        const userRef = doc(db, "users", sub.uid);
+                        const taskObj = window.allTasksData.find(t => t.id === sub.taskId);
+
+                        if (action === 'approve') {
+                            const reward = taskObj ? Number(taskObj.reward) : 0;
+                            // Update User Balances
+                            batch.update(userRef, {
+                                pendingTasks: increment(-1),
+                                approvedTasks: increment(1),
+                                balance: increment(reward),
+                                totalEarned: increment(reward)
+                            });
+                            // Global Success Notice mapped for specific user info
+                            const noticeRef = doc(collection(db, "notices"));
+                            batch.set(noticeRef, {
+                                title: "Task Approved 🟢",
+                                msg: `Task ID [${shortId}] submitted by you has been approved! Reward added.`,
+                                theme: "emerald",
+                                createdAt: serverTimestamp()
+                            });
+                        } else {
+                            // Reject Logic
+                            batch.update(userRef, { pendingTasks: increment(-1) });
+                            // Global Reject Notice
+                            const noticeRef = doc(collection(db, "notices"));
+                            batch.set(noticeRef, {
+                                title: "Task Rejected 🔴",
+                                msg: `Task ID [${shortId}] was rejected due to incorrect submission details.`,
+                                theme: "rose",
+                                createdAt: serverTimestamp()
+                            });
+                        }
+                        
+                        batch.delete(taskRef);
+                        processedCount++;
+                    }
+                }
+
+                if(processedCount > 0) {
+                    await batch.commit();
+                    alert(`Successfully ${action}d ${processedCount} tasks!`);
+                    inputEl.value = '';
+                } else {
+                    alert("No matching Active Task IDs found. Make sure you pasted valid IDs from Active Submissions.");
+                }
+            } catch (e) { alert("Error processing: " + e.message); }
+            
+            window.setButtonLoading(`btn-${action}`, false, action === 'approve' ? 'Approve Selected' : 'Reject Selected', action === 'approve' ? 'fa-solid fa-check-double' : 'fa-solid fa-trash-can');
         }
 
         window.completeTodaySheet = async () => {
             const filterId = document.getElementById('sheet-task-filter').value;
-            let submissions = window.allSubmissionsData;
+            if(!filterId) return alert("Please select a specific task from the dropdown first.");
             
-            if(filterId !== 'ALL') {
-                submissions = submissions.filter(s => s.taskId === filterId);
-            }
-            
+            let submissions = window.allSubmissionsData.filter(s => s.taskId === filterId);
             if(submissions.length === 0) return alert("No active submissions to complete for this selection.");
             
             if(!confirm(`Group ${submissions.length} submissions and move them to History?`)) return;
-            
             window.setButtonLoading('btn-complete-today', true, 'Completing...', 'fa-solid fa-spinner');
             
             try {
-                // Group submissions by taskId to create separate history files
                 const groupedData = {};
                 submissions.forEach(sub => {
                     if(!groupedData[sub.taskId]) groupedData[sub.taskId] = [];
@@ -1071,7 +1120,6 @@
                     const tName = task ? task.title : 'Deleted Task';
                     const subs = groupedData[tId];
                     
-                    // Inject password into historical submissions if it's missing but required by format
                     subs.forEach(s => {
                         if(task && task.formatArray) {
                             let passKey = task.formatArray.find(f => f.toLowerCase() === 'password');
@@ -1082,25 +1130,22 @@
                         }
                     });
 
-                    // Create History Document
                     const historyRef = doc(collection(db, "sheet_history"));
                     batch.set(historyRef, {
                         taskId: tId,
                         taskName: tName,
                         recordCount: subs.length,
+                        formatArray: task ? task.formatArray : [], 
                         submissions: subs,
                         createdAt: serverTimestamp()
                     });
                     
-                    // Delete Active Submissions
-                    subs.forEach(s => {
-                        batch.delete(doc(db, "task_submissions", s.id));
-                    });
+                    subs.forEach(s => { batch.delete(doc(db, "task_submissions", s.id)); });
                 }
                 
                 await batch.commit();
                 window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
-                alert("Successfully created History files and cleared the Active Sheet!");
+                alert("Successfully created History file and cleared the Active Sheet!");
             } catch(e) { 
                 window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
                 alert("Error: " + e.message); 
