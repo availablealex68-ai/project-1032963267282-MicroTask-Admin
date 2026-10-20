@@ -33,10 +33,27 @@
 </head>
 <body class="flex justify-center h-screen w-full overflow-hidden relative">
 
+    <!-- GLOBAL LOADER -->
     <div id="global-loader" class="fixed inset-0 z-[200] bg-[#0f172a] flex items-center justify-center">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-spinner animate-spin text-4xl text-indigo-500 mb-3"></i>
             <p class="text-sm font-bold text-slate-400 mt-2">Connecting Database...</p>
+        </div>
+    </div>
+
+    <!-- SMART ALERT MODAL -->
+    <div id="smart-alert-modal" class="fixed inset-0 z-[500] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl w-full max-w-sm transform scale-95 transition-transform duration-300 text-center" id="smart-alert-content">
+            <div id="smart-alert-icon" class="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl"></div>
+            <h3 class="text-xl font-bold text-white mb-2" id="smart-alert-title">MicroTask Pro</h3>
+            <p class="text-sm text-slate-400 mb-6" id="smart-alert-message"></p>
+            <div id="smart-prompt-area" class="hidden mb-6">
+                <input type="text" id="smart-prompt-input" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white text-center font-bold tracking-widest uppercase" autocomplete="off">
+            </div>
+            <div class="flex gap-3 justify-center" id="smart-alert-buttons">
+                <button id="smart-btn-cancel" class="hidden flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3.5 rounded-xl transition-colors text-sm">Cancel</button>
+                <button id="smart-btn-confirm" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm">OK</button>
+            </div>
         </div>
     </div>
 
@@ -125,7 +142,6 @@
                     <span id="sheet-badge" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-5 min-w-[20px] px-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
                 </button>
                 
-                <!-- REPORT BUTTON -->
                 <button id="nav-report" onclick="window.switchAdminTab('report')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
                     <i class="fa-solid fa-clipboard-check text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-cyan-400"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Report</span>
                 </button>
@@ -149,29 +165,67 @@
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto px-6 py-6 relative pb-28">
                 
-                <!-- DASHBOARD PAGE -->
-                <section id="page-dashboard" class="admin-page active w-full max-w-3xl mx-auto">
+                <!-- DASHBOARD PAGE (SMART STATS) -->
+                <section id="page-dashboard" class="admin-page active w-full max-w-4xl mx-auto">
                     <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-chart-line mr-2 text-indigo-400"></i> Analytics Overview</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-indigo-900/30 shadow-sm flex flex-col justify-center items-center">
-                            <div class="h-12 w-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 text-xl"><i class="fa-solid fa-users"></i></div>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
-                            <p id="stat-total-users" class="font-bold text-4xl text-white mt-1 tracking-tight">0</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-indigo-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2"><i class="fa-solid fa-users"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
+                            <p id="stat-total-users" class="font-bold text-2xl text-white mt-1">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center">
-                            <div class="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 text-xl"><i class="fa-solid fa-file-excel"></i></div>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Active Submissions</p>
-                            <p id="stat-sheet-count" class="font-bold text-4xl text-white mt-1 tracking-tight">0</p>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2"><i class="fa-solid fa-user-check"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Verified Users</p>
+                            <p id="stat-verified-users" class="font-bold text-2xl text-emerald-400 mt-1">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center">
-                            <div class="h-12 w-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-3 text-xl"><i class="fa-solid fa-id-badge"></i></div>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending KYC</p>
-                            <p id="stat-kyc" class="font-bold text-4xl text-rose-400 mt-1 tracking-tight">0</p>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-2"><i class="fa-solid fa-user-xmark"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Unverified</p>
+                            <p id="stat-unverified-users" class="font-bold text-2xl text-rose-400 mt-1">0</p>
                         </div>
-                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center">
-                            <div class="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 text-xl"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending Withdraw</p>
-                            <p id="stat-withdraw" class="font-bold text-4xl text-amber-400 mt-1 tracking-tight">0</p>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-cyan-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-2"><i class="fa-solid fa-wallet"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">User Balance</p>
+                            <p id="stat-total-balance" class="font-bold text-2xl text-cyan-400 mt-1">৳0</p>
+                        </div>
+                        
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-2"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Withdrawn</p>
+                            <p id="stat-total-withdrawn" class="font-bold text-2xl text-amber-400 mt-1">৳0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2"><i class="fa-solid fa-check-double"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Approved Tasks</p>
+                            <p id="stat-approved-tasks" class="font-bold text-2xl text-emerald-400 mt-1">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-2"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pending Tasks</p>
+                            <p id="stat-pending-tasks" class="font-bold text-2xl text-amber-400 mt-1">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-2"><i class="fa-solid fa-ban"></i></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rejected Tasks</p>
+                            <p id="stat-rejected-tasks" class="font-bold text-2xl text-rose-400 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">System Queue</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('sheet')">
+                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-file-excel"></i></div><p class="text-sm font-bold text-slate-300">Active Submissions</p></div>
+                            <p id="stat-sheet-count" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('kyc')">
+                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div><p class="text-sm font-bold text-slate-300">Pending KYC</p></div>
+                            <p id="stat-kyc" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors" onclick="window.switchAdminTab('withdraw')">
+                            <div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><p class="text-sm font-bold text-slate-300">Pending Withdraw</p></div>
+                            <p id="stat-withdraw" class="font-black text-white bg-slate-700 px-2 py-1 rounded text-xs">0</p>
                         </div>
                     </div>
                 </section>
@@ -266,7 +320,7 @@
                     </div>
                 </section>
 
-                <!-- NEW REPORT PAGE -->
+                <!-- REPORT PAGE (Cross-check Live & History) -->
                 <section id="page-report" class="admin-page w-full max-w-3xl mx-auto">
                     <h2 class="font-bold text-xl mb-6 text-white flex items-center"><i class="fa-solid fa-clipboard-check mr-2 text-cyan-400"></i> Task Reports / Actions</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -275,7 +329,7 @@
                         <div class="bg-[#1e293b] p-6 rounded-3xl border border-emerald-900/50 shadow-lg">
                             <h3 class="text-emerald-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-check-circle mr-2"></i> Approve Tasks</h3>
                             <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
-                            <textarea id="approve-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 text-white resize-none mb-4 font-mono" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <textarea id="approve-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 text-white resize-none mb-4 font-mono uppercase" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
                             <button id="btn-approve" onclick="window.processReport('approve')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-check-double text-lg"></i> Approve Selected</button>
                         </div>
                         
@@ -283,7 +337,7 @@
                         <div class="bg-[#1e293b] p-6 rounded-3xl border border-rose-900/50 shadow-lg">
                             <h3 class="text-rose-400 font-bold mb-3 flex items-center text-lg"><i class="fa-solid fa-ban mr-2"></i> Reject Tasks</h3>
                             <p class="text-[11px] text-slate-400 mb-3">Paste Short Task IDs separated by comma, space or newline.</p>
-                            <textarea id="reject-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-rose-500 text-white resize-none mb-4 font-mono" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
+                            <textarea id="reject-ids" class="w-full h-36 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-rose-500 text-white resize-none mb-4 font-mono uppercase" placeholder="e.g. A1B2C3D, X9Y8Z7K..."></textarea>
                             <button id="btn-reject" onclick="window.processReport('reject')" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-trash-can text-lg"></i> Reject Selected</button>
                         </div>
 
@@ -434,12 +488,10 @@
                     <input type="text" id="edit-task-password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                 </div>
 
-                <!-- SMARTER Edit Format Builder -->
                 <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700 border-dashed">
                     <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-3 block flex items-center">
                         <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns (Strict Order)
                     </label>
-                    
                     <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">1. Click to Quick Add:</p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         <button type="button" onclick="window.addEditFormatTag('Username')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Username</button>
@@ -450,16 +502,13 @@
                         <button type="button" onclick="window.addEditFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
                         <button type="button" onclick="window.addEditFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded text-xs transition-colors border border-slate-700"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
                     </div>
-
                     <p class="text-[9px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
                     <div class="flex gap-2 mb-4">
                         <input type="text" id="edit-custom-format-input" placeholder="e.g. Profile Link..." class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none text-white">
                         <button type="button" onclick="window.addEditCustomFormatTag()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-xs font-bold transition-colors">Add</button>
                     </div>
-
                     <p class="text-[9px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-3"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
                     <div id="edit-format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-1">
-                        <!-- Edit tags injected here -->
                     </div>
                 </div>
             </div>
@@ -469,8 +518,76 @@
 
     <!-- UI Scripts for Admin & Dynamic Forms -->
     <script>
-        // সিকিউরিটি ইমেইল (আপনার আসল অ্যাডমিন ইমেইল দিন)
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
+
+        // SMART ALERT SYSTEM
+        window.smartAlert = (msg, type = 'info') => {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('smart-alert-modal');
+                const content = document.getElementById('smart-alert-content');
+                const icon = document.getElementById('smart-alert-icon');
+                const title = document.getElementById('smart-alert-title');
+                const message = document.getElementById('smart-alert-message');
+                const promptArea = document.getElementById('smart-prompt-area');
+                const input = document.getElementById('smart-prompt-input');
+                const btnCancel = document.getElementById('smart-btn-cancel');
+                const btnConfirm = document.getElementById('smart-btn-confirm');
+
+                promptArea.classList.add('hidden');
+                btnCancel.classList.add('hidden');
+                input.value = '';
+
+                if (type === 'success') {
+                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-emerald-500/20 text-emerald-400';
+                    icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    btnConfirm.className = 'flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                } else if (type === 'error') {
+                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-rose-500/20 text-rose-400';
+                    icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    btnConfirm.className = 'flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                } else if (type === 'warning' || type === 'confirm' || type === 'prompt') {
+                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-amber-500/20 text-amber-400';
+                    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    btnConfirm.className = 'flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                    btnCancel.classList.remove('hidden');
+                } else {
+                    icon.className = 'mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center text-3xl bg-indigo-500/20 text-indigo-400';
+                    icon.innerHTML = '<i class="fa-solid fa-bell"></i>';
+                    btnConfirm.className = 'flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors text-sm';
+                }
+
+                title.innerText = 'MicroTask Pro';
+                message.innerText = msg;
+
+                let expectedValue = null;
+                if(type === 'prompt') {
+                    promptArea.classList.remove('hidden');
+                    expectedValue = 'DELETE ALL'; 
+                    input.placeholder = "Type 'DELETE ALL'";
+                }
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                content.classList.remove('scale-95');
+
+                const cleanup = () => {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    content.classList.add('scale-95');
+                    btnConfirm.onclick = null;
+                    btnCancel.onclick = null;
+                };
+
+                btnConfirm.onclick = () => {
+                    cleanup();
+                    if(type === 'prompt') { resolve(input.value === expectedValue); } 
+                    else { resolve(true); }
+                };
+
+                btnCancel.onclick = () => {
+                    cleanup();
+                    resolve(false);
+                };
+            });
+        }
 
         window.togglePassword = () => {
             const passInput = document.getElementById('admin-password'), icon = document.getElementById('toggle-password-icon');
@@ -479,10 +596,7 @@
         }
 
         window.switchAdminTab = (tabId) => {
-            document.querySelectorAll('.admin-page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
+            document.querySelectorAll('.admin-page').forEach(page => { page.classList.remove('active'); });
             const targetPage = document.getElementById('page-' + tabId);
             if(targetPage) { targetPage.classList.add('active'); }
             
@@ -490,7 +604,6 @@
                 item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]', 'bg-slate-800/50');
                 item.classList.add('text-slate-400', 'border-transparent');
             });
-            
             const activeBtn = document.getElementById('nav-' + tabId);
             if(activeBtn) {
                 activeBtn.classList.remove('text-slate-400', 'border-transparent');
@@ -541,34 +654,20 @@
         }
 
         window.addFormatTag = (val) => {
-            if(!window.taskFormatArray.includes(val)) { 
-                window.taskFormatArray.push(val); 
-                window.renderFormatTags('format-tags-container', window.taskFormatArray); 
-            }
+            if(!window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
         }
         window.addCustomFormatTag = () => {
             const val = document.getElementById('custom-format-input').value.trim();
-            if(val && !window.taskFormatArray.includes(val)) { 
-                window.taskFormatArray.push(val); 
-                window.renderFormatTags('format-tags-container', window.taskFormatArray); 
-                document.getElementById('custom-format-input').value = '';
-            }
+            if(val && !window.taskFormatArray.includes(val)) { window.taskFormatArray.push(val); window.renderFormatTags('format-tags-container', window.taskFormatArray); document.getElementById('custom-format-input').value = ''; }
         }
         window.removeFormatTag = (index) => { window.taskFormatArray.splice(index, 1); window.renderFormatTags('format-tags-container', window.taskFormatArray); }
 
         window.addEditFormatTag = (val) => {
-            if(!window.editFormatArray.includes(val)) { 
-                window.editFormatArray.push(val); 
-                window.renderFormatTags('edit-format-tags-container', window.editFormatArray); 
-            }
+            if(!window.editFormatArray.includes(val)) { window.editFormatArray.push(val); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
         }
         window.addEditCustomFormatTag = () => {
             const val = document.getElementById('edit-custom-format-input').value.trim();
-            if(val && !window.editFormatArray.includes(val)) { 
-                window.editFormatArray.push(val); 
-                window.renderFormatTags('edit-format-tags-container', window.editFormatArray); 
-                document.getElementById('edit-custom-format-input').value = '';
-            }
+            if(val && !window.editFormatArray.includes(val)) { window.editFormatArray.push(val); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); document.getElementById('edit-custom-format-input').value = ''; }
         }
         window.removeEditFormatTag = (index) => { window.editFormatArray.splice(index, 1); window.renderFormatTags('edit-format-tags-container', window.editFormatArray); }
 
@@ -620,7 +719,6 @@
                 return;
             }
 
-            // Extract EXACT headers order from Admin setup
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             
             let headHTML = '';
@@ -637,7 +735,6 @@
                 bodyHTML += `<tr class="border-b border-slate-800/50">`;
                 headers.forEach(h => {
                     let val = '-';
-                    // Auto-inject Password if column requires it
                     if (h.toLowerCase() === 'password') {
                         val = task.password || '-';
                     } else if (sub.submissionData && sub.submissionData[h] !== undefined) {
@@ -646,7 +743,6 @@
                     bodyHTML += `<td><div class="max-w-[200px] truncate select-all" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
                 });
                 
-                // Smart Short Task ID (7 Chars)
                 const shortId = sub.id.substring(0, 7).toUpperCase();
                 bodyHTML += `<td><span class="text-[10px] text-indigo-400 bg-indigo-900/20 px-2 py-0.5 rounded font-mono select-all">${shortId}</span></td>`;
                 bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
@@ -655,17 +751,16 @@
             tbody.innerHTML = bodyHTML;
         }
 
-        window.downloadCSV = () => {
+        window.downloadCSV = async () => {
             const filterId = document.getElementById('sheet-task-filter').value;
-            if(!filterId) return alert("Please select a specific task to download CSV.");
+            if(!filterId) return await window.smartAlert("Please select a specific task to download CSV.", "warning");
             
             let submissions = window.allSubmissionsData.filter(s => s.taskId === filterId);
-            if(submissions.length === 0) return alert("Sheet is empty for this task!");
+            if(submissions.length === 0) return await window.smartAlert("Sheet is empty for this task!", "warning");
             
             const task = window.allTasksData.find(t => t.id === filterId);
             const taskName = task ? task.title.replace(/ /g, '_') : "Unknown_Task";
             
-            // Extract EXACT headers
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             let csvHeaders = [...headers, "Task ID"];
             let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
@@ -679,8 +774,7 @@
                 });
                 
                 const shortId = sub.id.substring(0, 7).toUpperCase();
-                row.push(`"${shortId}"`); // Append Task ID
-                
+                row.push(`"${shortId}"`); 
                 csvContent += row.join(",") + "\n";
             });
 
@@ -691,14 +785,12 @@
             document.body.appendChild(link); link.click(); link.remove();
         }
 
-        window.downloadHistoryCSV = (historyId) => {
+        window.downloadHistoryCSV = async (historyId) => {
             const history = window.allHistoryData.find(h => h.id === historyId);
-            if(!history || !history.submissions || history.submissions.length === 0) return alert("No data available.");
+            if(!history || !history.submissions || history.submissions.length === 0) return await window.smartAlert("No data available.", "warning");
             
-            // Use saved format from history
             let headers = history.formatArray && history.formatArray.length > 0 ? history.formatArray : [];
             let csvHeaders = [...headers, "Task ID"];
-            
             let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
             
             history.submissions.forEach(sub => {
@@ -740,7 +832,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Auto Logout FIX: Ensure browser persistence
+        // Auto Logout FIX
         setPersistence(auth, browserLocalPersistence).catch(console.error);
 
         onAuthStateChanged(auth, async (user) => {
@@ -756,10 +848,10 @@
                     window.switchAdminTab('dashboard');
                     loadDatabaseLive();
                 } catch (error) {
-                    auth.signOut().then(() => {
+                    auth.signOut().then(async () => {
                         document.getElementById('global-loader').style.display = 'none';
                         document.getElementById('auth-container').style.display = 'flex';
-                        alert("Access Denied! You are not authorized by the Database Security Rules.");
+                        await window.smartAlert("Access Denied! You are not authorized by Database Security Rules.", "error");
                     });
                 }
             } else {
@@ -769,18 +861,21 @@
             }
         });
 
-        window.logoutAdmin = () => { signOut(auth).then(() => { window.location.reload(); }); };
+        window.logoutAdmin = async () => { 
+            const confirmed = await window.smartAlert("Are you sure you want to log out?", "confirm");
+            if(confirmed) { signOut(auth).then(() => { window.location.reload(); }); }
+        };
 
         window.loginAdmin = () => {
             const email = document.getElementById('admin-email').value.trim(), password = document.getElementById('admin-password').value.trim();
-            if(!email || !password) return alert("Enter admin email and password!");
+            if(!email || !password) return window.smartAlert("Enter admin email and password!", "warning");
             
-            if(email !== AUTHORIZED_ADMIN_EMAIL) return alert("Access Denied! Unauthorized Email Address.");
+            if(email !== AUTHORIZED_ADMIN_EMAIL) return window.smartAlert("Access Denied! Unauthorized Email Address.", "error");
             
             window.setButtonLoading('btn-admin-login', true, 'Verifying...', 'fa-solid fa-spinner');
-            signInWithEmailAndPassword(auth, email, password).catch((error) => {
+            signInWithEmailAndPassword(auth, email, password).catch(async (error) => {
                 window.setButtonLoading('btn-admin-login', false, 'Secure Login', 'fa-solid fa-right-to-bracket');
-                alert("Login Failed: Incorrect credentials.");
+                await window.smartAlert("Login Failed: Incorrect credentials.", "error");
             });
         };
 
@@ -817,15 +912,34 @@
 
         function loadDatabaseLive() {
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
-                if(docSnap.exists()) {
-                    document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true;
-                }
+                if(docSnap.exists()) { document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true; }
             });
 
             onSnapshot(collection(db, "users"), (snapshot) => {
                 window.allUsersData = [];
-                snapshot.forEach(docSnap => { window.allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
-                document.getElementById('stat-total-users').innerText = window.allUsersData.length;
+                let tUser=0, tVer=0, tUnver=0, tBal=0, tWith=0, tAppr=0, tPend=0, tRej=0;
+                
+                snapshot.forEach(docSnap => { 
+                    const u = docSnap.data();
+                    window.allUsersData.push({id: docSnap.id, ...u}); 
+                    tUser++;
+                    if(u.kycVerified || u.kycStatus === 'verified') tVer++; else tUnver++;
+                    tBal += (u.balance || 0);
+                    tWith += (u.totalWithdrawn || 0);
+                    tAppr += (u.approvedTasks || 0);
+                    tPend += (u.pendingTasks || 0);
+                    tRej += (u.rejectedTasks || 0);
+                });
+                
+                document.getElementById('stat-total-users').innerText = tUser;
+                document.getElementById('stat-verified-users').innerText = tVer;
+                document.getElementById('stat-unverified-users').innerText = tUnver;
+                document.getElementById('stat-total-balance').innerText = "৳" + tBal;
+                document.getElementById('stat-total-withdrawn').innerText = "৳" + tWith;
+                document.getElementById('stat-approved-tasks').innerText = tAppr;
+                document.getElementById('stat-pending-tasks').innerText = tPend;
+                document.getElementById('stat-rejected-tasks').innerText = tRej;
+                
                 window.filterUsers(); 
             });
 
@@ -843,7 +957,6 @@
                 }
             });
 
-            // TASKS LIVE (Updates Filter Dropdown Dynamically)
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 const filterEl = document.getElementById('sheet-task-filter');
@@ -854,19 +967,15 @@
                 
                 if(snapshot.empty) { 
                     if(list) list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; 
-                    const statTasks = document.getElementById('stat-tasks');
-                    if(statTasks) statTasks.innerText = "0";
                     if(filterEl) filterEl.innerHTML = filterHtml;
                 } 
                 else {
                     let html = '';
-                    let validCount = 0;
                     snapshot.forEach((docSnap) => {
                         try {
                             const data = docSnap.data();
                             data.id = docSnap.id;
                             window.allTasksData.push(data);
-                            validCount++;
                             
                             filterHtml += `<option value="${data.id}">${data.title || 'Untitled Task'}</option>`;
                             
@@ -880,9 +989,6 @@
                     }); 
                     if(list) list.innerHTML = html;
                     
-                    const statTasks = document.getElementById('stat-tasks');
-                    if(statTasks) statTasks.innerText = validCount.toString();
-                    
                     if(filterEl) {
                         filterEl.innerHTML = filterHtml;
                         if(window.allTasksData.some(t => t.id === currentFilterVal)) filterEl.value = currentFilterVal;
@@ -891,7 +997,6 @@
                 window.renderSheetTable();
             });
 
-            // TASK SUBMISSIONS (SHEET)
             onSnapshot(query(collection(db, "task_submissions"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allSubmissionsData = [];
                 snapshot.forEach(docSnap => { window.allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
@@ -900,7 +1005,6 @@
                 window.renderSheetTable();
             });
 
-            // SHEET HISTORY
             onSnapshot(query(collection(db, "sheet_history"), orderBy("createdAt", "desc")), (snapshot) => {
                 window.allHistoryData = [];
                 const list = document.getElementById('sheet-history-list');
@@ -974,8 +1078,6 @@
                         html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
-                const statPayments = document.getElementById('stat-payments');
-                if(statPayments) statPayments.innerText = activeCount;
             });
         }
 
@@ -989,17 +1091,18 @@
                 const snap = await getDoc(docRef); 
                 if(snap.exists()){ await updateDoc(docRef, { tasksEnabled: status }); } 
                 else { await setDoc(docRef, { tasksEnabled: status }); }
-            } catch(e) { alert("Error changing global settings! " + e.message); document.getElementById('global-task-toggle').checked = !status; }
+            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); document.getElementById('global-task-toggle').checked = !status; }
         }
 
         window.toggleBanUserDB = async (uid, status) => {
-            if(!confirm(`Are you sure you want to ${status ? 'BAN' : 'UNBAN'} this user?`)) return;
-            try { await updateDoc(doc(db, "users", uid), { isBanned: status }); } catch(e) { alert("Error: " + e.message); }
+            const confirmed = await window.smartAlert(`Are you sure you want to ${status ? 'BAN' : 'UNBAN'} this user?`, "confirm");
+            if(!confirmed) return;
+            try { await updateDoc(doc(db, "users", uid), { isBanned: status }); } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
         window.addTaskDB = async () => {
             const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value, password = document.getElementById('task-password').value;
-            if(!title || !desc || !reward || !password || window.taskFormatArray.length === 0) return alert("Fill all fields and add at least one format!");
+            if(!title || !desc || !reward || !password || window.taskFormatArray.length === 0) return await window.smartAlert("Fill all fields and add at least one format!", "warning");
             
             try { 
                 await addDoc(collection(db, "tasks"), { 
@@ -1007,35 +1110,35 @@
                     formatArray: window.taskFormatArray,
                     createdAt: serverTimestamp() 
                 }); 
-                alert("Task Added Live!"); 
+                await window.smartAlert("Task Added Live!", "success");
                 document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; document.getElementById('task-password').value='';
                 window.taskFormatArray = ['Username', 'Password', 'UID', '2FA', 'Cookies']; 
                 window.renderFormatTags('format-tags-container', window.taskFormatArray);
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
         window.saveEditTaskDB = async () => {
             if(!window.editingTaskId) return;
             const title = document.getElementById('edit-task-title').value, desc = document.getElementById('edit-task-desc').value, reward = document.getElementById('edit-task-reward').value, platform = document.getElementById('edit-task-platform').value, password = document.getElementById('edit-task-password').value;
-            if(!title || !desc || !reward || !password || window.editFormatArray.length === 0) return alert("Fill all fields and add at least one sheet format!");
+            if(!title || !desc || !reward || !password || window.editFormatArray.length === 0) return await window.smartAlert("Fill all fields and add at least one sheet format!", "warning");
             
             try {
                 await updateDoc(doc(db, "tasks", window.editingTaskId), {
                     title, desc, reward: Number(reward), platform, password,
                     formatArray: window.editFormatArray
                 });
-                alert("Task Updated Successfully!");
+                await window.smartAlert("Task Updated Successfully!", "success");
                 window.closeEditTask();
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
         // ==========================================
-        // REPORT SYSTEM (APPROVE / REJECT)
+        // SMART REPORT SYSTEM (APPROVE / REJECT)
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
             const idsRaw = inputEl.value;
-            if(!idsRaw.trim()) return alert("Please paste at least one Task ID.");
+            if(!idsRaw.trim()) return await window.smartAlert("Please paste at least one Task ID.", "warning");
 
             const shortIds = idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0);
             if(shortIds.length === 0) return;
@@ -1047,10 +1150,26 @@
                 let processedCount = 0;
 
                 for (const shortId of shortIds) {
-                    const sub = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
+                    // Check Live Submissions
+                    let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
+                    let foundInHistory = null;
+                    let historyDocId = null;
+
+                    // If not in live, check History
+                    if (!foundInLive) {
+                        for (const h of window.allHistoryData) {
+                            const match = h.submissions.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
+                            if (match) {
+                                foundInHistory = match;
+                                historyDocId = h.id;
+                                break;
+                            }
+                        }
+                    }
+
+                    let sub = foundInLive || foundInHistory;
                     
                     if (sub) {
-                        const taskRef = doc(db, "task_submissions", sub.id);
                         const userRef = doc(db, "users", sub.uid);
                         const taskObj = window.allTasksData.find(t => t.id === sub.taskId);
 
@@ -1070,7 +1189,10 @@
                                 createdAt: serverTimestamp()
                             });
                         } else {
-                            batch.update(userRef, { pendingTasks: increment(-1) });
+                            batch.update(userRef, { 
+                                pendingTasks: increment(-1),
+                                rejectedTasks: increment(1)
+                            });
                             const noticeRef = doc(collection(db, "notices"));
                             batch.set(noticeRef, {
                                 title: "Task Rejected 🔴",
@@ -1080,31 +1202,48 @@
                             });
                         }
                         
-                        batch.delete(taskRef);
+                        // Delete logic
+                        if(foundInLive) {
+                            batch.delete(doc(db, "task_submissions", sub.id));
+                        } else if(foundInHistory) {
+                            const hRef = doc(db, "sheet_history", historyDocId);
+                            const hData = window.allHistoryData.find(h => h.id === historyDocId);
+                            const updatedSubs = hData.submissions.filter(s => s.id !== sub.id);
+                            if(updatedSubs.length === 0) {
+                                batch.delete(hRef);
+                            } else {
+                                batch.update(hRef, {
+                                    submissions: updatedSubs,
+                                    recordCount: updatedSubs.length
+                                });
+                            }
+                        }
                         processedCount++;
                     }
                 }
 
                 if(processedCount > 0) {
                     await batch.commit();
-                    alert(`Successfully ${action}d ${processedCount} tasks!`);
+                    await window.smartAlert(`Successfully ${action}d ${processedCount} tasks!`, "success");
                     inputEl.value = '';
                 } else {
-                    alert("No matching Active Task IDs found. Make sure you pasted valid IDs from Active Submissions.");
+                    await window.smartAlert("No matching Task IDs found. Check if the ID is correct.", "error");
                 }
-            } catch (e) { alert("Error processing: " + e.message); }
+            } catch (e) { await window.smartAlert("Error processing: " + e.message, "error"); }
             
             window.setButtonLoading(`btn-${action}`, false, action === 'approve' ? 'Approve Selected' : 'Reject Selected', action === 'approve' ? 'fa-solid fa-check-double' : 'fa-solid fa-trash-can');
         }
 
         window.completeTodaySheet = async () => {
             const filterId = document.getElementById('sheet-task-filter').value;
-            if(!filterId) return alert("Please select a specific task from the dropdown first.");
+            if(!filterId) return await window.smartAlert("Please select a specific task from the dropdown first.", "warning");
             
             let submissions = window.allSubmissionsData.filter(s => s.taskId === filterId);
-            if(submissions.length === 0) return alert("No active submissions to complete for this selection.");
+            if(submissions.length === 0) return await window.smartAlert("No active submissions to complete for this selection.", "warning");
             
-            if(!confirm(`Group ${submissions.length} submissions and move them to History?`)) return;
+            const confirmed = await window.smartAlert(`Group ${submissions.length} submissions and move them to History?`, "confirm");
+            if(!confirmed) return;
+
             window.setButtonLoading('btn-complete-today', true, 'Completing...', 'fa-solid fa-spinner');
             
             try {
@@ -1146,52 +1285,61 @@
                 
                 await batch.commit();
                 window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
-                alert("Successfully created History file and cleared the Active Sheet!");
+                await window.smartAlert("Successfully created History file and cleared the Active Sheet!", "success");
             } catch(e) { 
                 window.setButtonLoading('btn-complete-today', false, 'Complete Today', 'fa-solid fa-check-double');
-                alert("Error: " + e.message); 
+                await window.smartAlert("Error: " + e.message, "error"); 
             }
         }
 
         window.deleteAllHistory = async () => {
-            if(window.allHistoryData.length === 0) return alert("History is already empty!");
-            const authPass = prompt("Type 'DELETE ALL' to confirm clearing all history:");
-            if(authPass !== 'DELETE ALL') return alert("Action Cancelled.");
+            if(window.allHistoryData.length === 0) return await window.smartAlert("History is already empty!", "warning");
+            
+            const confirmed = await window.smartAlert("Type 'DELETE ALL' below to clear all history forever:", "prompt");
+            if(!confirmed) return await window.smartAlert("Action Cancelled.", "info");
             
             try {
                 const batch = writeBatch(db);
                 window.allHistoryData.forEach(h => { batch.delete(doc(db, "sheet_history", h.id)); });
                 await batch.commit();
-                alert("All history files deleted successfully.");
-            } catch(e) { alert("Error deleting history: " + e.message); }
+                await window.smartAlert("All history files deleted successfully.", "success");
+            } catch(e) { await window.smartAlert("Error deleting history: " + e.message, "error"); }
         }
 
         window.addNoticeDB = async () => {
             const title = document.getElementById('notice-title').value, msg = document.getElementById('notice-msg').value, theme = document.getElementById('notice-theme').value;
-            if(!title || !msg) return alert("Fill all fields!");
-            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Broadcasted!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
-            catch(e) { alert("Error: " + e.message); }
+            if(!title || !msg) return await window.smartAlert("Fill all fields!", "warning");
+            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); await window.smartAlert("Notice Broadcasted!", "success"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
+            catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
         window.addPaymentMethodDB = async () => {
             const name = document.getElementById('pay-method-name').value.trim();
-            if(!name) return alert("Enter method name!");
+            if(!name) return await window.smartAlert("Enter method name!", "warning");
             try { await addDoc(collection(db, "payment_methods"), { name, isActive: true }); document.getElementById('pay-method-name').value=''; } 
-            catch(e) { alert("Error: " + e.message); }
+            catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
         }
 
-        window.togglePaymentDB = async (docId, newStatus) => { try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { alert("Error: " + e.message); } }
-        window.deleteDocDB = async (colName, docId) => { if(!confirm("Are you sure you want to delete this?")) return; try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); } }
+        window.togglePaymentDB = async (docId, newStatus) => { try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { await window.smartAlert("Error: " + e.message, "error"); } }
+        
+        window.deleteDocDB = async (colName, docId) => { 
+            const confirmed = await window.smartAlert("Are you sure you want to delete this?", "confirm");
+            if(!confirmed) return; 
+            try { await deleteDoc(doc(db, colName, docId)); } catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
+        }
         
         window.approveKycDB = async (uid, reqId) => { 
-            try { await updateDoc(doc(db, "users", uid), { kycVerified: true, kycStatus: "verified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); alert("KYC Approved!"); } 
-            catch(e) { alert("Error: " + e.message); } 
+            try { await updateDoc(doc(db, "users", uid), { kycVerified: true, kycStatus: "verified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); await window.smartAlert("KYC Approved!", "success"); } 
+            catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
         window.rejectKycDB = async (uid, reqId) => { 
-            try { await updateDoc(doc(db, "users", uid), { kycStatus: "unverified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); alert("KYC Rejected!"); } 
-            catch(e) { alert("Error: " + e.message); } 
+            try { await updateDoc(doc(db, "users", uid), { kycStatus: "unverified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); await window.smartAlert("KYC Rejected!", "success"); } 
+            catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
-        window.approveWithdrawDB = async (docId) => { try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); alert("Withdrawal marked as Paid!"); } catch(e) { alert("Error: " + e.message); } }
+        window.approveWithdrawDB = async (docId) => { 
+            try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); await window.smartAlert("Withdrawal marked as Paid!", "success"); } 
+            catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
+        }
     </script>
 </body>
 </html>
