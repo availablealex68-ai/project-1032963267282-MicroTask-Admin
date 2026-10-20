@@ -20,6 +20,17 @@
         
         .admin-page { display: none; }
         .admin-page.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
+        
+        /* Table Styles for Sheet */
+        table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+        th, td { border: 1px solid #334155; padding: 12px 16px; text-align: left; font-size: 12px; }
+        th { background-color: #0f172a; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:hover { background-color: #0f172a; }
+        
+        /* Tag Input Styles */
+        .format-tag { display: inline-flex; items-center; background-color: #4f46e5; color: white; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: bold; margin: 2px; }
+        .format-tag span { cursor: pointer; margin-left: 6px; color: #cbd5e1; }
+        .format-tag span:hover { color: #f87171; }
     </style>
 </head>
 <body class="flex justify-center h-screen w-full overflow-hidden relative">
@@ -57,7 +68,6 @@
                     <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 focus-within:border-indigo-500 transition-colors">
                         <i class="fa-solid fa-lock text-slate-500 w-6"></i>
                         <input type="password" id="admin-password" autocomplete="new-password" placeholder="••••••••" class="w-full bg-transparent text-sm focus:outline-none text-white placeholder-slate-600 ml-2 pr-8">
-                        <!-- Password Eye Toggle Icon -->
                         <i id="toggle-password-icon" class="fa-solid fa-eye-slash text-slate-500 absolute right-4 cursor-pointer hover:text-indigo-400 transition-colors" onclick="togglePassword()"></i>
                     </div>
                 </div>
@@ -71,7 +81,7 @@
     <!-- ========================================== -->
     <!-- 2. MAIN ADMIN DASHBOARD -->
     <!-- ========================================== -->
-    <div id="admin-app-container" class="w-full max-w-md h-full relative flex flex-col hidden bg-[#0f172a]">
+    <div id="admin-app-container" class="w-full max-w-[1200px] h-full relative flex flex-col hidden bg-[#0f172a] mx-auto border-x border-slate-800">
         
         <input type="text" style="display:none" autocomplete="username">
         <input type="password" style="display:none" autocomplete="current-password">
@@ -79,189 +89,288 @@
         <!-- Header -->
         <header class="p-5 flex justify-between items-center z-10 border-b border-slate-800 bg-[#1e293b]">
             <div class="flex items-center gap-3">
-                <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400"><i class="fa-solid fa-user-shield"></i></div>
-                <div><h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1><p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p></div>
+                <div class="h-10 w-10 bg-indigo-600/20 border border-indigo-500/50 rounded-lg flex items-center justify-center text-indigo-400"><i class="fa-solid fa-user-shield text-lg"></i></div>
+                <div>
+                    <h1 class="text-sm font-bold text-white leading-tight">Admin Control</h1>
+                    <div class="flex items-center gap-2">
+                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Database Live</p>
+                        <!-- Global Task ON/OFF Toggle -->
+                        <label class="flex items-center cursor-pointer ml-3 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
+                            <span class="text-[9px] font-bold text-slate-300 mr-1.5 uppercase">Tasks</span>
+                            <div class="relative">
+                                <input type="checkbox" id="global-task-toggle" class="sr-only" onchange="toggleGlobalTasks(this.checked)">
+                                <div class="block bg-slate-600 w-6 h-3.5 rounded-full toggle-bg transition-colors duration-300"></div>
+                                <div class="dot absolute left-[2px] top-[2px] bg-white w-2.5 h-2.5 rounded-full transition transform duration-300"></div>
+                            </div>
+                        </label>
+                        <style>
+                            input:checked ~ .toggle-bg { background-color: #10b981; }
+                            input:checked ~ .dot { transform: translateX(10px); }
+                        </style>
+                    </div>
+                </div>
             </div>
-            <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
+            <button onclick="logoutAdmin()" class="h-9 px-3 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-xs font-bold hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-power-off mr-1"></i> Logout</button>
         </header>
 
-        <!-- Dynamic Grid Buttons -->
-        <div class="grid grid-cols-3 gap-3 p-4 bg-[#1e293b] border-b border-slate-800 shadow-md z-10 rounded-b-3xl">
-            <button id="nav-dashboard" onclick="switchAdminTab('dashboard')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all active:scale-95">
-                <i class="fa-solid fa-chart-pie mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Dash</span>
-            </button>
-            <button id="nav-users" onclick="switchAdminTab('users')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
-                <i class="fa-solid fa-users mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Users</span>
-            </button>
-            <button id="nav-tasks" onclick="switchAdminTab('tasks')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
-                <i class="fa-solid fa-briefcase mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Tasks</span>
-            </button>
-            <button id="nav-kyc" onclick="switchAdminTab('kyc')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 relative">
-                <i class="fa-solid fa-id-card mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">KYC</span>
-                <span id="kyc-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-rose-500 border-2 border-[#0f172a] rounded-full"></span>
-            </button>
-            <button id="nav-withdraw" onclick="switchAdminTab('withdraw')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 relative">
-                <i class="fa-solid fa-money-bill-transfer mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Withdraw</span>
-                <span id="withdraw-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-amber-500 border-2 border-[#0f172a] rounded-full"></span>
-            </button>
-            <button id="nav-notices" onclick="switchAdminTab('notices')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95">
-                <i class="fa-solid fa-bell mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Notice</span>
-            </button>
-            <button id="nav-payments" onclick="switchAdminTab('payments')" class="admin-nav-item flex flex-col items-center justify-center py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-slate-400 transition-all active:scale-95 col-span-3">
-                <i class="fa-solid fa-wallet mb-1 text-lg"></i><span class="text-[10px] font-bold uppercase tracking-wider">Payments Config</span>
-            </button>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar Navigation -->
+            <nav class="w-20 md:w-48 shrink-0 bg-[#1e293b] border-r border-slate-800 flex flex-col py-4 gap-2 overflow-y-auto">
+                <button id="nav-dashboard" onclick="switchAdminTab('dashboard')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-indigo-400 bg-indigo-500/10 border border-indigo-500/50 shadow-[0_0_10px_rgba(99,102,241,0.2)] transition-all">
+                    <i class="fa-solid fa-chart-pie text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Dash</span>
+                </button>
+                <button id="nav-users" onclick="switchAdminTab('users')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
+                    <i class="fa-solid fa-users text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Users</span>
+                </button>
+                <button id="nav-tasks" onclick="switchAdminTab('tasks')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
+                    <i class="fa-solid fa-briefcase text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Tasks</span>
+                </button>
+                <button id="nav-sheet" onclick="switchAdminTab('sheet')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
+                    <i class="fa-solid fa-file-excel text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center text-emerald-500"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Sheet</span>
+                    <span id="sheet-badge" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-5 min-w-[20px] px-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button id="nav-kyc" onclick="switchAdminTab('kyc')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
+                    <i class="fa-solid fa-id-card text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">KYC</span>
+                    <span id="kyc-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                </button>
+                <button id="nav-withdraw" onclick="switchAdminTab('withdraw')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all relative">
+                    <i class="fa-solid fa-money-bill-transfer text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Withdraw</span>
+                    <span id="withdraw-badge" class="hidden absolute top-2 right-2 md:relative md:top-auto md:right-auto md:ml-auto h-2.5 w-2.5 md:h-5 md:w-auto md:min-w-[20px] md:px-1 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                </button>
+                <button id="nav-notices" onclick="switchAdminTab('notices')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all">
+                    <i class="fa-solid fa-bell text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Notice</span>
+                </button>
+                <button id="nav-payments" onclick="switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-4 py-3 mx-2 rounded-xl text-slate-400 hover:bg-slate-800/50 border border-transparent transition-all mt-auto border-t border-slate-700 pt-4">
+                    <i class="fa-solid fa-wallet text-lg md:mr-3 mb-1 md:mb-0 w-6 text-center"></i><span class="text-[10px] md:text-sm font-bold md:font-semibold uppercase md:capitalize tracking-wider md:tracking-normal">Payments</span>
+                </button>
+            </nav>
+
+            <main class="flex-1 overflow-y-auto px-6 py-6 relative">
+                
+                <!-- DASHBOARD PAGE -->
+                <section id="page-dashboard" class="admin-page active w-full max-w-2xl mx-auto">
+                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-chart-line mr-2 text-indigo-400"></i> Analytics Overview</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-indigo-900/30 shadow-sm flex flex-col justify-center items-center">
+                            <div class="h-12 w-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 text-xl"><i class="fa-solid fa-users"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Users</p>
+                            <p id="stat-total-users" class="font-bold text-4xl text-white mt-1 tracking-tight">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-emerald-900/30 shadow-sm flex flex-col justify-center items-center">
+                            <div class="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 text-xl"><i class="fa-solid fa-file-excel"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Total Submissions</p>
+                            <p id="stat-sheet-count" class="font-bold text-4xl text-white mt-1 tracking-tight">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-rose-900/30 shadow-sm flex flex-col justify-center items-center">
+                            <div class="h-12 w-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 mb-3 text-xl"><i class="fa-solid fa-id-badge"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending KYC</p>
+                            <p id="stat-kyc" class="font-bold text-4xl text-rose-400 mt-1 tracking-tight">0</p>
+                        </div>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-amber-900/30 shadow-sm flex flex-col justify-center items-center">
+                            <div class="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 text-xl"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Pending Withdraw</p>
+                            <p id="stat-withdraw" class="font-bold text-4xl text-amber-400 mt-1 tracking-tight">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- USERS MANAGEMENT PAGE -->
+                <section id="page-users" class="admin-page w-full max-w-3xl mx-auto">
+                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-users-gear mr-2 text-indigo-400"></i> Manage Users</h2>
+                    <div class="relative mb-5">
+                        <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-500"></i>
+                        <input type="text" id="search-user" oninput="filterUsers()" placeholder="Search by email or name..." class="w-full bg-[#1e293b] border border-slate-700 text-sm rounded-xl pl-10 pr-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-sm">
+                    </div>
+                    <div id="admin-user-list" class="space-y-3">
+                        <p class="text-sm text-slate-500 text-center mt-10"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading users...</p>
+                    </div>
+                </section>
+
+                <!-- TASKS MANAGEMENT PAGE -->
+                <section id="page-tasks" class="admin-page w-full max-w-2xl mx-auto">
+                    <div class="bg-[#1e293b] p-5 rounded-3xl border border-slate-700 shadow-lg mb-8">
+                        <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-3 flex items-center"><i class="fa-solid fa-plus-circle mr-2 text-emerald-500"></i> Create New Task</h2>
+                        <form autocomplete="off" onsubmit="event.preventDefault();">
+                            <div class="space-y-4 mb-5">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Title</label>
+                                    <input type="text" id="task-title" autocomplete="new-password" placeholder="e.g. FB Account Create" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Task Instructions</label>
+                                    <textarea id="task-desc" autocomplete="new-password" placeholder="Write detailed instructions..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                                </div>
+                                
+                                <div class="flex gap-4">
+                                    <div class="w-1/2">
+                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Reward (৳)</label>
+                                        <input type="number" id="task-reward" autocomplete="new-password" placeholder="Amount" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                    </div>
+                                    <div class="w-1/2">
+                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Platform</label>
+                                        <select id="task-platform" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                            <option value="facebook">Facebook</option>
+                                            <option value="youtube">YouTube</option>
+                                            <option value="instagram">Instagram</option>
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="twitter">Twitter / X</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Default Password to Copy</label>
+                                    <input type="text" id="task-password" autocomplete="new-password" placeholder="Pass@123..." class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                </div>
+
+                                <!-- Dynamic Format Builder -->
+                                <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700 border-dashed">
+                                    <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-2 block flex items-center justify-between">
+                                        <span><i class="fa-solid fa-table-columns mr-1"></i> Submissions Format (Sheet Columns)</span>
+                                    </label>
+                                    
+                                    <div id="format-tags-container" class="flex flex-wrap gap-1 min-h-[32px] p-2 bg-[#1e293b] rounded-lg border border-slate-700 mb-3">
+                                        <!-- Default formats -->
+                                    </div>
+                                    
+                                    <div class="flex gap-2">
+                                        <select id="format-selector" class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none text-slate-300">
+                                            <option value="UID">Facebook UID</option>
+                                            <option value="Username">Username</option>
+                                            <option value="Email">Email</option>
+                                            <option value="Password">Password</option>
+                                            <option value="2FA">2FA Key</option>
+                                            <option value="Cookies">Cookies Array</option>
+                                            <option value="Full Name">Full Name</option>
+                                            <option value="Phone">Phone</option>
+                                            <option value="Custom">Custom Text...</option>
+                                        </select>
+                                        <button type="button" onclick="addFormatTag()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-plus"></i> Add</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <button type="button" onclick="addTaskDB()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-emerald-900/20"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Publish Task to Users</button>
+                        </form>
+                    </div>
+
+                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Live Tasks History</h2>
+                    <div id="admin-task-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-10">No active tasks.</p></div>
+                </section>
+
+                <!-- TASK SHEET (GOOGLE SHEET VIEW) PAGE -->
+                <section id="page-sheet" class="admin-page w-full h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-5 shrink-0">
+                        <h2 class="font-bold text-xl text-white flex items-center"><i class="fa-solid fa-file-excel mr-2 text-emerald-400"></i> Submissions Sheet</h2>
+                        <div class="flex gap-2">
+                            <button onclick="downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-download mr-1"></i> Download CSV</button>
+                            <button onclick="completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Complete Today</button>
+                            <button onclick="deleteAllSubmissions()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-trash mr-1"></i> Delete All</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 bg-[#1e293b] rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col min-h-[400px]">
+                        <div class="overflow-x-auto overflow-y-auto flex-1 p-1">
+                            <table id="sheet-table" class="w-full text-left">
+                                <thead>
+                                    <tr id="sheet-headers" class="bg-[#0f172a] text-slate-400 text-xs uppercase">
+                                        <th class="rounded-tl-lg">Task ID</th>
+                                        <th>User Email</th>
+                                        <th>Date</th>
+                                        <!-- Dynamic columns will inject here based on task format -->
+                                        <th class="rounded-tr-lg">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sheet-body" class="text-slate-300 text-sm">
+                                    <tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">Loading submissions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NOTICES MANAGEMENT PAGE -->
+                <section id="page-notices" class="admin-page w-full max-w-xl mx-auto">
+                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-bullhorn mr-2 text-amber-400"></i> Global Notice</h2>
+                    <div class="bg-[#1e293b] p-5 rounded-3xl border border-slate-700 shadow-lg mb-8">
+                        <form autocomplete="off" onsubmit="event.preventDefault();">
+                            <div class="space-y-4 mb-5">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Notice Title</label>
+                                    <input type="text" id="notice-title" autocomplete="new-password" placeholder="Important Update" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Message</label>
+                                    <textarea id="notice-msg" autocomplete="new-password" placeholder="Write the details here..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Color Theme</label>
+                                    <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
+                                        <option value="cyan">🔵 Cyan (Info Update)</option>
+                                        <option value="emerald">🟢 Emerald (Success/Good News)</option>
+                                        <option value="amber">🟡 Amber (Warning/Alert)</option>
+                                        <option value="rose">🔴 Rose (Urgent/Danger)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addNoticeDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-paper-plane mr-2"></i> Broadcast Notice</button>
+                        </form>
+                    </div>
+
+                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Active Broadcasts</h2>
+                    <div id="admin-notice-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-10">No notices sent.</p></div>
+                </section>
+
+                <!-- PAYMENT METHODS PAGE -->
+                <section id="page-payments" class="admin-page w-full max-w-xl mx-auto">
+                    <h2 class="font-bold text-xl mb-4 text-white flex items-center"><i class="fa-solid fa-building-columns mr-2 text-cyan-400"></i> Withdraw Settings</h2>
+                    <div class="bg-[#1e293b] p-5 rounded-2xl border border-slate-700 shadow-sm mb-8">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Add New Gateway</label>
+                        <form autocomplete="off" onsubmit="event.preventDefault();" class="flex gap-3">
+                            <input type="text" id="pay-method-name" autocomplete="new-password" placeholder="e.g. bKash Personal" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
+                            <button type="button" onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg"><i class="fa-solid fa-plus mr-1"></i> Add</button>
+                        </form>
+                    </div>
+
+                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Manage Gateways</h2>
+                    <div id="admin-payment-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-10"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Loading methods...</p></div>
+                </section>
+
+                <!-- KYC REVIEW PAGE -->
+                <section id="page-kyc" class="admin-page w-full max-w-3xl mx-auto">
+                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-id-card-clip mr-2 text-rose-400"></i> Verification Requests</h2>
+                    <div id="kyc-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending KYC requests.</p></div>
+                </section>
+
+                <!-- WITHDRAW PAGE -->
+                <section id="page-withdraw" class="admin-page w-full max-w-3xl mx-auto">
+                    <h2 class="font-bold text-xl mb-5 text-white flex items-center"><i class="fa-solid fa-money-bill-wave mr-2 text-amber-400"></i> Withdrawal Queue</h2>
+                    <div id="withdraw-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending withdrawals.</p></div>
+                </section>
+
+            </main>
         </div>
-
-        <main class="flex-1 overflow-y-auto px-5 pt-5 pb-10 relative">
-            
-            <!-- DASHBOARD PAGE -->
-            <section id="page-dashboard" class="admin-page active">
-                <h2 class="font-bold text-lg mb-4 text-white">Live Database Stats</h2>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-indigo-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-users text-indigo-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
-                        <p id="stat-total-users" class="font-bold text-3xl text-indigo-400 mt-1">0</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-emerald-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-briefcase text-emerald-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Active Tasks</p>
-                        <p id="stat-tasks" class="font-bold text-3xl text-emerald-400 mt-1">0</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-rose-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-id-badge text-rose-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending KYC</p>
-                        <p id="stat-kyc" class="font-bold text-3xl text-rose-400 mt-1">0</p>
-                    </div>
-                    <div class="bg-[#1e293b] p-4 rounded-2xl border border-amber-900/30 shadow-sm text-center">
-                        <i class="fa-solid fa-hand-holding-dollar text-amber-400 mb-2 text-2xl"></i>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Pending Withdraw</p>
-                        <p id="stat-withdraw" class="font-bold text-3xl text-amber-400 mt-1">0</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- USERS MANAGEMENT PAGE -->
-            <section id="page-users" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Manage Users</h2>
-                <div class="relative mb-4">
-                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-500"></i>
-                    <input type="text" id="search-user" oninput="filterUsers()" placeholder="Search by email or name..." class="w-full bg-[#1e293b] border border-slate-700 text-sm rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-indigo-500 text-white shadow-sm">
-                </div>
-                <div id="admin-user-list" class="space-y-3">
-                    <p class="text-sm text-slate-500 text-center mt-5">Loading users...</p>
-                </div>
-            </section>
-
-            <!-- TASKS MANAGEMENT PAGE -->
-            <section id="page-tasks" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Create New Task</h2>
-                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
-                    <form autocomplete="off" onsubmit="event.preventDefault();">
-                        <div class="space-y-3 mb-4">
-                            <input type="text" id="task-title" autocomplete="new-password" placeholder="Task Title (e.g. FB Account Create)" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                            <textarea id="task-desc" autocomplete="new-password" placeholder="Task Instructions..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
-                            
-                            <div class="flex gap-3">
-                                <input type="number" id="task-reward" autocomplete="new-password" placeholder="Reward ৳" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                                <select id="task-platform" class="w-1/2 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
-                                    <option value="facebook">Facebook</option>
-                                    <option value="youtube">YouTube</option>
-                                    <option value="instagram">Instagram</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Task Password Field -->
-                            <input type="text" id="task-password" autocomplete="new-password" placeholder="Set Task Default Password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-
-                            <!-- 2FA & Cookies Toggles -->
-                            <div class="flex gap-3 mt-2">
-                                <button type="button" id="btn-toggle-2fa" onclick="toggleTaskRequirement('2fa')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
-                                    <i class="fa-solid fa-shield-halved mr-1"></i> Require 2FA
-                                </button>
-                                <button type="button" id="btn-toggle-cookies" onclick="toggleTaskRequirement('cookies')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
-                                    <i class="fa-solid fa-cookie mr-1"></i> Require Cookies
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" onclick="addTaskDB()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus mr-1"></i> Publish Task</button>
-                    </form>
-                </div>
-
-                <h2 class="font-bold text-lg mb-3 text-white">Live Tasks History</h2>
-                <div id="admin-task-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p></div>
-            </section>
-
-            <!-- NOTICES MANAGEMENT PAGE -->
-            <section id="page-notices" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Send Notification</h2>
-                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6">
-                    <form autocomplete="off" onsubmit="event.preventDefault();">
-                        <div class="space-y-3 mb-4">
-                            <input type="text" id="notice-title" autocomplete="new-password" placeholder="Notice Title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                            <textarea id="notice-msg" autocomplete="new-password" placeholder="Message content..." class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
-                            <select id="notice-theme" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-300">
-                                <option value="cyan">Cyan (System Update)</option>
-                                <option value="emerald">Emerald (Success)</option>
-                                <option value="amber">Amber (Warning)</option>
-                                <option value="rose">Rose (Alert)</option>
-                            </select>
-                        </div>
-                        <button type="button" onclick="addNoticeDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-paper-plane mr-1"></i> Send Notice</button>
-                    </form>
-                </div>
-
-                <h2 class="font-bold text-lg mb-3 text-white">Sent Notices</h2>
-                <div id="admin-notice-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p></div>
-            </section>
-
-            <!-- PAYMENT METHODS PAGE -->
-            <section id="page-payments" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Add Payment Method</h2>
-                <div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm mb-6 flex gap-3">
-                    <form autocomplete="off" onsubmit="event.preventDefault();" class="flex-1 flex gap-3">
-                        <input type="text" id="pay-method-name" autocomplete="new-password" placeholder="e.g. Rocket" class="flex-1 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
-                        <button type="button" onclick="addPaymentMethodDB()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-plus"></i></button>
-                    </form>
-                </div>
-
-                <h2 class="font-bold text-lg mb-3 text-white">Manage Methods</h2>
-                <div id="admin-payment-list" class="space-y-3"><p class="text-sm text-slate-500 text-center mt-5">Loading methods...</p></div>
-            </section>
-
-            <!-- KYC REVIEW PAGE -->
-            <section id="page-kyc" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Pending KYC Requests</h2>
-                <div id="kyc-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests.</p></div>
-            </section>
-
-            <!-- WITHDRAW PAGE -->
-            <section id="page-withdraw" class="admin-page">
-                <h2 class="font-bold text-lg mb-4 text-white">Withdrawal Requests</h2>
-                <div id="withdraw-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p></div>
-            </section>
-
-        </main>
     </div>
 
     <!-- Edit Task Modal Overlay -->
-    <div id="edit-task-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
-        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 w-full max-w-md transform scale-95 transition-transform duration-300" id="edit-task-content">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-indigo-400"></i>Edit Task</h3>
-                <button onclick="closeEditTask()" class="text-slate-400 hover:text-rose-500 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="edit-task-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#0f172a]/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-300" id="edit-task-content">
+            <div class="flex justify-between items-center mb-5 border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-pen-to-square mr-2 text-indigo-400"></i> Edit Configuration</h3>
+                <button onclick="closeEditTask()" class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-3 mb-5 max-h-[60vh] overflow-y-auto pr-2">
+            <div class="space-y-4 mb-6 max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
+                <style>.custom-scrollbar::-webkit-scrollbar{width:4px;}.custom-scrollbar::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}</style>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Task Title</label>
                     <input type="text" id="edit-task-title" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Description</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Instructions</label>
                     <textarea id="edit-task-desc" class="w-full h-20 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-4">
                     <div class="w-1/2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Reward (৳)</label>
                         <input type="number" id="edit-task-reward" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
@@ -272,31 +381,45 @@
                             <option value="facebook">Facebook</option>
                             <option value="youtube">YouTube</option>
                             <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="twitter">Twitter / X</option>
                             <option value="other">Other</option>
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Default Password</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Default Password to Copy</label>
                     <input type="text" id="edit-task-password" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white">
                 </div>
-                <div class="flex gap-3 mt-4">
-                    <button type="button" id="btn-edit-toggle-2fa" onclick="toggleEditTaskReq('2fa')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
-                        <i class="fa-solid fa-shield-halved mr-1"></i> Require 2FA
-                    </button>
-                    <button type="button" id="btn-edit-toggle-cookies" onclick="toggleEditTaskReq('cookies')" class="flex-1 bg-[#0f172a] py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs transition-colors shadow-sm">
-                        <i class="fa-solid fa-cookie mr-1"></i> Require Cookies
-                    </button>
+
+                <!-- Edit Format Builder -->
+                <div class="p-4 bg-[#0f172a] rounded-xl border border-slate-700 border-dashed">
+                    <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-2 block flex items-center justify-between">
+                        <span><i class="fa-solid fa-table-columns mr-1"></i> Submissions Format</span>
+                    </label>
+                    <div id="edit-format-tags-container" class="flex flex-wrap gap-1 min-h-[32px] p-2 bg-[#1e293b] rounded-lg border border-slate-700 mb-3"></div>
+                    <div class="flex gap-2">
+                        <select id="edit-format-selector" class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none text-slate-300">
+                            <option value="UID">Facebook UID</option>
+                            <option value="Username">Username</option>
+                            <option value="Email">Email</option>
+                            <option value="Password">Password</option>
+                            <option value="2FA">2FA Key</option>
+                            <option value="Cookies">Cookies Array</option>
+                            <option value="Full Name">Full Name</option>
+                            <option value="Phone">Phone</option>
+                            <option value="Custom">Custom Text...</option>
+                        </select>
+                        <button type="button" onclick="addEditFormatTag()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                 </div>
             </div>
-            <button onclick="saveEditTaskDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm"><i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes</button>
+            <button onclick="saveEditTaskDB()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-indigo-900/20"><i class="fa-solid fa-floppy-disk mr-2"></i> Update Configuration</button>
         </div>
     </div>
 
+    <!-- UI Scripts for Admin & Dynamic Forms -->
     <script>
-        // ==========================================
-        // 🔒 ADMIN SECURITY CONFIGURATION
-        // ==========================================
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
 
         function togglePassword() {
@@ -305,46 +428,34 @@
             else { passInput.type = 'password'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
         }
 
-        let req2FA = false, reqCookies = false;
-
-        function toggleTaskRequirement(type) {
-            if(type === '2fa') {
-                req2FA = !req2FA; const btn = document.getElementById('btn-toggle-2fa');
-                if(req2FA) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
-                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
-            } else if(type === 'cookies') {
-                reqCookies = !reqCookies; const btn = document.getElementById('btn-toggle-cookies');
-                if(reqCookies) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
-                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
-            }
-        }
-
         function switchAdminTab(tabId) {
             document.querySelectorAll('.admin-page').forEach(page => page.classList.remove('active'));
             document.getElementById('page-' + tabId).classList.add('active');
             
             document.querySelectorAll('.admin-nav-item').forEach(item => {
-                item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
-                item.classList.add('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
+                item.classList.remove('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]', 'bg-slate-800/50');
+                item.classList.add('text-slate-400', 'border-transparent');
             });
             
             const activeBtn = document.getElementById('nav-' + tabId);
             if(activeBtn) {
-                activeBtn.classList.remove('text-slate-400', 'bg-[#0f172a]', 'border-slate-700');
+                activeBtn.classList.remove('text-slate-400', 'border-transparent');
                 activeBtn.classList.add('text-indigo-400', 'border-indigo-500', 'bg-indigo-500/10', 'shadow-[0_0_10px_rgba(99,102,241,0.2)]');
             }
         }
 
         function setButtonLoading(id, isLoading, defaultText, iconClass) {
             const btn = document.getElementById(id);
-            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verifying...</span>`; } 
-            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Wait...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="${iconClass} mr-1"></i> <span>${defaultText}</span>`; }
         }
 
-        // Search & Global State Variables for Users and Tasks
+        // Global States
         let allUsersData = [];
         let allTasksData = [];
-        
+        let allSubmissionsData = [];
+        let globalTasksEnabled = true;
+
         window.filterUsers = () => {
             const query = document.getElementById('search-user').value.toLowerCase();
             const filtered = allUsersData.filter(u => 
@@ -354,21 +465,53 @@
             window.renderUsersList(filtered);
         }
 
-        // Edit Task UI Handlers
-        let editingTaskId = null, editReq2FA = false, editReqCookies = false;
+        // ==========================================
+        // DYNAMIC TASK FORMAT BUILDER LOGIC
+        // ==========================================
+        let taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; // Default setup
+        let editFormatArray = [];
+        let editingTaskId = null;
 
-        window.toggleEditTaskReq = (type) => {
-            if(type === '2fa') {
-                editReq2FA = !editReq2FA; const btn = document.getElementById('btn-edit-toggle-2fa');
-                if(editReq2FA) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
-                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
-            } else if(type === 'cookies') {
-                editReqCookies = !editReqCookies; const btn = document.getElementById('btn-edit-toggle-cookies');
-                if(editReqCookies) { btn.classList.add('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.remove('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); } 
-                else { btn.classList.remove('bg-indigo-500/20', 'text-indigo-400', 'border-indigo-500/50'); btn.classList.add('bg-[#0f172a]', 'text-slate-400', 'border-slate-700'); }
+        function renderFormatTags(containerId, array) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if(array.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-500 italic p-1">No fields added. Will capture nothing.</span>';
+                return;
             }
+            array.forEach((item, index) => {
+                const isEdit = containerId.includes('edit');
+                const funcName = isEdit ? `removeEditFormatTag(${index})` : `removeFormatTag(${index})`;
+                container.innerHTML += `<div class="format-tag">${item} <span onclick="${funcName}"><i class="fa-solid fa-xmark"></i></span></div>`;
+            });
         }
 
+        window.addFormatTag = () => {
+            const val = document.getElementById('format-selector').value;
+            if(val === 'Custom') {
+                const custom = prompt("Enter custom field name (e.g. Recovery Email):");
+                if(custom && custom.trim()) { taskFormatArray.push(custom.trim()); renderFormatTags('format-tags-container', taskFormatArray); }
+            } else {
+                if(!taskFormatArray.includes(val)) { taskFormatArray.push(val); renderFormatTags('format-tags-container', taskFormatArray); }
+            }
+        }
+        window.removeFormatTag = (index) => { taskFormatArray.splice(index, 1); renderFormatTags('format-tags-container', taskFormatArray); }
+
+        window.addEditFormatTag = () => {
+            const val = document.getElementById('edit-format-selector').value;
+            if(val === 'Custom') {
+                const custom = prompt("Enter custom field name:");
+                if(custom && custom.trim()) { editFormatArray.push(custom.trim()); renderFormatTags('edit-format-tags-container', editFormatArray); }
+            } else {
+                if(!editFormatArray.includes(val)) { editFormatArray.push(val); renderFormatTags('edit-format-tags-container', editFormatArray); }
+            }
+        }
+        window.removeEditFormatTag = (index) => { editFormatArray.splice(index, 1); renderFormatTags('edit-format-tags-container', editFormatArray); }
+
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => { renderFormatTags('format-tags-container', taskFormatArray); });
+
+        // Edit Modal Open
         window.openEditTask = (taskId) => {
             const t = allTasksData.find(x => x.id === taskId);
             if(!t) return;
@@ -379,9 +522,14 @@
             document.getElementById('edit-task-platform').value = t.platform || 'facebook';
             document.getElementById('edit-task-password').value = t.password || '';
             
-            // Set Toggles properly
-            editReq2FA = !t.require2FA; toggleEditTaskReq('2fa'); // triggers true
-            editReqCookies = !t.requireCookies; toggleEditTaskReq('cookies'); // triggers true
+            // Format Array Handling
+            editFormatArray = t.formatArray && Array.isArray(t.formatArray) ? [...t.formatArray] : [];
+            if(editFormatArray.length === 0) { // Retrofit old data
+                if(t.require2FA) editFormatArray.push('2FA');
+                if(t.requireCookies) editFormatArray.push('Cookies');
+                if(editFormatArray.length === 0) editFormatArray = ['Email', 'Password']; // fallback
+            }
+            renderFormatTags('edit-format-tags-container', editFormatArray);
 
             document.getElementById('edit-task-modal').classList.remove('opacity-0', 'pointer-events-none');
             document.getElementById('edit-task-content').classList.remove('scale-95');
@@ -393,13 +541,51 @@
             editingTaskId = null;
         }
 
+        // ==========================================
+        // SHEET EXPORT & MANAGE FUNCTIONS
+        // ==========================================
+        window.downloadCSV = () => {
+            if(allSubmissionsData.length === 0) return alert("Sheet is empty!");
+            
+            // Collect all unique headers from format arrays
+            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
+            allSubmissionsData.forEach(sub => {
+                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
+            });
+            const headers = Array.from(headersSet);
+            
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            
+            allSubmissionsData.forEach(sub => {
+                let row = headers.map(header => {
+                    let val = '';
+                    if(header === 'Task ID') val = sub.taskId || '';
+                    else if(header === 'User Email') val = sub.email || '';
+                    else if(header === 'Date') val = sub.createdAt ? new Date(sub.createdAt.seconds * 1000).toLocaleString() : '';
+                    else val = (sub.submissionData && sub.submissionData[header]) ? sub.submissionData[header] : '';
+                    
+                    // Escape quotes and wrap in quotes for CSV safety
+                    return `"${String(val).replace(/"/g, '""')}"`;
+                });
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `microtask_submissions_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
     </script>
 
     <!-- FIREBASE DB & AUTH API SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
@@ -474,7 +660,7 @@
                             </div>
                         </div>
                         <div class="flex gap-2 pt-3 border-t border-slate-800/50">
-                            <button onclick="toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors">${banBtnText}</button>
+                            <button onclick="toggleBanUserDB('${u.id}', ${!u.isBanned})" class="flex-1 bg-${banBtnColor}-600/10 hover:bg-${banBtnColor}-600/20 text-${banBtnColor}-400 border border-${banBtnColor}-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-user-slash mr-1"></i> ${banBtnText}</button>
                             <button onclick="deleteDocDB('users', '${u.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
                         </div>
                     </div>`;
@@ -483,35 +669,101 @@
             }
         };
 
+        window.renderSheetTable = (submissions) => {
+            const thead = document.getElementById('sheet-headers');
+            const tbody = document.getElementById('sheet-body');
+            
+            if(submissions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-10 text-slate-500 border-none">No submissions found in the database.</td></tr>`;
+                return;
+            }
+
+            // Extract all unique custom headers dynamically
+            let headersSet = new Set(['Task ID', 'User Email', 'Date']);
+            submissions.forEach(sub => {
+                if(sub.submissionData) Object.keys(sub.submissionData).forEach(k => headersSet.add(k));
+            });
+            const headers = Array.from(headersSet);
+
+            // Render Headers
+            let headHTML = '';
+            headers.forEach((h, i) => { 
+                let classes = i === 0 ? 'rounded-tl-lg' : '';
+                headHTML += `<th class="${classes}">${h}</th>`; 
+            });
+            headHTML += `<th class="rounded-tr-lg w-20">Action</th>`;
+            thead.innerHTML = headHTML;
+
+            // Render Rows
+            let bodyHTML = '';
+            submissions.forEach(sub => {
+                bodyHTML += `<tr class="border-b border-slate-800/50">`;
+                headers.forEach(h => {
+                    let val = '';
+                    if(h === 'Task ID') val = `<span class="text-[10px] text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded font-mono select-all">${sub.taskId || 'Unknown'}</span>`;
+                    else if(h === 'User Email') val = sub.email || '';
+                    else if(h === 'Date') val = sub.createdAt ? `<span class="text-[10px] text-slate-500">${new Date(sub.createdAt.seconds * 1000).toLocaleString()}</span>` : '';
+                    else {
+                        const rawVal = (sub.submissionData && sub.submissionData[h]) ? sub.submissionData[h] : '-';
+                        val = `<div class="max-w-[200px] truncate select-all" title="${String(rawVal).replace(/"/g, '&quot;')}">${rawVal}</div>`;
+                    }
+                    bodyHTML += `<td>${val}</td>`;
+                });
+                bodyHTML += `<td><button onclick="deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash"></i></button></td>`;
+                bodyHTML += `</tr>`;
+            });
+            tbody.innerHTML = bodyHTML;
+        }
+
         function loadDatabaseLive() {
+            // Global App Settings (Task ON/OFF)
+            onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
+                if(docSnap.exists()) {
+                    globalTasksEnabled = docSnap.data().tasksEnabled ?? true;
+                    document.getElementById('global-task-toggle').checked = globalTasksEnabled;
+                } else {
+                    // Create default setting
+                    setDoc(doc(db, "app_settings", "global"), { tasksEnabled: true });
+                }
+            });
+
             // USERS LIVE FETCH
             onSnapshot(collection(db, "users"), (snapshot) => {
                 allUsersData = [];
                 snapshot.forEach(docSnap => { allUsersData.push({id: docSnap.id, ...docSnap.data()}); });
                 document.getElementById('stat-total-users').innerText = allUsersData.length;
-                window.filterUsers(); // Render list automatically based on search
+                window.filterUsers(); 
             });
 
             // TASKS LIVE FETCH
             onSnapshot(collection(db, "tasks"), (snapshot) => {
                 const list = document.getElementById('admin-task-list');
                 document.getElementById('stat-tasks').innerText = snapshot.size;
-                
                 allTasksData = [];
-                snapshot.forEach(docSnap => { allTasksData.push({id: docSnap.id, ...docSnap.data()}); });
-
-                if(allTasksData.length === 0) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
+                
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No active tasks.</p>`; } 
                 else {
                     let html = '';
-                    allTasksData.forEach((data) => {
-                        const tag2FA = data.require2FA ? `<span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded ml-1">2FA</span>` : '';
-                        const tagCookie = data.requireCookies ? `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded ml-1">Cookie</span>` : '';
-                        
+                    snapshot.forEach(docSnap => { 
+                        const data = docSnap.data();
+                        data.id = docSnap.id;
+                        allTasksData.push(data); 
+
+                        // Generate Format Tags visual
+                        let formatHtml = '';
+                        if(data.formatArray && Array.isArray(data.formatArray)) {
+                            data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-800 text-slate-400 px-1 rounded mx-0.5 border border-slate-700">${f}</span>`; });
+                        }
+
                         html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in mb-3">
                             <div class="flex justify-between items-center mb-3 border-b border-slate-800/50 pb-3">
                                 <div class="flex items-center gap-3">
                                     <div class="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div>
-                                    <div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 mt-0.5">Reward: ৳${data.reward} ${tag2FA} ${tagCookie}</p></div>
+                                    <div>
+                                        <h3 class="font-bold text-sm text-white">${data.title}</h3>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">Reward: ৳${data.reward}</p>
+                                        <div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div>
+                                    </div>
                                 </div>
                                 <span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide select-all">${data.password || 'No Pass'}</span>
                             </div>
@@ -524,16 +776,25 @@
                 }
             });
 
-            // KYC, WITHDRAW, NOTICES, PAYMENTS (Same as before)
+            // TASK SUBMISSIONS (SHEET) FETCH
+            onSnapshot(query(collection(db, "task_submissions"), orderBy("createdAt", "desc")), (snapshot) => {
+                allSubmissionsData = [];
+                snapshot.forEach(docSnap => { allSubmissionsData.push({id: docSnap.id, ...docSnap.data()}); });
+                document.getElementById('stat-sheet-count').innerText = snapshot.size;
+                document.getElementById('sheet-badge').innerText = snapshot.size;
+                window.renderSheetTable(allSubmissionsData);
+            });
+
+            // KYC, WITHDRAW, NOTICES, PAYMENTS
             onSnapshot(collection(db, "kyc_requests"), (snapshot) => {
                 const list = document.getElementById('kyc-list'), badge = document.getElementById('kyc-badge');
                 document.getElementById('stat-kyc').innerText = snapshot.size;
-                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending KYC requests.</p>`; badge.classList.add('hidden'); } 
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending KYC requests.</p>`; badge.classList.add('hidden'); } 
                 else {
-                    badge.classList.remove('hidden'); let html = '';
+                    badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400">${data.email}</p></div><span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Pending DB</span></div><div class="flex gap-2"><button onclick="approveKycDB('${docSnap.id}')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Approve</button><button onclick="rejectKycDB('${docSnap.id}')" class="flex-1 bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors">Reject</button></div></div>`;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col justify-between h-full"><div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-3"><div><h3 class="font-bold text-sm text-white">${data.name || 'User'}</h3><p class="text-xs text-slate-400 mt-1">${data.email}</p></div><div class="h-8 w-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div></div><div class="flex gap-2 mt-auto"><button onclick="approveKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Approve</button><button onclick="rejectKycDB('${data.uid}', '${docSnap.id}')" class="flex-1 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-xmark mr-1"></i> Reject</button></div></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -542,12 +803,12 @@
             onSnapshot(qWithdraw, (snapshot) => {
                 const list = document.getElementById('withdraw-list'), badge = document.getElementById('withdraw-badge');
                 document.getElementById('stat-withdraw').innerText = snapshot.size;
-                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-10 col-span-2">No pending withdrawals.</p>`; badge.classList.add('hidden'); } 
                 else {
-                    badge.classList.remove('hidden'); let html = '';
+                    badge.classList.remove('hidden'); badge.innerText = snapshot.size; let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-900/30 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-amber-400">Pending DB</p></div></div><h2 class="text-lg font-bold text-white">৳ ${data.amount}</h2></div><div class="mb-4"><p class="text-xs text-slate-400 mb-1">Method: <strong class="text-white capitalize">${data.method}</strong></p><p class="text-xs text-slate-400">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2 py-0.5 rounded select-all">${data.account}</strong></p></div><button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check mr-1"></i> Mark as Paid in DB</button></div>`;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 shadow-sm fade-in flex flex-col h-full"><div class="flex justify-between items-start mb-3 border-b border-slate-800 pb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center"><i class="fa-solid fa-money-bill-transfer"></i></div><div><h3 class="font-bold text-sm text-white">${data.email}</h3><p class="text-[10px] text-slate-400 mt-0.5">Method: <strong class="text-cyan-400 uppercase">${data.method}</strong></p></div></div><h2 class="text-xl font-black text-white">৳${data.amount}</h2></div><div class="mb-4 bg-[#0f172a] p-3 rounded-xl border border-slate-800"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Account Info</p><p class="text-sm font-bold text-white tracking-widest select-all">${data.account}</p></div><button onclick="approveWithdrawDB('${docSnap.id}')" class="w-full mt-auto bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-check-circle mr-1"></i> Mark as Paid</button></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -559,7 +820,7 @@
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[10px] text-slate-400 truncate w-32">${data.msg}</p></div></div><button onclick="deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20"><i class="fa-solid fa-trash"></i></button></div>`;
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-xl bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-48 mt-0.5">${data.msg}</p></div></div><button onclick="deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -573,9 +834,11 @@
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
                         if(data.isActive) activeCount++;
-                        const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400 bg-slate-500/10';
+                        const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-500 bg-slate-800 border-slate-700';
                         const toggleTxt = data.isActive ? 'Disable' : 'Enable';
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${toggleTxt}</button><button onclick="deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-2 py-1 rounded hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
+                        const toggleBtnColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20';
+                        
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-xl ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3><p class="text-[10px] text-slate-500 mt-0.5">${data.isActive ? 'Active on User Panel' : 'Disabled'}</p></div></div><div class="flex gap-2"><button onclick="togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 rounded-lg ${toggleBtnColor} font-bold transition-colors">${toggleTxt}</button><button onclick="deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
                 document.getElementById('stat-payments').innerText = activeCount;
@@ -586,6 +849,11 @@
         // ADD / UPDATE / DELETE DB FUNCTIONS
         // ==========================================
         
+        window.toggleGlobalTasks = async (status) => {
+            try { await updateDoc(doc(db, "app_settings", "global"), { tasksEnabled: status }); } 
+            catch(e) { alert("Error changing global settings!"); document.getElementById('global-task-toggle').checked = !status; }
+        }
+
         window.toggleBanUserDB = async (uid, status) => {
             if(!confirm(`Are you sure you want to ${status ? 'BAN' : 'UNBAN'} this user?`)) return;
             try { await updateDoc(doc(db, "users", uid), { isBanned: status }); } catch(e) { alert("Error: " + e.message); }
@@ -593,42 +861,72 @@
 
         window.addTaskDB = async () => {
             const title = document.getElementById('task-title').value, desc = document.getElementById('task-desc').value, reward = document.getElementById('task-reward').value, platform = document.getElementById('task-platform').value, password = document.getElementById('task-password').value;
-            if(!title || !desc || !reward || !password) return alert("Fill all fields including password!");
+            if(!title || !desc || !reward || !password || taskFormatArray.length === 0) return alert("Fill all fields and add at least one sheet format!");
             
             try { 
                 await addDoc(collection(db, "tasks"), { 
                     title, desc, reward: Number(reward), platform, password,
-                    require2FA: req2FA, requireCookies: reqCookies,
+                    formatArray: taskFormatArray, // Dynamic Formats
+                    require2FA: false, requireCookies: false, // Legacy fallback
                     createdAt: serverTimestamp() 
                 }); 
                 
                 alert("Task Added Live!"); 
                 document.getElementById('task-title').value=''; document.getElementById('task-desc').value=''; document.getElementById('task-reward').value=''; document.getElementById('task-password').value='';
-                if(req2FA) toggleTaskRequirement('2fa');
-                if(reqCookies) toggleTaskRequirement('cookies');
-
+                taskFormatArray = ['Email', 'Password', '2FA', 'Cookies']; // Reset default
+                renderFormatTags('format-tags-container', taskFormatArray);
             } catch(e) { alert("Error: " + e.message); }
         }
 
         window.saveEditTaskDB = async () => {
             if(!editingTaskId) return;
             const title = document.getElementById('edit-task-title').value, desc = document.getElementById('edit-task-desc').value, reward = document.getElementById('edit-task-reward').value, platform = document.getElementById('edit-task-platform').value, password = document.getElementById('edit-task-password').value;
-            if(!title || !desc || !reward || !password) return alert("Fill all fields!");
+            if(!title || !desc || !reward || !password || editFormatArray.length === 0) return alert("Fill all fields and add at least one sheet format!");
             
             try {
                 await updateDoc(doc(db, "tasks", editingTaskId), {
                     title, desc, reward: Number(reward), platform, password,
-                    require2FA: editReq2FA, requireCookies: editReqCookies
+                    formatArray: editFormatArray
                 });
                 alert("Task Updated Successfully!");
                 closeEditTask();
             } catch(e) { alert("Error: " + e.message); }
         }
 
+        window.deleteAllSubmissions = async () => {
+            if(allSubmissionsData.length === 0) return alert("Sheet is already empty!");
+            const authPass = prompt("Type 'DELETE ALL' to confirm deleting entire sheet permanently:");
+            if(authPass !== 'DELETE ALL') return alert("Action Cancelled.");
+            
+            try {
+                const batch = writeBatch(db);
+                allSubmissionsData.forEach(sub => { batch.delete(doc(db, "task_submissions", sub.id)); });
+                await batch.commit();
+                alert("All submissions deleted.");
+            } catch(e) { alert("Error deleting: " + e.message); }
+        }
+
+        window.completeTodaySheet = async () => {
+            if(allSubmissionsData.length === 0) return alert("No active submissions to move.");
+            if(!confirm("Move current submissions to History and clear active sheet?")) return;
+            
+            try {
+                const batch = writeBatch(db);
+                allSubmissionsData.forEach(sub => { 
+                    // Add to history collection
+                    batch.set(doc(collection(db, "task_submissions_history")), { ...sub, archivedAt: serverTimestamp() });
+                    // Delete from active collection
+                    batch.delete(doc(db, "task_submissions", sub.id)); 
+                });
+                await batch.commit();
+                alert("Sheet cleared and moved to history successfully!");
+            } catch(e) { alert("Error: " + e.message); }
+        }
+
         window.addNoticeDB = async () => {
             const title = document.getElementById('notice-title').value, msg = document.getElementById('notice-msg').value, theme = document.getElementById('notice-theme').value;
             if(!title || !msg) return alert("Fill all fields!");
-            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Sent Live!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
+            try { await addDoc(collection(db, "notices"), { title, msg, theme, createdAt: serverTimestamp() }); alert("Notice Broadcasted!"); document.getElementById('notice-title').value=''; document.getElementById('notice-msg').value=''; } 
             catch(e) { alert("Error: " + e.message); }
         }
 
@@ -641,9 +939,1240 @@
 
         window.togglePaymentDB = async (docId, newStatus) => { try { await updateDoc(doc(db, "payment_methods", docId), { isActive: newStatus }); } catch(e) { alert("Error: " + e.message); } }
         window.deleteDocDB = async (colName, docId) => { if(!confirm("Are you sure you want to delete this?")) return; try { await deleteDoc(doc(db, colName, docId)); } catch(e) { alert("Error: " + e.message); } }
-        window.approveKycDB = async (uid) => { try { await updateDoc(doc(db, "users", uid), { kycVerified: true }); await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Approved!"); } catch(e) { alert("Error: " + e.message); } }
-        window.rejectKycDB = async (uid) => { try { await deleteDoc(doc(db, "kyc_requests", uid)); alert("KYC Rejected!"); } catch(e) { alert("Error: " + e.message); } }
+        
+        window.approveKycDB = async (uid, reqId) => { 
+            try { await updateDoc(doc(db, "users", uid), { kycVerified: true, kycStatus: "verified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); alert("KYC Approved!"); } 
+            catch(e) { alert("Error: " + e.message); } 
+        }
+        window.rejectKycDB = async (uid, reqId) => { 
+            try { await updateDoc(doc(db, "users", uid), { kycStatus: "unverified" }); await deleteDoc(doc(db, "kyc_requests", reqId)); alert("KYC Rejected!"); } 
+            catch(e) { alert("Error: " + e.message); } 
+        }
         window.approveWithdrawDB = async (docId) => { try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); alert("Withdrawal marked as Paid!"); } catch(e) { alert("Error: " + e.message); } }
+    </script>
+</body>
+</html>
+
+আর এইটা হচ্ছে user pannel code - 
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MicroTask Pro - Ultimate App</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { darkBg: '#09090b', darkCard: '#18181b', } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar { display: none; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        * { transition: background-color 0.2s ease, border-color 0.2s ease; will-change: transform, opacity; }
+        
+        .float-1 { animation: floating 4s ease-in-out infinite; }
+        .float-2 { animation: floating 4s ease-in-out infinite; animation-delay: 0.8s; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
+        
+        .light-pass { position: relative; overflow: hidden; }
+        .light-pass::after { content: ''; position: absolute; top: 0; left: -150%; width: 40%; height: 100%; background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent); transform: skewX(-25deg); animation: lightSweep 4s infinite; pointer-events: none; z-index: 10; }
+        .dark .light-pass::after { background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent); }
+        @keyframes lightSweep { 0% { left: -150%; } 25%, 100% { left: 200%; } }
+        
+        .glow-pulse { animation: pulseGlow 3s infinite alternate; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.15); } 100% { box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.45); } }
+        
+        .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .zoom-in { animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes zoomIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .task-btn-wrapper { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .task-fab { background: linear-gradient(135deg, #06b6d4, #10b981); animation: pulseGlow 2s infinite alternate; transition: transform 0.2s ease; }
+        .task-fab:active { transform: scale(0.95); }
+
+        .app-page { display: none; }
+        .app-page.active { display: block; animation: fadeIn 0.25s ease-out forwards; }
+
+        @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -30px) scale(1.1); } }
+        .copy-floater { position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #10b981; font-weight: bold; font-size: 14px; animation: floatUpFade 0.6s forwards; pointer-events: none; text-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; }
+        
+        .slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+        
+        .slide-indicator { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .form-panel { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        input[type=file]::file-selector-button { background-color: #06b6d4; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background-color 0.2s ease; margin-right: 15px; }
+        
+        #auth-container { display: flex; }
+        #main-app-container { display: none; }
+    </style>
+</head>
+<body class="flex justify-center h-screen w-full overflow-hidden bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-zinc-50 relative">
+
+    <div id="global-loader" class="fixed inset-0 z-[999] bg-slate-50 dark:bg-darkBg flex items-center justify-center transition-colors">
+        <div class="flex flex-col items-center">
+            <i class="fa-solid fa-spinner animate-spin text-4xl text-cyan-500 mb-3"></i>
+            <p id="loader-text" class="text-sm font-bold text-slate-500 dark:text-zinc-400">Loading MicroTask Pro...</p>
+        </div>
+    </div>
+
+    <button id="auth-theme-btn" onclick="toggleTheme()" class="hidden absolute top-6 right-6 h-10 w-10 rounded-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 items-center justify-center shadow-sm z-50 active:scale-95 transition-transform">
+        <i id="theme-icon" class="fa-solid fa-moon text-indigo-500 text-lg"></i>
+    </button>
+
+    <div id="success-screen" class="fixed inset-0 z-[120] bg-slate-900/90 backdrop-blur-md flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="zoom-in h-28 w-28 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 border-2 border-emerald-500/30">
+            <i class="fa-solid fa-check text-6xl text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)]"></i>
+        </div>
+        <h2 class="text-3xl font-extrabold text-white mb-2 zoom-in" style="animation-delay: 0.1s;">Login Successful!</h2>
+        <p class="text-slate-400 zoom-in" style="animation-delay: 0.15s;">Welcome back,</p>
+        <p id="success-name" class="text-2xl font-bold text-cyan-400 zoom-in tracking-wide mt-1" style="animation-delay: 0.2s;">User</p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. AUTHENTICATION SECTION                  -->
+    <!-- ========================================== -->
+    <div id="auth-container" class="w-full max-w-md h-full flex-col justify-center px-6 relative z-40 bg-slate-50 dark:bg-darkBg transition-colors fade-in hidden">
+        
+        <div class="flex flex-col items-center mb-6 float-1">
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-4 relative overflow-hidden">
+                <i class="fa-solid fa-bolt text-3xl text-white z-10 relative"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight">MicroTask<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500">Pro</span></h1>
+            <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Earn by completing simple tasks</p>
+        </div>
+
+        <div class="flex justify-center mb-8">
+            <div class="relative bg-slate-200/70 dark:bg-zinc-800/70 rounded-full p-1 flex w-[240px] shadow-inner backdrop-blur-md">
+                <div id="auth-indicator" class="slide-indicator absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-600 rounded-full shadow-sm z-0 border border-slate-100 dark:border-zinc-500"></div>
+                <button type="button" onclick="toggleAuth('login')" id="btn-login-tab" class="flex-1 relative z-10 py-2 text-sm font-bold text-slate-900 dark:text-white transition-colors duration-300">Login</button>
+                <button type="button" onclick="toggleAuth('register')" id="btn-register-tab" class="flex-1 relative z-10 py-2 text-sm font-bold text-slate-500 dark:text-zinc-400 transition-colors duration-300">Sign Up</button>
+            </div>
+        </div>
+
+        <div class="relative w-full overflow-hidden min-h-[380px]">
+            <!-- LOGIN FORM -->
+            <div id="login-form" class="form-panel absolute w-full top-0 left-0 transform translate-x-0 opacity-100 z-10">
+                <form autocomplete="off" onsubmit="event.preventDefault(); loginUser();" class="space-y-4 mb-6">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><i class="fa-solid fa-envelope text-slate-400 group-focus-within:text-cyan-500 transition-colors"></i></div>
+                        <input type="email" id="login-email" autocomplete="off" placeholder="Email Address" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-sm dark:text-white placeholder-slate-400">
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><i class="fa-solid fa-lock text-slate-400 group-focus-within:text-cyan-500 transition-colors"></i></div>
+                        <input type="password" id="login-password" autocomplete="new-password" placeholder="Password" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl pl-11 pr-10 py-3.5 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-sm dark:text-white placeholder-slate-400">
+                        <i id="toggle-login-pwd" onclick="togglePasswordVisibility('login-password', 'toggle-login-pwd')" class="fa-solid fa-eye-slash absolute right-4 top-4 text-slate-400 cursor-pointer hover:text-cyan-500 transition-colors"></i>
+                    </div>
+                </form>
+                <button type="button" id="btn-login-submit" onclick="loginUser()" class="w-full light-pass glow-pulse bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm mb-6 flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> <span>Login</span>
+                </button>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="flex-1 h-px bg-slate-200 dark:bg-zinc-800"></div><p class="text-[10px] uppercase font-bold text-slate-400">Or continue with</p><div class="flex-1 h-px bg-slate-200 dark:bg-zinc-800"></div>
+                </div>
+                <button type="button" id="btn-google-login" onclick="googleLogin()" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-sm flex justify-center items-center gap-2">
+                    <i class="fa-brands fa-google text-red-500"></i> <span>Google Account</span>
+                </button>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div id="register-form" class="form-panel absolute w-full top-0 left-0 transform translate-x-full opacity-0 pointer-events-none z-0">
+                <form autocomplete="off" onsubmit="event.preventDefault(); registerUser();" class="space-y-4 mb-6">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><i class="fa-solid fa-user text-slate-400 group-focus-within:text-cyan-500 transition-colors"></i></div>
+                        <input type="text" id="reg-name" autocomplete="off" placeholder="Full Name" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-sm dark:text-white placeholder-slate-400">
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><i class="fa-solid fa-envelope text-slate-400 group-focus-within:text-cyan-500 transition-colors"></i></div>
+                        <input type="email" id="reg-email" autocomplete="off" placeholder="Email Address" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-sm dark:text-white placeholder-slate-400">
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><i class="fa-solid fa-lock text-slate-400 group-focus-within:text-cyan-500 transition-colors"></i></div>
+                        <input type="password" id="reg-password" autocomplete="new-password" placeholder="Create Password (min 6 char)" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl pl-11 pr-10 py-3.5 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-sm dark:text-white placeholder-slate-400">
+                        <i id="toggle-reg-pwd" onclick="togglePasswordVisibility('reg-password', 'toggle-reg-pwd')" class="fa-solid fa-eye-slash absolute right-4 top-4 text-slate-400 cursor-pointer hover:text-cyan-500 transition-colors"></i>
+                    </div>
+                </form>
+                <button type="button" id="btn-reg-submit" onclick="registerUser()" class="w-full light-pass glow-pulse bg-gradient-to-r from-cyan-500 to-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5-MIN VERIFICATION MODAL -->
+    <div id="verify-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-darkCard p-8 rounded-3xl shadow-2xl max-w-[320px] w-full text-center border border-slate-200 dark:border-zinc-700 transform scale-95 transition-transform duration-300" id="verify-modal-content">
+            <div class="h-20 w-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-5 relative">
+                <i class="fa-solid fa-envelope-open-text text-3xl text-cyan-500 animate-pulse z-10"></i>
+                <svg class="animate-spin absolute inset-0 h-full w-full text-cyan-500/50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Check Your Email</h3>
+            <p class="text-xs text-slate-500 dark:text-zinc-400 mb-4 leading-relaxed">We've sent a verification link to your email. <br><strong class="text-cyan-500">Waiting for you to verify...</strong></p>
+            <p id="verify-timer-display" class="text-3xl font-black text-rose-500 mb-5 tracking-widest drop-shadow-sm">05:00</p>
+            <button id="btn-resend-link" onclick="resendVerification()" class="hidden w-full bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-400 font-bold py-3 rounded-xl mb-4 border border-cyan-200 dark:border-cyan-800 active:scale-95 transition-transform flex justify-center items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span>Resend Link</span></button>
+            <button type="button" onclick="cancelVerification()" class="text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors uppercase tracking-wider">Cancel & Logout</button>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- 2. MAIN APP SECTION (Dashboard)            -->
+    <!-- ========================================== -->
+    <div id="main-app-container" class="w-full max-w-md h-full relative flex-col bg-slate-50 dark:bg-darkBg transition-colors overflow-hidden">
+        
+        <header class="p-5 flex justify-between items-center z-10 border-b border-slate-200 dark:border-zinc-800 shadow-sm bg-white/50 dark:bg-[#09090b]/50 backdrop-blur-md">
+            <div>
+                <p class="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-emerald-500 uppercase tracking-wider mb-1">MicroTask Pro</p>
+                <div class="flex items-center gap-2">
+                    <img id="user-profile-pic" src="" class="w-8 h-8 rounded-full border border-slate-300 dark:border-zinc-700 bg-slate-200 object-cover" alt="Profile">
+                    <h1 class="text-lg font-bold tracking-tight" id="user-display-name-app">User <span class="verify-badge hidden"><i class="fa-solid fa-circle-check text-cyan-500 text-sm ml-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"></i></span></h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="h-10 w-10 rounded-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 flex items-center justify-center shadow-sm active:scale-90 transition-transform">
+                    <i id="app-theme-icon" class="fa-solid fa-moon text-indigo-500 text-lg"></i>
+                </button>
+                <div onclick="openNotifications()" class="h-10 w-10 rounded-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 flex items-center justify-center relative shadow-sm cursor-pointer active:scale-90 transition-transform">
+                    <i class="fa-regular fa-bell text-slate-600 dark:text-zinc-300"></i>
+                    <span id="notif-badge" class="hidden absolute top-2 right-2 h-2.5 w-2.5 bg-rose-500 border-2 border-white dark:border-darkCard rounded-full"></span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-5 pt-5 pb-28 relative">
+            
+            <!-- HOME PAGE -->
+            <section id="page-home" class="app-page active">
+                <div class="float-1 light-pass glow-pulse p-6 rounded-3xl mb-6 relative bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-800 shadow-xl dark:shadow-none">
+                    <div class="absolute -right-10 -top-10 h-32 w-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                    <p class="text-sm text-slate-500 dark:text-zinc-400 mb-1 font-medium">Available Balance</p>
+                    <h2 class="text-4xl font-extrabold tracking-tight text-slate-800 dark:text-white mb-5">৳ <span id="main-balance">0</span><span class="text-lg text-slate-400 dark:text-zinc-500">.00</span></h2>
+                    <button onclick="openWithdraw()" class="w-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 py-3 rounded-xl font-bold border border-emerald-200 dark:border-emerald-500/20 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-building-columns"></i> Withdraw Funds
+                    </button>
+                </div>
+                <h3 class="font-bold text-lg mb-3">Work Summary</h3>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="float-2 light-pass bg-white dark:bg-darkCard p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-md">
+                        <i class="fa-solid fa-clock text-amber-500 mb-2 text-xl"></i>
+                        <p class="text-[11px] text-slate-500 dark:text-zinc-400 font-semibold uppercase">Pending Tasks</p>
+                        <p id="stat-pending-tasks" class="font-bold text-lg text-slate-800 dark:text-white">0</p>
+                    </div>
+                    <div class="float-1 light-pass bg-white dark:bg-darkCard p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-md">
+                        <i class="fa-solid fa-check-double text-cyan-500 mb-2 text-xl"></i>
+                        <p class="text-[11px] text-slate-500 dark:text-zinc-400 font-semibold uppercase">Approved</p>
+                        <p id="stat-approved-tasks" class="font-bold text-lg text-slate-800 dark:text-white">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TOP PAGE (Leaderboard) -->
+            <section id="page-top" class="app-page">
+                <div class="text-center mb-6 mt-2 float-1 flex flex-col items-center">
+                    <div class="h-16 w-16 bg-yellow-100 dark:bg-yellow-500/10 rounded-full flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(234,179,8,0.3)] animate-bounce border border-yellow-300 dark:border-yellow-500/30"><i class="fa-solid fa-trophy text-3xl text-yellow-500"></i></div>
+                    <h2 class="text-2xl font-bold">Leaderboard</h2>
+                    <p class="text-sm text-slate-500 dark:text-zinc-400">Top earners of the week</p>
+                </div>
+                <div class="flex justify-center mb-6">
+                    <div class="relative bg-slate-200/70 dark:bg-zinc-800/70 rounded-full p-1 flex w-full max-w-[260px] shadow-inner backdrop-blur-md">
+                        <div id="lb-indicator" class="slide-indicator absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-600 rounded-full shadow-sm z-0 border border-slate-100 dark:border-zinc-500"></div>
+                        <button onclick="toggleLeaderboard('approved')" id="btn-lb-approved" class="flex-1 relative z-10 py-2 text-sm font-bold text-slate-900 dark:text-white transition-colors">Approved</button>
+                        <button onclick="toggleLeaderboard('pending')" id="btn-lb-pending" class="flex-1 relative z-10 py-2 text-sm font-bold text-slate-500 dark:text-zinc-400 transition-colors">Pending</button>
+                    </div>
+                </div>
+                
+                <!-- Fixed Leaderboard Container (No inner absolute heights) -->
+                <div class="relative w-full overflow-hidden" id="lb-slider-container">
+                    <div id="lb-approved" class="w-full relative transition-transform duration-300 transform translate-x-0 opacity-100 z-10 flex flex-col">
+                        <div class="light-pass shrink-0 bg-cyan-50 dark:bg-cyan-900/20 p-4 rounded-2xl mb-3 flex items-center gap-4 border-2 border-cyan-400 dark:border-cyan-500 shadow-md">
+                            <h1 class="text-2xl font-black text-cyan-600 dark:text-cyan-400 w-6 text-center">★</h1>
+                            <img id="lb-current-user-pic" src="" class="h-12 w-12 rounded-full border-2 border-cyan-400 dark:border-cyan-500 object-cover bg-slate-200">
+                            <div class="flex-1"><p class="font-bold text-sm text-cyan-700 dark:text-cyan-300">You <span id="lb-current-name">(User)</span> <span class="verify-badge hidden"><i class="fa-solid fa-circle-check text-cyan-500 text-sm ml-1"></i></span></p><p class="text-[11px] text-cyan-600/70 dark:text-cyan-400/70"><span id="lb-my-approved">0</span> Tasks done</p></div>
+                            <p class="text-emerald-600 dark:text-emerald-400 font-bold">৳ <span id="lb-my-earned">0</span></p>
+                        </div>
+                        <div id="lb-approved-list" class="space-y-3 pb-6">
+                            <p class="text-center text-sm text-slate-500 py-4">Loading Leaderboard...</p>
+                        </div>
+                    </div>
+                    <div id="lb-pending" class="w-full absolute top-0 left-0 transition-transform duration-300 transform translate-x-full opacity-0 pointer-events-none z-0 flex flex-col">
+                        <div id="lb-pending-list" class="space-y-3 pb-6">
+                            <p class="text-center text-sm text-slate-500 py-4">Loading Leaderboard...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TASK PAGE -->
+            <section id="page-task" class="app-page">
+                <div class="mb-5 flex justify-between items-end mt-2">
+                    <div><h2 class="text-2xl font-bold">New Tasks</h2></div>
+                    <span id="task-count-badge" class="bg-cyan-100 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-400 text-xs font-bold px-3 py-1.5 rounded-full animate-pulse">0 Available</span>
+                </div>
+                
+                <div id="task-list-container" class="space-y-4">
+                    <p class="text-center text-sm text-slate-500 py-10">Loading tasks...</p>
+                </div>
+            </section>
+
+            <!-- REFER PAGE -->
+            <section id="page-refer" class="app-page">
+                <div class="text-center mt-10 mb-8 float-1"><i class="fa-solid fa-gift text-6xl text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] mb-4 block"></i><h2 class="text-2xl font-bold mb-2">Invite Friends</h2><p class="text-sm text-slate-500 dark:text-zinc-400 px-4">Earn ৳50 instantly when your friend completes their first task.</p></div>
+                <div class="bg-white dark:bg-darkCard p-2 rounded-2xl flex items-center justify-between border border-emerald-200 dark:border-emerald-500/30 mb-8 shadow-sm">
+                    <span class="font-mono text-lg tracking-widest text-emerald-600 dark:text-emerald-400 font-bold pl-4">JOIN50</span>
+                    <button class="bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md m-1 active:scale-95 transition-transform">Copy Link</button>
+                </div>
+            </section>
+
+            <!-- PROFILE PAGE -->
+            <section id="page-profile" class="app-page">
+                <div class="relative mb-12 float-1">
+                    <div class="h-32 w-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-2xl shadow-lg border border-white/10"></div>
+                    <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                        <img id="profile-tab-pic" src="" class="h-24 w-24 rounded-full bg-slate-200 dark:bg-zinc-800 border-4 border-white dark:border-darkBg shadow-xl object-cover">
+                        <span id="profile-verify-badge" class="absolute bottom-0 right-0 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-darkBg shadow-sm transition-all duration-300">Unverified</span>
+                    </div>
+                </div>
+                <div class="text-center mb-6">
+                    <h2 id="profile-tab-name" class="text-2xl font-bold">User Name <span class="verify-badge hidden"><i class="fa-solid fa-circle-check text-cyan-500 text-sm ml-1"></i></span></h2>
+                    <p class="text-sm text-slate-500 dark:text-zinc-400" id="profile-display-email">user@example.com</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-white dark:bg-darkCard p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-bold mb-1">Total Earned</p>
+                        <p class="text-lg font-bold text-emerald-500">৳ <span id="profile-total-earned">0</span></p>
+                    </div>
+                    <div class="bg-white dark:bg-darkCard p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-bold mb-1">Withdrawn</p>
+                        <p class="text-lg font-bold text-cyan-500">৳ <span id="profile-total-withdrawn">0</span></p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div id="btn-verify-account" onclick="submitKYC()" class="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-2xl flex items-center gap-4 border border-indigo-200 dark:border-indigo-500/30 cursor-pointer active:scale-95 transition-colors shadow-sm">
+                        <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div>
+                        <p class="flex-1 font-bold text-sm text-indigo-700 dark:text-indigo-400">Verify Identity (KYC)</p>
+                        <i class="fa-solid fa-chevron-right text-indigo-400 text-xs"></i>
+                    </div>
+                    <div onclick="openSettings()" class="bg-white dark:bg-darkCard p-4 rounded-2xl flex items-center gap-4 border border-slate-200 dark:border-zinc-800 cursor-pointer active:scale-95 transition-transform shadow-sm">
+                        <div class="h-10 w-10 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></div>
+                        <p class="flex-1 font-semibold text-sm">Security & Password</p>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </div>
+                    <div onclick="logoutUser()" class="bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 p-4 rounded-2xl flex items-center gap-4 border border-rose-200 dark:border-rose-900/30 cursor-pointer active:scale-95 transition-transform shadow-sm">
+                        <div class="h-10 w-10 rounded-full flex items-center justify-center"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                        <p class="flex-1 font-bold text-sm">Log Out</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- OVERLAYS -->
+            
+            <!-- Withdraw Overlay -->
+            <div id="withdraw-overlay" class="absolute inset-0 bg-slate-50 dark:bg-darkBg z-[60] hidden slide-in-right flex-col pb-6">
+                <div class="p-5 flex items-center gap-4 border-b border-slate-200 dark:border-zinc-800 shadow-sm bg-white/50 dark:bg-darkBg/50 backdrop-blur-md">
+                    <button onclick="closeWithdraw()" class="h-8 w-8 rounded-full bg-slate-200 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2 class="text-lg font-bold">Withdraw Funds</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto px-5 pt-6">
+                    <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 p-6 rounded-2xl text-center text-white shadow-lg mb-6 float-1">
+                        <p class="text-xs font-bold uppercase tracking-wider opacity-80 mb-1">Available to Withdraw</p>
+                        <h2 class="text-3xl font-extrabold">৳ <span id="withdraw-balance-display">0</span></h2>
+                    </div>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 block">Select Payment Method</label>
+                            <div class="relative">
+                                <select id="withdraw-method" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm font-semibold rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 shadow-sm transition-colors">
+                                    <option value="">Loading methods...</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 block">Account Number / ID</label>
+                            <input type="text" id="withdraw-account" placeholder="e.g. 017XXXXXX" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 shadow-sm transition-colors">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 block">Amount (৳)</label>
+                            <input type="number" id="withdraw-amount" placeholder="Min ৳100" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 shadow-sm transition-colors">
+                        </div>
+                    </div>
+                    <button id="btn-withdraw-submit" onclick="submitWithdraw()" class="w-full light-pass glow-pulse bg-slate-900 text-white dark:bg-white dark:text-black font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform text-sm mb-8 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-money-bill-transfer"></i> <span>Request Withdrawal</span>
+                    </button>
+                    <h3 class="font-bold text-sm mb-3 text-slate-500 dark:text-zinc-400 uppercase tracking-wide">Recent Withdrawals</h3>
+                    <div id="withdraw-history-list" class="space-y-3">
+                        <p class="text-sm text-slate-500 dark:text-zinc-400 text-center py-4">No withdrawals yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Overlay -->
+            <div id="settings-overlay" class="absolute inset-0 bg-slate-50 dark:bg-darkBg z-[60] hidden slide-in-right flex-col pb-6">
+                <div class="p-5 flex items-center gap-4 border-b border-slate-200 dark:border-zinc-800 shadow-sm bg-white/50 dark:bg-darkBg/50 backdrop-blur-md">
+                    <button onclick="closeSettings()" class="h-8 w-8 rounded-full bg-slate-200 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2 class="text-lg font-bold">Security & Profile</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto px-5 pt-6 space-y-5">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 block">Change Full Name</label>
+                        <input type="text" id="setting-name" placeholder="Enter new name" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 shadow-sm transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 dark:text-zinc-400 mb-2 block">Change Password</label>
+                        <input type="password" id="setting-password" placeholder="New Password (min 6 chars)" class="w-full bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 shadow-sm transition-colors">
+                    </div>
+                    <button id="btn-save-settings" onclick="saveSettings()" class="w-full light-pass glow-pulse bg-slate-900 text-white dark:bg-white dark:text-black font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform text-sm mt-4 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> <span>Save Changes</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Task Details Overlay -->
+            <div id="task-detail-overlay" class="absolute inset-0 bg-slate-50 dark:bg-darkBg z-[60] hidden slide-in-right flex-col pb-6">
+                <div class="p-5 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800 shadow-sm bg-white/50 dark:bg-darkBg/50 backdrop-blur-md">
+                    <div class="flex items-center gap-4"><button onclick="closeTaskDetails()" class="h-8 w-8 rounded-full bg-slate-200 dark:bg-zinc-800 flex items-center justify-center active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button><h2 id="task-detail-title" class="text-lg font-bold">Task</h2></div>
+                    <button onclick="toggleBulkUpload()" class="text-xs font-bold text-cyan-600 bg-cyan-50 dark:bg-cyan-900/30 px-3 py-1.5 rounded-lg border border-cyan-200 dark:border-cyan-800 active:scale-95 transition-transform shadow-sm"><i class="fa-solid fa-layer-group mr-1"></i> Bulk</button>
+                </div>
+                <div class="flex-1 overflow-y-auto px-5 pt-4">
+                    <div id="task-bulk-area" class="hidden">
+                        <div class="bg-slate-100 dark:bg-zinc-800/50 p-5 rounded-2xl border border-slate-200 dark:border-zinc-700 text-center mb-5 border-dashed"><i class="fa-solid fa-file-csv text-4xl text-cyan-500 mb-3"></i><h3 class="font-bold mb-1">Bulk Submit Tasks</h3><p class="text-xs text-slate-500 dark:text-zinc-400 mb-4">Upload a .txt or .csv file containing multiple accounts.</p><input type="file" id="bulk-file" accept=".txt,.csv" class="w-full text-sm text-slate-500 dark:text-zinc-400 bg-white dark:bg-darkCard border border-slate-200 dark:border-zinc-700 p-2 rounded-xl mb-2 focus:outline-none"></div>
+                        <button id="btn-bulk-submit" onclick="submitBulkTask()" class="w-full light-pass glow-pulse bg-gradient-to-r from-cyan-500 to-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform text-sm"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Upload File</button>
+                    </div>
+                    <div id="task-single-area">
+                        <div id="task-instructions">
+                            <div class="bg-blue-50 dark:bg-blue-500/10 p-4 rounded-xl border border-blue-100 dark:border-blue-500/20 mb-5">
+                                <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2"><i class="fa-solid fa-circle-info mr-1"></i> Guidelines</h3>
+                                <p id="task-detail-desc" class="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">Instructions loading...</p>
+                            </div>
+                            <button onclick="startTaskAction()" class="w-full light-pass glow-pulse bg-slate-900 text-white dark:bg-white dark:text-black font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform text-sm">Start Task Now</button>
+                        </div>
+                        <div id="task-action-area" class="hidden">
+                            <div class="flex justify-between items-center mb-3">
+                                <p class="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase">Tap to copy details:</p>
+                                <button onclick="cancelCurrentTask()" class="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-800/50 active:scale-95 transition-transform"><i class="fa-solid fa-xmark mr-1"></i> Cancel Task</button>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3 mb-5" id="dynamic-credentials">
+                                <!-- Data will be injected here dynamically -->
+                            </div>
+                            
+                            <!-- Dynamic Inputs Area (for UID, 2FA, Cookies etc) -->
+                            <div id="dynamic-inputs-area" class="space-y-4 mb-5"></div>
+                            
+                            <button id="btn-task-submit" onclick="submitSingleTask()" class="w-full light-pass glow-pulse bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-95 transition-all text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-check-circle"></i> <span>Submit Task</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Overlay -->
+            <div id="notif-overlay" class="absolute inset-0 bg-slate-50 dark:bg-darkBg z-[70] hidden slide-in-right flex-col pb-6">
+                <div class="p-5 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800 shadow-sm bg-white/50 dark:bg-darkBg/50 backdrop-blur-md"><div class="flex items-center gap-4"><button onclick="closeNotifications()" class="h-8 w-8 bg-slate-200 dark:bg-zinc-800 rounded-full active:scale-95"><i class="fa-solid fa-arrow-left"></i></button><h2 class="font-bold">Notifications</h2></div><button onclick="clearNotifications()" class="text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-500/10 px-3 py-1.5 rounded-lg active:scale-95">Clear All</button></div>
+                <div id="notif-list" class="flex-1 overflow-y-auto px-5 pt-4 space-y-3"></div>
+                <div id="notif-empty" class="hidden flex-1 flex-col items-center justify-center px-5 opacity-50"><i class="fa-regular fa-bell-slash text-6xl text-slate-400 mb-4"></i><p class="text-sm font-bold text-slate-500 dark:text-zinc-400">No new notifications</p></div>
+            </div>
+
+            <!-- Specific Notification Popup Modal -->
+            <div id="notif-detail-modal" class="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+                <div class="bg-white dark:bg-darkCard p-6 rounded-3xl shadow-2xl max-w-[320px] w-full border border-slate-200 dark:border-zinc-700 transform scale-95 transition-transform duration-300" id="notif-detail-content">
+                    <div class="flex justify-between items-start mb-4"><div id="notif-detail-icon" class="h-12 w-12 rounded-full flex items-center justify-center text-xl"></div><button onclick="closeNotifDetail()" class="text-slate-400 hover:text-rose-500 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+                    <h3 id="notif-detail-title" class="text-xl font-bold text-slate-800 dark:text-white mb-2">Title</h3>
+                    <p id="notif-detail-msg" class="text-sm text-slate-600 dark:text-zinc-400 mb-5 leading-relaxed">Message goes here...</p>
+                    <div class="flex justify-between items-center border-t border-slate-100 dark:border-zinc-800 pt-3"><p id="notif-detail-time" class="text-[11px] text-slate-400 font-medium"><i class="fa-regular fa-clock"></i> Now</p><button onclick="closeNotifDetail()" class="text-[11px] font-bold text-cyan-500 bg-cyan-50 dark:bg-cyan-500/10 px-3 py-1.5 rounded-lg">Got it</button></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav id="bottom-nav" class="absolute bottom-0 w-full bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-lg border-t border-slate-200 dark:border-zinc-800 rounded-t-[30px] px-6 py-3 pb-6 z-50 transition-colors shadow-[0_-10px_20px_rgba(0,0,0,0.05)] dark:shadow-none">
+            <div class="flex justify-between items-center relative">
+                <button onclick="switchAppTab('home')" class="app-nav-item active flex flex-col items-center gap-1 p-2 text-cyan-600 dark:text-cyan-400 w-12 transition-colors"><i class="fa-solid fa-house text-xl"></i><span class="text-[9px] font-bold mt-1">Home</span></button>
+                <button onclick="switchAppTab('top')" class="app-nav-item flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-zinc-500 w-12 mr-6 transition-colors"><i class="fa-solid fa-ranking-star text-xl"></i><span class="text-[9px] font-bold mt-1">Top</span></button>
+                <div class="task-btn-wrapper"><button onclick="switchAppTab('task')" class="task-fab h-16 w-16 rounded-full flex items-center justify-center text-white border-[5px] border-slate-50 dark:border-[#09090b]"><i class="fa-solid fa-briefcase text-2xl"></i></button><span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-slate-400 dark:text-zinc-500 app-task-text transition-colors">Tasks</span></div>
+                <button onclick="switchAppTab('refer')" class="app-nav-item flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-zinc-500 w-12 ml-6 transition-colors"><i class="fa-solid fa-users text-xl"></i><span class="text-[9px] font-bold mt-1">Refer</span></button>
+                <button onclick="switchAppTab('profile')" class="app-nav-item flex flex-col items-center gap-1 p-2 text-slate-400 dark:text-zinc-500 w-12 transition-colors"><i class="fa-regular fa-user text-xl"></i><span class="text-[9px] font-bold mt-1">Profile</span></button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- UI Scripts -->
+    <script>
+        let currentUserBalance = 0; let isUserVerified = false; let activeTaskId = null; let submittedTaskIds = []; let isFreshLogin = false;
+        
+        let activeTaskPlatform = ''; let activeTaskPassword = ''; let activeTaskFormat = [];
+        let currentOverlay = null;
+
+        window.getPlatformStyles = (platform) => {
+            let p = (platform || 'facebook').toLowerCase();
+            if(p === 'facebook') return { bg: 'bg-[#1877F2]/10', text: 'text-[#1877F2]', icon: 'fa-facebook' };
+            if(p === 'youtube') return { bg: 'bg-[#FF0000]/10', text: 'text-[#FF0000]', icon: 'fa-youtube' };
+            if(p === 'instagram') return { bg: 'bg-[#E1306C]/10', text: 'text-[#E1306C]', icon: 'fa-instagram' };
+            if(p === 'tiktok') return { bg: 'bg-black/5 dark:bg-white/10', text: 'text-black dark:text-white', icon: 'fa-tiktok' };
+            if(p === 'twitter' || p === 'x') return { bg: 'bg-[#1DA1F2]/10', text: 'text-[#1DA1F2]', icon: 'fa-twitter' };
+            return { bg: 'bg-cyan-500/10', text: 'text-cyan-500', icon: 'fa-briefcase' };
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId), icon = document.getElementById(iconId);
+            if(input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye-slash', 'fa-eye'); } 
+            else { input.type = 'password'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+        }
+
+        function toggleAuth(type) {
+            const loginForm = document.getElementById('login-form'), registerForm = document.getElementById('register-form'), indicator = document.getElementById('auth-indicator'), btnLogin = document.getElementById('btn-login-tab'), btnRegister = document.getElementById('btn-register-tab');
+            if(type === 'register') {
+                indicator.style.transform = 'translateX(100%)'; btnLogin.classList.replace('text-slate-900', 'text-slate-500'); btnLogin.classList.replace('dark:text-white', 'dark:text-zinc-400'); btnRegister.classList.replace('text-slate-500', 'text-slate-900'); btnRegister.classList.replace('dark:text-zinc-400', 'dark:text-white');
+                loginForm.style.transform = 'translateX(-100%)'; loginForm.style.opacity = '0'; loginForm.classList.add('pointer-events-none'); registerForm.style.transform = 'translateX(0)'; registerForm.style.opacity = '1'; registerForm.classList.remove('pointer-events-none');
+            } else {
+                indicator.style.transform = 'translateX(0)'; btnRegister.classList.replace('text-slate-900', 'text-slate-500'); btnRegister.classList.replace('dark:text-white', 'dark:text-zinc-400'); btnLogin.classList.replace('text-slate-500', 'text-slate-900'); btnLogin.classList.replace('dark:text-zinc-400', 'dark:text-white');
+                registerForm.style.transform = 'translateX(100%)'; registerForm.style.opacity = '0'; registerForm.classList.add('pointer-events-none'); loginForm.style.transform = 'translateX(0)'; loginForm.style.opacity = '1'; loginForm.classList.remove('pointer-events-none');
+            }
+            if (navigator.vibrate) navigator.vibrate(40);
+        }
+
+        function toggleTheme() {
+            const htmlTag = document.documentElement, authIcon = document.getElementById('theme-icon'), appIcon = document.getElementById('app-theme-icon');
+            if (htmlTag.classList.contains('dark')) { htmlTag.classList.remove('dark'); if(authIcon) { authIcon.classList.replace('fa-sun', 'fa-moon'); authIcon.classList.replace('text-yellow-400', 'text-indigo-500'); } if(appIcon) { appIcon.classList.replace('fa-sun', 'fa-moon'); appIcon.classList.replace('text-yellow-400', 'text-indigo-500'); } } 
+            else { htmlTag.classList.add('dark'); if(authIcon) { authIcon.classList.replace('fa-moon', 'fa-sun'); authIcon.classList.replace('text-indigo-500', 'text-yellow-400'); } if(appIcon) { appIcon.classList.replace('fa-moon', 'fa-sun'); appIcon.classList.replace('text-indigo-500', 'text-yellow-400'); } }
+        }
+
+        function setButtonLoading(id, isLoading, defaultText, iconClass) {
+            const btn = document.getElementById(id); if(!btn) return;
+            if (isLoading) { btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Processing...</span>`; } 
+            else { btn.disabled = false; btn.classList.remove('opacity-70', 'cursor-not-allowed'); 
+                if(iconClass) { btn.innerHTML = `<i class="${iconClass}"></i> <span>${defaultText}</span>`; }
+                else { btn.innerHTML = `<span>${defaultText}</span>`; }
+            }
+        }
+
+        function openOverlay(id) {
+            document.getElementById(id).style.display = 'flex';
+            document.getElementById('bottom-nav').style.display = 'none';
+            currentOverlay = id;
+            history.pushState({ overlay: id }, '', '#' + id);
+        }
+
+        function closeAnyOverlay(id) {
+            document.getElementById(id).style.display = 'none';
+            document.getElementById('bottom-nav').style.display = 'block';
+            if(id === 'task-detail-overlay') {
+                document.getElementById('task-instructions').style.display = 'block'; 
+                document.getElementById('task-action-area').style.display = 'none';
+            }
+            currentOverlay = null;
+        }
+
+        window.addEventListener('popstate', (e) => {
+            if (currentOverlay) { closeAnyOverlay(currentOverlay); } 
+            else if (e.state && e.state.tab) { switchAppTab(e.state.tab, false); } 
+            else { switchAppTab('home', false); }
+        });
+
+        function openSettings() { openOverlay('settings-overlay'); }
+        function closeSettings() { if(currentOverlay==='settings-overlay') history.back(); else closeAnyOverlay('settings-overlay'); }
+        
+        function openWithdraw() { openOverlay('withdraw-overlay'); document.getElementById('withdraw-balance-display').innerText = currentUserBalance.toLocaleString(); }
+        function closeWithdraw() { if(currentOverlay==='withdraw-overlay') history.back(); else closeAnyOverlay('withdraw-overlay'); }
+        
+        function openNotifications() { openOverlay('notif-overlay'); const badge = document.getElementById('notif-badge'); if(badge) badge.style.display = 'none'; }
+        function closeNotifications() { if(currentOverlay==='notif-overlay') history.back(); else closeAnyOverlay('notif-overlay'); }
+        
+        function closeTaskDetails() { if(currentOverlay==='task-detail-overlay') history.back(); else closeAnyOverlay('task-detail-overlay'); }
+
+        function toggleLeaderboard(type) { 
+            const lbApproved = document.getElementById('lb-approved'), lbPending = document.getElementById('lb-pending'), indicator = document.getElementById('lb-indicator'), btnApproved = document.getElementById('btn-lb-approved'), btnPending = document.getElementById('btn-lb-pending'); 
+            if(type === 'pending') { 
+                indicator.style.transform = 'translateX(100%)'; 
+                btnApproved.classList.replace('text-slate-900', 'text-slate-500'); btnApproved.classList.replace('dark:text-white', 'dark:text-zinc-400'); 
+                btnPending.classList.replace('text-slate-500', 'text-slate-900'); btnPending.classList.replace('dark:text-zinc-400', 'dark:text-white'); 
+                
+                lbApproved.classList.remove('relative'); lbApproved.classList.add('absolute', 'top-0', 'left-0');
+                lbApproved.style.transform = 'translateX(-100%)'; lbApproved.style.opacity = '0'; lbApproved.classList.add('pointer-events-none'); 
+                
+                lbPending.classList.remove('absolute', 'top-0', 'left-0'); lbPending.classList.add('relative');
+                lbPending.style.transform = 'translateX(0)'; lbPending.style.opacity = '1'; lbPending.classList.remove('pointer-events-none'); 
+            } else { 
+                indicator.style.transform = 'translateX(0)'; 
+                btnPending.classList.replace('text-slate-900', 'text-slate-500'); btnPending.classList.replace('dark:text-white', 'dark:text-zinc-400'); 
+                btnApproved.classList.replace('text-slate-500', 'text-slate-900'); btnApproved.classList.replace('dark:text-zinc-400', 'dark:text-white'); 
+                
+                lbPending.classList.remove('relative'); lbPending.classList.add('absolute', 'top-0', 'left-0');
+                lbPending.style.transform = 'translateX(100%)'; lbPending.style.opacity = '0'; lbPending.classList.add('pointer-events-none'); 
+                
+                lbApproved.classList.remove('absolute', 'top-0', 'left-0'); lbApproved.classList.add('relative');
+                lbApproved.style.transform = 'translateX(0)'; lbApproved.style.opacity = '1'; lbApproved.classList.remove('pointer-events-none'); 
+            } 
+        }
+        
+        window.clearNotifications = () => { 
+            let clearedNotices = JSON.parse(localStorage.getItem('clearedNotices')) || [];
+            document.querySelectorAll('.notice-card').forEach(el => { if (!clearedNotices.includes(el.dataset.id)) clearedNotices.push(el.dataset.id); });
+            localStorage.setItem('clearedNotices', JSON.stringify(clearedNotices));
+            document.getElementById('notif-list').style.display = 'none'; document.getElementById('notif-empty').style.display = 'flex'; document.getElementById('notif-empty').classList.add('flex-col'); const badge = document.getElementById('notif-badge'); if(badge) badge.style.display = 'none';
+        }
+        
+        window.openNotifDetail = (id, title, msg, colorTheme) => { 
+            let clearedNotices = JSON.parse(localStorage.getItem('clearedNotices')) || [];
+            if (!clearedNotices.includes(id)) { clearedNotices.push(id); localStorage.setItem('clearedNotices', JSON.stringify(clearedNotices)); }
+            const card = document.querySelector(`.notice-card[data-id="${id}"]`); if(card) card.style.display = 'none';
+            const visibleCards = document.querySelectorAll('.notice-card:not([style*="display: none"])');
+            if(visibleCards.length === 0) { const badge = document.getElementById('notif-badge'); if(badge) badge.style.display = 'none'; }
+
+            const modal = document.getElementById('notif-detail-modal'); document.getElementById('notif-detail-title').innerText = title; document.getElementById('notif-detail-msg').innerText = msg; const iconDiv = document.getElementById('notif-detail-icon'); iconDiv.className = `h-12 w-12 rounded-full bg-${colorTheme}-100 dark:bg-${colorTheme}-500/20 text-${colorTheme}-500 flex items-center justify-center text-xl`; if(colorTheme === 'emerald') iconDiv.innerHTML = '<i class="fa-solid fa-check"></i>'; else iconDiv.innerHTML = '<i class="fa-regular fa-bell"></i>'; modal.classList.remove('pointer-events-none', 'opacity-0'); document.getElementById('notif-detail-content').classList.remove('scale-95'); 
+        }
+        window.closeNotifDetail = () => { const modal = document.getElementById('notif-detail-modal'); modal.classList.add('opacity-0', 'pointer-events-none'); document.getElementById('notif-detail-content').classList.add('scale-95'); }
+        
+        function switchAppTab(tabId, pushToHistory = true) { 
+            document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active')); 
+            document.getElementById('page-' + tabId).classList.add('active'); 
+            
+            document.querySelectorAll('.app-nav-item').forEach(item => { item.classList.remove('text-cyan-600', 'dark:text-cyan-400'); item.classList.add('text-slate-400', 'dark:text-zinc-500'); }); 
+            document.querySelector('.app-task-text').classList.remove('text-cyan-600', 'dark:text-cyan-400'); 
+            
+            const btn = document.querySelector(`button[onclick*="switchAppTab('${tabId}')"]`);
+            if(btn && tabId !== 'task') {
+                btn.classList.remove('text-slate-400', 'dark:text-zinc-500'); 
+                btn.classList.add('text-cyan-600', 'dark:text-cyan-400'); 
+            } else if (tabId === 'task') { 
+                document.querySelector('.app-task-text').classList.add('text-cyan-600', 'dark:text-cyan-400'); 
+            } 
+
+            if(pushToHistory) {
+                if(tabId === 'home') { history.replaceState({ tab: 'home' }, '', '#home'); } 
+                else { history.pushState({ tab: tabId }, '', '#' + tabId); }
+            }
+        }
+        
+        window.startTaskAction = () => { 
+            document.getElementById('task-instructions').style.display = 'none'; 
+            document.getElementById('task-action-area').style.display = 'block'; 
+            
+            let taskData = localStorage.getItem('task_data_' + activeTaskId);
+            
+            if(!taskData) {
+                const firstNames = ['Md', 'Abu', 'Sami', 'Alex', 'John', 'David', 'Rahim', 'Karim', 'Sajid', 'Tariq', 'Hasan', 'Sam'];
+                const lastNames = ['Hasan', 'Islam', 'Rahman', 'Khan', 'Sheikh', 'Ali', 'Ahmed', 'Chowdhury', 'Doe'];
+                const fName = firstNames[Math.floor(Math.random()*firstNames.length)];
+                const lName = lastNames[Math.floor(Math.random()*lastNames.length)];
+                
+                const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                let uname = fName.toLowerCase() + '_' + lName.toLowerCase() + '-';
+                for(let i=0; i<4; i++) uname += chars.charAt(Math.floor(Math.random() * chars.length));
+                
+                taskData = JSON.stringify({
+                    firstName: fName,
+                    lastName: lName,
+                    fullName: fName + ' ' + lName,
+                    username: uname.substring(0, 29)
+                });
+                localStorage.setItem('task_data_' + activeTaskId, taskData);
+            }
+            
+            const data = JSON.parse(taskData);
+            const passToShow = activeTaskPassword || 'Pass@2026!xyz';
+            const credContainer = document.getElementById('dynamic-credentials');
+            
+            let html = '';
+            if(activeTaskPlatform === 'instagram') {
+                html += `<div onclick="copyData('${data.fullName}', this)" class="bg-white dark:bg-darkCard p-3 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm cursor-pointer relative active:scale-95 transition-colors duration-300 text-center"><p class="text-[10px] text-slate-400 mb-1">Name</p><p class="font-bold text-sm text-cyan-600 dark:text-cyan-400">${data.fullName}</p></div>`;
+                html += `<div onclick="copyData('${data.username}', this)" class="bg-white dark:bg-darkCard p-3 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm cursor-pointer relative active:scale-95 transition-colors duration-300 text-center"><p class="text-[10px] text-slate-400 mb-1">Username</p><p class="font-bold text-sm text-cyan-600 dark:text-cyan-400">${data.username}</p></div>`;
+            } else {
+                html += `<div onclick="copyData('${data.firstName}', this)" class="bg-white dark:bg-darkCard p-3 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm cursor-pointer relative active:scale-95 transition-colors duration-300 text-center"><p class="text-[10px] text-slate-400 mb-1">First Name</p><p class="font-bold text-sm text-cyan-600 dark:text-cyan-400">${data.firstName}</p></div>`;
+                html += `<div onclick="copyData('${data.lastName}', this)" class="bg-white dark:bg-darkCard p-3 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm cursor-pointer relative active:scale-95 transition-colors duration-300 text-center"><p class="text-[10px] text-slate-400 mb-1">Last Name</p><p class="font-bold text-sm text-cyan-600 dark:text-cyan-400">${data.lastName}</p></div>`;
+            }
+            html += `<div onclick="copyData('${passToShow}', this)" class="col-span-2 bg-white dark:bg-darkCard p-3 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm cursor-pointer relative active:scale-95 transition-colors duration-300 text-center"><p class="text-[10px] text-slate-400 mb-1">Password</p><p class="font-bold text-sm text-cyan-600 dark:text-cyan-400 tracking-wider">${passToShow}</p></div>`;
+            
+            credContainer.innerHTML = html;
+
+            // Generate Input Boxes based on format Array
+            const inputsArea = document.getElementById('dynamic-inputs-area');
+            let inputsHtml = '';
+            
+            if(activeTaskFormat.length > 0) {
+                activeTaskFormat.forEach((f, i) => {
+                    let fieldId = `sub-field-${i}`;
+                    let placeholder = `Enter ${f}...`;
+                    let isTextarea = (f.toLowerCase() === 'cookies' || f.toLowerCase() === 'token');
+                    
+                    if(f.toLowerCase() === '2fa') {
+                        inputsHtml += `<div>
+                            <label class="text-xs font-bold text-rose-500 dark:text-rose-400 mb-1 block">2FA Secret Key (Required)*</label>
+                            <input type="text" id="${fieldId}" data-name="${f}" oninput="generateOTP(this.value)" placeholder="Paste 2FA Secret here..." class="w-full bg-slate-100 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                            <div id="otpDisplay" class="hidden mt-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 p-3 rounded-xl flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="copyOTP(this)"><div><p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">Generated OTP</p><p id="otpCode" class="text-xl font-black text-emerald-700 dark:text-emerald-300 tracking-widest mt-1">------</p></div><i class="fa-regular fa-copy text-emerald-500 text-lg"></i></div>
+                        </div>`;
+                    } else if(isTextarea) {
+                        inputsHtml += `<div>
+                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-1 block">${f} (Required)*</label>
+                            <textarea id="${fieldId}" data-name="${f}" placeholder="${placeholder}" class="w-full h-20 bg-slate-100 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors resize-none"></textarea>
+                        </div>`;
+                    } else {
+                        inputsHtml += `<div>
+                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-1 block">${f} (Required)*</label>
+                            <input type="text" id="${fieldId}" data-name="${f}" placeholder="${placeholder}" class="w-full bg-slate-100 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>`;
+                    }
+                });
+            } else {
+                inputsHtml = `<p class="text-xs text-rose-500 text-center italic py-2">No submission format set for this task. You can just submit.</p>`;
+            }
+            inputsArea.innerHTML = inputsHtml;
+        }
+
+        window.cancelCurrentTask = () => {
+            if(confirm("Are you sure you want to cancel? New data will be generated next time you enter this task.")) {
+                localStorage.removeItem('task_data_' + activeTaskId);
+                closeTaskDetails();
+            }
+        }
+
+        function toggleBulkUpload() { const singleArea = document.getElementById('task-single-area'), bulkArea = document.getElementById('task-bulk-area'); if(bulkArea.style.display === 'block') { bulkArea.style.display = 'none'; singleArea.style.display = 'block'; } else { singleArea.style.display = 'none'; bulkArea.style.display = 'block'; } }
+        
+        window.copyData = (text, element) => { 
+            navigator.clipboard.writeText(text); 
+            showFloatingText('Copied!', element); 
+            element.classList.remove('bg-white', 'dark:bg-darkCard', 'border-slate-200', 'dark:border-zinc-700');
+            element.classList.add('bg-emerald-50', 'dark:bg-emerald-500/10', 'border-emerald-400', 'dark:border-emerald-500/50');
+        }
+
+        window.copyOTP = (element) => { navigator.clipboard.writeText(document.getElementById('otpCode').innerText); showFloatingText('OTP Copied!', element); }
+        function showFloatingText(msg, parent) { const floater = document.createElement('div'); floater.className = 'copy-floater'; floater.innerText = msg; parent.appendChild(floater); setTimeout(() => floater.remove(), 600); }
+        window.generateOTP = (val) => { const display = document.getElementById('otpDisplay'); if(val.length > 8) { document.getElementById('otpCode').innerText = Math.floor(100000 + Math.random() * 900000); display.classList.remove('hidden'); } else { display.classList.add('hidden'); } }
+
+        window.openDynamicTask = (id, title, desc, req2fa, reqCook, platform, pass) => {
+            if(submittedTaskIds.includes(id)) return alert("You have already submitted this task!");
+            activeTaskId = id; 
+            activeTaskPlatform = platform || 'facebook'; 
+            activeTaskPassword = pass || '';
+            
+            // Get raw task data to find format array
+            let rawTaskData = localStorage.getItem('raw_tasks_cache');
+            if(rawTaskData) {
+                let cache = JSON.parse(rawTaskData);
+                let tData = cache.find(x => x.id === id);
+                if(tData && tData.formatArray) activeTaskFormat = tData.formatArray;
+                else activeTaskFormat = [];
+            } else { activeTaskFormat = []; }
+            
+            document.getElementById('task-detail-title').innerText = title; document.getElementById('task-detail-desc').innerText = desc;
+            
+            const submitBtn = document.getElementById('btn-task-submit');
+            submitBtn.disabled = false; submitBtn.classList.replace('from-slate-500', 'from-emerald-500'); submitBtn.classList.replace('to-slate-600', 'to-cyan-500'); submitBtn.classList.add('glow-pulse', 'active:scale-95');
+            submitBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>Submit Task</span>`;
+            
+            openOverlay('task-detail-overlay'); 
+        }
+
+    </script>
+
+    <!-- FIREBASE DB & AUTH API SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, updateProfile, updatePassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB7fXgHjnMA2wQwmvU4eOycHjiRIoVn5U",
+            authDomain: "microtask-pro-bb3a0.firebaseapp.com",
+            projectId: "microtask-pro-bb3a0",
+            storageBucket: "microtask-pro-bb3a0.firebasestorage.app",
+            messagingSenderId: "1032963267282",
+            appId: "1:1032963267282:web:a5ec4fba2699c32922ab0b",
+            measurementId: "G-1H11MKMNLP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        
+        let verifyInterval, timerInterval;
+        let verifyTimeLeft = 300;
+        let isRegistering = false;
+
+        setPersistence(auth, browserLocalPersistence).catch((error) => { console.error("Persistence Error:", error); });
+
+        getRedirectResult(auth).then((result) => {
+            if (result) { isFreshLogin = true; }
+        }).catch((error) => { console.error("Redirect Error:", error); });
+
+        onAuthStateChanged(auth, async (user) => {
+            try {
+                if (user) {
+                    const hasGoogle = user.providerData.some(p => p.providerId === 'google.com');
+                    
+                    if (!user.emailVerified && !hasGoogle) {
+                        if (isRegistering) return; 
+                        startVerificationCheck(user); 
+                        return;
+                    }
+                    
+                    try {
+                        const userRef = doc(db, "users", user.uid);
+                        const userSnap = await getDoc(userRef);
+                        if(!userSnap.exists()){
+                            const defaultName = user.displayName || user.email.split('@')[0];
+                            await setDoc(userRef, { name: defaultName, email: user.email, balance: 0, totalEarned: 0, totalWithdrawn: 0, pendingTasks: 0, approvedTasks: 0, kycVerified: false, kycStatus: "unverified", submittedTasks: [] });
+                        }
+                    } catch(err) { console.log("DB handled:", err); }
+                    
+                    showAppUI(user, !isFreshLogin);
+                    loadDatabaseRealtime(user); 
+                    isFreshLogin = false;
+                } else { 
+                    showAuthScreen(); 
+                }
+            } catch(e) {
+                console.error(e);
+                auth.signOut(); showAuthScreen();
+            }
+        });
+
+        function startVerificationCheck(user) {
+            document.getElementById('global-loader').style.display = 'none'; 
+            document.getElementById('auth-container').style.display = 'flex'; 
+            document.getElementById('main-app-container').style.display = 'none';
+            
+            const modal = document.getElementById('verify-modal');
+            modal.classList.remove('pointer-events-none', 'opacity-0'); 
+            document.getElementById('verify-modal-content').classList.remove('scale-95');
+            
+            document.getElementById('btn-resend-link').classList.add('hidden');
+            verifyTimeLeft = 300;
+            updateTimerDisplay();
+
+            clearInterval(verifyInterval);
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                verifyTimeLeft--;
+                updateTimerDisplay();
+                if(verifyTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('btn-resend-link').classList.remove('hidden');
+                    document.getElementById('verify-timer-display').innerText = "00:00";
+                }
+            }, 1000);
+
+            verifyInterval = setInterval(async () => {
+                if(verifyTimeLeft > 0) {
+                    await user.reload();
+                    if (user.emailVerified) { 
+                        clearInterval(verifyInterval); 
+                        clearInterval(timerInterval);
+                        
+                        modal.classList.add('opacity-0', 'pointer-events-none'); 
+                        document.getElementById('verify-modal-content').classList.add('scale-95'); 
+                        
+                        try {
+                            const userRef = doc(db, "users", user.uid);
+                            const uSnap = await getDoc(userRef);
+                            if(!uSnap.exists()) {
+                                await setDoc(userRef, { name: user.displayName || user.email.split('@')[0], email: user.email, balance: 0, totalEarned: 0, totalWithdrawn: 0, pendingTasks: 0, approvedTasks: 0, kycVerified: false, kycStatus: "unverified", submittedTasks: [] });
+                            }
+                        } catch(err) { console.log("DB Init:", err); }
+                        
+                        showAppUI(user, false); 
+                        loadDatabaseRealtime(user);
+                    }
+                }
+            }, 3000);
+        }
+
+        function updateTimerDisplay() {
+            if(verifyTimeLeft <= 0) return;
+            let m = Math.floor(verifyTimeLeft / 60).toString().padStart(2, '0');
+            let s = (verifyTimeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('verify-timer-display').innerText = m + ":" + s;
+        }
+
+        window.resendVerification = async () => {
+            const user = auth.currentUser;
+            if(user) {
+                setButtonLoading('btn-resend-link', true, 'Sending...', 'fa-solid fa-spinner');
+                try {
+                    await sendEmailVerification(user);
+                    alert("Verification link sent again to your email!");
+                    startVerificationCheck(user); 
+                } catch(e) {
+                    alert("Error: " + e.message);
+                }
+                setButtonLoading('btn-resend-link', false, 'Resend Link', 'fa-solid fa-rotate-right');
+            }
+        }
+
+        function showAuthScreen() { 
+            document.getElementById('global-loader').style.display = 'none'; 
+            document.getElementById('auth-container').style.display = 'flex'; 
+            document.getElementById('main-app-container').style.display = 'none'; 
+            document.getElementById('auth-theme-btn').style.display = 'flex'; 
+            
+            setTimeout(() => {
+                document.getElementById('login-email').value = ''; document.getElementById('login-password').value = '';
+                document.getElementById('reg-name').value = ''; document.getElementById('reg-email').value = ''; document.getElementById('reg-password').value = '';
+            }, 100);
+        }
+        
+        function showAppUI(user, instant = false) {
+            document.getElementById('global-loader').style.display = 'none'; 
+            document.getElementById('auth-container').style.display = 'none'; 
+            document.getElementById('auth-theme-btn').style.display = 'none';
+            
+            if(instant) { 
+                document.getElementById('main-app-container').style.display = 'flex'; 
+                switchAppTab('home', false); 
+                history.replaceState({ tab: 'home' }, '', '#home');
+            } else {
+                const displayName = user.displayName || user.email.split('@')[0];
+                const successScreen = document.getElementById('success-screen');
+                document.getElementById('success-name').innerText = displayName; 
+                successScreen.classList.remove('opacity-0', 'pointer-events-none');
+                
+                setTimeout(() => { 
+                    successScreen.classList.add('opacity-0', 'pointer-events-none'); 
+                    setTimeout(() => { 
+                        document.getElementById('main-app-container').style.display = 'flex'; 
+                        document.getElementById('main-app-container').classList.add('fade-in'); 
+                        switchAppTab('home', false); 
+                        history.replaceState({ tab: 'home' }, '', '#home');
+                    }, 300); 
+                }, 1500);
+            }
+        }
+
+        function loadDatabaseRealtime(user) {
+            const uid = user.uid;
+
+            // Global Check
+            onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
+                if(docSnap.exists()) {
+                    let tasksEnabled = docSnap.data().tasksEnabled ?? true;
+                    if(!tasksEnabled) {
+                        document.getElementById('task-list-container').innerHTML = `<div class="bg-rose-50 dark:bg-rose-500/10 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/30 text-center"><i class="fa-solid fa-ban text-4xl text-rose-500 mb-3"></i><h3 class="font-bold text-rose-700 dark:text-rose-400">Tasks are Currently Disabled</h3><p class="text-xs text-rose-600 dark:text-rose-300 mt-1">Admin has paused all tasks. Check back later.</p></div>`;
+                        document.getElementById('task-count-badge').innerText = `0 Available`;
+                    }
+                }
+            });
+
+            onSnapshot(doc(db, "users", uid), async (docSnap) => {
+                if(!docSnap.exists()){ return; }
+                const data = docSnap.data();
+                
+                currentUserBalance = data.balance || 0;
+                isUserVerified = data.kycVerified || false;
+                submittedTaskIds = data.submittedTasks || [];
+                
+                if(data.isBanned) {
+                    await auth.signOut();
+                    alert("Your account has been BANNED by Admin.");
+                    window.location.reload();
+                    return;
+                }
+
+                const displayName = data.name || user.displayName || user.email.split('@')[0];
+                const photoUrl = user.photoURL || `https://ui-avatars.com/api/?name=${displayName}&background=0D8ABC&color=fff&bold=true`;
+                
+                document.getElementById('profile-display-email').innerText = data.email || user.email;
+                document.getElementById('user-profile-pic').src = photoUrl;
+                document.getElementById('profile-tab-pic').src = photoUrl;
+                document.getElementById('lb-current-name').innerText = `(${displayName})`;
+                
+                document.getElementById('main-balance').innerText = currentUserBalance.toLocaleString();
+                document.getElementById('withdraw-balance-display').innerText = currentUserBalance.toLocaleString();
+                document.getElementById('profile-total-earned').innerText = (data.totalEarned || 0).toLocaleString();
+                document.getElementById('profile-total-withdrawn').innerText = (data.totalWithdrawn || 0).toLocaleString();
+                document.getElementById('stat-pending-tasks').innerText = data.pendingTasks || 0;
+                document.getElementById('stat-approved-tasks').innerText = data.approvedTasks || 0;
+                document.getElementById('lb-my-approved').innerText = data.approvedTasks || 0;
+                document.getElementById('lb-my-earned').innerText = data.totalEarned || 0;
+
+                const kycBtn = document.getElementById('btn-verify-account'), pBadge = document.getElementById('profile-verify-badge');
+                let verifyTickHTML = '';
+
+                if(isUserVerified) {
+                    verifyTickHTML = `<span class="verify-badge"><i class="fa-solid fa-circle-check text-cyan-500 text-sm ml-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"></i></span>`;
+                    pBadge.innerText = 'Verified'; pBadge.className = 'absolute bottom-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-darkBg shadow-sm transition-all duration-300';
+                    kycBtn.innerHTML = `<div class="h-10 w-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center"><i class="fa-solid fa-circle-check"></i></div><p class="flex-1 font-bold text-sm text-emerald-600 dark:text-emerald-400">Account Verified</p>`;
+                    kycBtn.classList.replace('bg-indigo-50', 'bg-emerald-50'); kycBtn.classList.replace('dark:bg-indigo-500/10', 'dark:bg-emerald-500/10'); kycBtn.style.pointerEvents = 'none';
+                    document.querySelectorAll('.verify-badge').forEach(el => el.classList.remove('hidden'));
+                } else if(data.kycStatus === 'pending') {
+                    pBadge.innerText = 'Pending Review'; pBadge.className = 'absolute bottom-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-darkBg shadow-sm transition-all duration-300';
+                    kycBtn.innerHTML = `<div class="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-hourglass-half"></i></div><p class="flex-1 font-bold text-sm text-amber-600 dark:text-amber-400">KYC Under Review</p>`;
+                    kycBtn.style.pointerEvents = 'none';
+                } else {
+                    pBadge.innerText = 'Unverified'; pBadge.className = 'absolute bottom-0 right-0 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-darkBg shadow-sm transition-all duration-300';
+                    kycBtn.innerHTML = `<div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 flex items-center justify-center"><i class="fa-solid fa-id-card"></i></div><p class="flex-1 font-bold text-sm text-indigo-700 dark:text-indigo-400">Verify Identity (KYC)</p><i class="fa-solid fa-chevron-right text-indigo-400 text-xs"></i>`;
+                    kycBtn.classList.replace('bg-emerald-50', 'bg-indigo-50'); kycBtn.classList.replace('dark:bg-emerald-500/10', 'dark:bg-indigo-500/10'); kycBtn.style.pointerEvents = 'auto';
+                }
+
+                document.getElementById('user-display-name-app').innerHTML = displayName + verifyTickHTML;
+                document.getElementById('profile-tab-name').innerHTML = displayName + verifyTickHTML;
+            });
+
+            onSnapshot(collection(db, "tasks"), async (snapshot) => {
+                // Check if globally disabled
+                const gSnap = await getDoc(doc(db, "app_settings", "global"));
+                let isEnabled = true;
+                if(gSnap.exists()) isEnabled = gSnap.data().tasksEnabled ?? true;
+                
+                if(!isEnabled) return; // Prevent overwriting the disabled UI
+
+                const list = document.getElementById('task-list-container');
+                document.getElementById('task-count-badge').innerText = `${snapshot.size} Available`;
+                
+                let cacheArray = [];
+
+                if(snapshot.empty) { list.innerHTML = `<p class="text-center text-sm text-slate-500 py-10">No active tasks at the moment.</p>`; } 
+                else {
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data(); const isDone = submittedTaskIds.includes(docSnap.id);
+                        const doneClass = isDone ? 'opacity-50 pointer-events-none' : 'cursor-pointer active:scale-95 transition-transform';
+                        const doneText = isDone ? 'Submitted' : `৳ ${data.reward}`;
+                        
+                        const safeTitle = String(data.title || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        const safeDesc = String(data.desc || '').replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
+                        const safePass = String(data.password || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        const safePlatform = String(data.platform || 'facebook').replace(/'/g, "\\'");
+                        
+                        // Cache format logic for popup usage
+                        cacheArray.push({ id: docSnap.id, formatArray: data.formatArray || [] });
+
+                        let formatHtml = '';
+                        if(data.formatArray && Array.isArray(data.formatArray)) {
+                            data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-200 dark:bg-zinc-800 text-slate-500 px-1 rounded mx-0.5 border border-slate-300 dark:border-zinc-700">${f}</span>`; });
+                        }
+
+                        const pStyles = window.getPlatformStyles(safePlatform);
+
+                        html += `<div onclick="${isDone ? '' : `openDynamicTask('${docSnap.id}', '${safeTitle}', '${safeDesc}', ${!!data.require2FA}, ${!!data.requireCookies}, '${safePlatform}', '${safePass}')`}" class="float-1 light-pass bg-white dark:bg-darkCard p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-md relative ${doneClass}">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-cyan-500 rounded-l-2xl"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex gap-3 items-center">
+                                    <div class="h-10 w-10 rounded-xl ${pStyles.bg} ${pStyles.text} flex items-center justify-center text-2xl drop-shadow-md">
+                                        <i class="fa-brands ${pStyles.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-sm">${data.title}</p>
+                                        <div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div>
+                                    </div>
+                                </div>
+                                <span class="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-500/20">${doneText}</span>
+                            </div>
+                        </div>`;
+                    }); 
+                    list.innerHTML = html;
+                    localStorage.setItem('raw_tasks_cache', JSON.stringify(cacheArray));
+                }
+            });
+
+            onSnapshot(collection(db, "notices"), (snapshot) => {
+                const list = document.getElementById('notif-list'), badge = document.getElementById('notif-badge');
+                let html = ''; let newCount = 0; let clearedNotices = JSON.parse(localStorage.getItem('clearedNotices')) || [];
+                snapshot.forEach((docSnap) => {
+                    if(!clearedNotices.includes(docSnap.id)) {
+                        newCount++; const data = docSnap.data();
+                        const safeTitle = String(data.title || '').replace(/'/g, "\\'"); const safeMsg = String(data.msg || '').replace(/'/g, "\\'");
+                        html += `<div data-id="${docSnap.id}" onclick="openNotifDetail('${docSnap.id}', '${safeTitle}', '${safeMsg}', '${data.theme}')" class="notice-card p-4 bg-white dark:bg-darkCard rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm relative overflow-hidden cursor-pointer active:scale-95 transition-transform"><div class="absolute top-0 left-0 w-1 h-full bg-${data.theme}-500"></div><h3 class="font-bold text-sm mb-1">${data.title}</h3><p class="text-xs text-slate-500 dark:text-zinc-400 truncate">${data.msg}</p></div>`;
+                    }
+                });
+                if(newCount === 0) { list.innerHTML = ''; list.style.display = 'none'; document.getElementById('notif-empty').style.display = 'flex'; badge.style.display='none'; } 
+                else { document.getElementById('notif-empty').style.display = 'none'; list.style.display = 'block'; badge.style.display='block'; list.innerHTML = html; }
+            });
+
+            onSnapshot(query(collection(db, "payment_methods"), where("isActive", "==", true)), (snapshot) => {
+                const select = document.getElementById('withdraw-method'); let html = '';
+                snapshot.forEach((docSnap) => { html += `<option value="${docSnap.data().name}">${docSnap.data().name}</option>`; });
+                select.innerHTML = html || '<option value="">No methods available</option>';
+            });
+
+            onSnapshot(query(collection(db, "withdrawals"), where("uid", "==", uid)), (snapshot) => {
+                const list = document.getElementById('withdraw-history-list');
+                if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">No withdrawals yet.</p>`; } 
+                else {
+                    let html = '';
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data(); const sColor = data.status === 'paid' ? 'emerald' : 'amber';
+                        html += `<div class="bg-white dark:bg-darkCard p-3 rounded-xl flex items-center justify-between border border-slate-200 dark:border-zinc-800 shadow-sm"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-500"><i class="fa-solid fa-building-columns"></i></div><div><p class="font-bold text-sm capitalize">${data.method}</p></div></div><div class="text-right"><p class="font-bold text-sm">৳ ${data.amount}</p><span class="text-[9px] font-bold bg-${sColor}-100 text-${sColor}-600 dark:bg-${sColor}-500/20 px-2 py-0.5 rounded uppercase">${data.status}</span></div></div>`;
+                    }); list.innerHTML = html;
+                }
+            });
+
+            onSnapshot(query(collection(db, "users"), orderBy("totalEarned", "desc"), limit(10)), (snapshot) => {
+                const listA = document.getElementById('lb-approved-list'); let htmlA = ''; let rank = 1;
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    htmlA += `<div class="bg-yellow-50 dark:bg-yellow-500/5 p-4 rounded-2xl mb-3 flex items-center gap-4 border border-yellow-200 dark:border-yellow-500/30"><h1 class="text-2xl font-black text-yellow-500 w-6 text-center">${rank++}</h1><div class="h-12 w-12 bg-slate-200 dark:bg-zinc-800 rounded-full flex items-center justify-center border-2 border-yellow-500 text-xl"><i class="fa-solid fa-user text-slate-400"></i></div><div class="flex-1"><p class="font-bold text-sm">${data.name}</p><p class="text-[11px] text-slate-500 dark:text-zinc-400">${data.approvedTasks || 0} Tasks done</p></div><p class="text-emerald-600 dark:text-emerald-400 font-bold">৳ ${data.totalEarned || 0}</p></div>`;
+                }); listA.innerHTML = htmlA;
+            });
+        }
+
+        window.submitKYC = async () => {
+            if(isUserVerified) return;
+            const uid = auth.currentUser.uid;
+            const btn = document.getElementById('btn-verify-account');
+            btn.style.pointerEvents = 'none'; btn.innerHTML = `<div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-500 flex items-center justify-center"><i class="fa-solid fa-spinner animate-spin"></i></div><p class="flex-1 font-bold text-sm text-indigo-700 dark:text-indigo-400">Submitting...</p>`;
+            try {
+                await setDoc(doc(db, "kyc_requests", uid), { uid: uid, name: auth.currentUser.displayName || auth.currentUser.email, email: auth.currentUser.email, timestamp: serverTimestamp() });
+                await updateDoc(doc(db, "users", uid), { kycStatus: "pending" });
+                alert("KYC Submitted for Admin Review!");
+            } catch (e) { alert("Error: " + e.message); btn.style.pointerEvents = 'auto'; }
+        }
+
+        window.submitSingleTask = async () => {
+            const uid = auth.currentUser.uid;
+            let submissionData = {};
+            
+            // Loop through dynamic format inputs to collect data
+            if(activeTaskFormat && activeTaskFormat.length > 0) {
+                for(let i=0; i<activeTaskFormat.length; i++) {
+                    const inputEl = document.getElementById(`sub-field-${i}`);
+                    if(inputEl) {
+                        const val = inputEl.value.trim();
+                        if(!val) return alert(`Please fill the required field: ${activeTaskFormat[i]}`);
+                        
+                        if(activeTaskFormat[i].toLowerCase() === 'cookies' && val.length < 50) return alert("Invalid Cookie! Must be longer.");
+                        submissionData[activeTaskFormat[i]] = val;
+                    }
+                }
+            } else {
+                // Retrofit old fallback check
+                if(activeTaskRequires2FA) { const twoFa = document.getElementById('twoFaInput').value.trim(); if(!twoFa) return alert("Please provide the 2FA Secret Key!"); submissionData['2FA'] = twoFa; }
+                if(activeTaskRequiresCookies) { const cookies = document.getElementById('cookieInput').value.trim(); if(cookies.length < 100) return alert("Invalid Cookie!"); submissionData['Cookies'] = cookies; }
+            }
+
+            setButtonLoading('btn-task-submit', true, 'Processing...', 'fa-solid fa-spinner');
+            try {
+                await addDoc(collection(db, "task_submissions"), { 
+                    uid: uid, 
+                    taskId: activeTaskId, 
+                    email: auth.currentUser.email, 
+                    status: "pending", 
+                    submissionData: submissionData,
+                    createdAt: serverTimestamp() 
+                });
+                
+                await updateDoc(doc(db, "users", uid), { pendingTasks: increment(1), submittedTasks: [...submittedTaskIds, activeTaskId] });
+
+                setButtonLoading('btn-task-submit', false, 'Submitted Successfully', 'fa-solid fa-check-double');
+                const submitBtn = document.getElementById('btn-task-submit'); submitBtn.disabled = true; submitBtn.classList.replace('from-emerald-500', 'from-slate-500'); submitBtn.classList.replace('to-cyan-500', 'to-slate-600'); submitBtn.classList.remove('glow-pulse', 'active:scale-95');
+                alert("Task submitted to Admin for review!"); 
+                localStorage.removeItem('task_data_' + activeTaskId);
+                setTimeout(() => { closeTaskDetails(); }, 1500);
+            } catch (e) { setButtonLoading('btn-task-submit', false, 'Submit Task', 'fa-solid fa-check-circle'); alert("Error submitting task: " + e.message); }
+        }
+
+        window.submitWithdraw = async () => {
+            if (!isUserVerified) { alert("Withdrawal Blocked! Your identity (KYC) is not verified."); closeWithdraw(); switchAppTab('profile'); return; }
+            const method = document.getElementById('withdraw-method').value, account = document.getElementById('withdraw-account').value.trim(), amount = parseFloat(document.getElementById('withdraw-amount').value);
+            if (!method) return alert("No payment methods available."); if (!account) return alert("Please enter your account number/ID."); if (!amount || amount < 100) return alert("Minimum withdrawal is ৳100."); if (amount > currentUserBalance) return alert("Insufficient balance!");
+
+            setButtonLoading('btn-withdraw-submit', true, 'Processing...', 'fa-solid fa-spinner');
+            try {
+                await addDoc(collection(db, "withdrawals"), { uid: auth.currentUser.uid, email: auth.currentUser.email, method: method, account: account, amount: amount, status: "pending", timestamp: serverTimestamp() });
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: increment(-amount), totalWithdrawn: increment(amount) });
+                setButtonLoading('btn-withdraw-submit', false, 'Request Withdrawal', 'fa-solid fa-money-bill-transfer'); document.getElementById('withdraw-amount').value = ''; alert(`Withdrawal request of ৳${amount} submitted!`);
+            } catch (e) { setButtonLoading('btn-withdraw-submit', false, 'Request Withdrawal', 'fa-solid fa-money-bill-transfer'); alert("Error: " + e.message); }
+        }
+
+        window.saveSettings = async () => {
+            const newName = document.getElementById('setting-name').value.trim(), newPass = document.getElementById('setting-password').value.trim();
+            if(!newName && !newPass) return alert("Nothing to update!");
+            setButtonLoading('btn-save-settings', true, 'Saving...', 'fa-solid fa-spinner');
+            try {
+                if(newName) { await updateProfile(auth.currentUser, { displayName: newName }); await updateDoc(doc(db, "users", auth.currentUser.uid), { name: newName }); }
+                if(newPass) await updatePassword(auth.currentUser, newPass);
+                setButtonLoading('btn-save-settings', false, 'Saved Successfully', 'fa-solid fa-check'); setTimeout(() => { closeSettings(); setButtonLoading('btn-save-settings', false, 'Save Changes', 'fa-solid fa-floppy-disk'); alert("Profile updated!"); }, 1000);
+            } catch (error) { setButtonLoading('btn-save-settings', false, 'Save Changes', 'fa-solid fa-floppy-disk'); alert("Error: " + error.message); }
+        }
+
+        window.registerUser = async () => {
+            const name = document.getElementById('reg-name').value.trim(), email = document.getElementById('reg-email').value.trim(), password = document.getElementById('reg-password').value.trim();
+            if(!name || !email || !password) return alert("Please fill all fields!"); if(password.length < 6) return alert("Password min 6 chars.");
+            
+            setButtonLoading('btn-reg-submit', true, 'Processing...', 'fa-solid fa-spinner'); 
+            isFreshLogin = true; isRegistering = true;
+            
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(cred.user, { displayName: name });
+                await sendEmailVerification(cred.user);
+                startVerificationCheck(cred.user);
+            } catch (e) { 
+                alert("Registration Error: " + e.message); 
+            } finally {
+                setButtonLoading('btn-reg-submit', false, 'Create Account', 'fa-solid fa-user-plus');
+                isRegistering = false; 
+            }
+        };
+
+        window.cancelVerification = async () => { 
+            clearInterval(verifyInterval); clearInterval(timerInterval);
+            try { await signOut(auth); } catch(e){}
+            const modal = document.getElementById('verify-modal'); 
+            modal.classList.add('opacity-0', 'pointer-events-none'); document.getElementById('verify-modal-content').classList.add('scale-95'); 
+            showAuthScreen(); toggleAuth('login'); 
+        }
+
+        window.logoutUser = async () => { 
+            document.getElementById('global-loader').style.display = 'flex';
+            document.getElementById('loader-text').innerText = "Signing out securely...";
+            try {
+                await signOut(auth);
+                localStorage.clear();
+                window.location.replace(window.location.href.split('#')[0]);
+            } catch(e) { window.location.reload(); }
+        };
+
+        window.loginUser = async () => {
+            const email = document.getElementById('login-email').value.trim(), password = document.getElementById('login-password').value.trim();
+            if(!email || !password) return alert("Enter email and password!");
+            
+            setButtonLoading('btn-login-submit', true, 'Processing...', 'fa-solid fa-spinner'); 
+            isFreshLogin = true;
+            
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                if(!cred.user.emailVerified) { 
+                    alert("Please verify email first!"); 
+                    await auth.signOut(); 
+                }
+            } catch (e) { 
+                alert("Login Failed: Incorrect email or password."); 
+            } finally {
+                setButtonLoading('btn-login-submit', false, 'Login', 'fa-solid fa-right-to-bracket');
+            }
+        };
+
+        window.googleLogin = async () => {
+            setButtonLoading('btn-google-login', true, 'Processing...', 'fa-brands fa-google text-red-500'); 
+            isFreshLogin = true;
+            try {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                const isSocialBrowser = (ua.indexOf('Instagram') > -1) || (ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || (ua.indexOf('Telegram') > -1) || (ua.indexOf('Messenger') > -1);
+                
+                if (isSocialBrowser) { await signInWithRedirect(auth, provider); } 
+                else { await signInWithPopup(auth, provider); }
+            } catch (error) {
+                alert("Google Login error: Please try opening the app in Chrome/Safari browser.");
+            } finally {
+                setButtonLoading('btn-google-login', false, 'Google Account', 'fa-brands fa-google text-red-500');
+            }
+        };
+        
     </script>
 </body>
 </html>
