@@ -26,9 +26,9 @@
         th { background-color: #0f172a; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
         tr:hover { background-color: #0f172a; }
         
-        .format-tag { display: inline-flex; align-items: center; background-color: #4f46e5; color: white; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: bold; margin: 2px; }
-        .format-tag span { cursor: pointer; margin-left: 6px; color: #cbd5e1; }
-        .format-tag span:hover { color: #f87171; }
+        .format-tag { display: inline-flex; align-items: center; background-color: #4f46e5; color: white; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: bold; margin: 3px; border: 1px solid #6366f1; transition: all 0.2s; }
+        .format-tag span { cursor: pointer; margin-left: 8px; color: #cbd5e1; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; transition: all 0.2s; }
+        .format-tag span:hover { color: white; background: #e11d48; }
     </style>
 </head>
 <body class="flex justify-center h-screen w-full overflow-hidden relative">
@@ -226,12 +226,12 @@
                                         <span><i class="fa-solid fa-table-columns mr-1"></i> Submissions Format (Sheet Columns)</span>
                                     </label>
                                     
-                                    <div id="format-tags-container" class="flex flex-wrap gap-1 min-h-[32px] p-2 bg-[#1e293b] rounded-lg border border-slate-700 mb-3">
+                                    <div id="format-tags-container" class="flex flex-wrap gap-2 min-h-[40px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-3">
                                         <!-- Default formats -->
                                     </div>
                                     
                                     <div class="flex gap-2">
-                                        <select id="format-selector" class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none text-slate-300">
+                                        <select id="format-selector" class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2.5 focus:outline-none text-slate-300">
                                             <option value="UID">Facebook UID</option>
                                             <option value="Username">Username</option>
                                             <option value="Email">Email</option>
@@ -394,7 +394,7 @@
                     <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-2 block flex items-center justify-between">
                         <span><i class="fa-solid fa-table-columns mr-1"></i> Submissions Format</span>
                     </label>
-                    <div id="edit-format-tags-container" class="flex flex-wrap gap-1 min-h-[32px] p-2 bg-[#1e293b] rounded-lg border border-slate-700 mb-3"></div>
+                    <div id="edit-format-tags-container" class="flex flex-wrap gap-2 min-h-[40px] p-3 bg-[#1e293b] rounded-lg border border-slate-700 mb-3"></div>
                     <div class="flex gap-2">
                         <select id="edit-format-selector" class="flex-1 bg-[#1e293b] border border-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none text-slate-300">
                             <option value="UID">Facebook UID</option>
@@ -407,7 +407,7 @@
                             <option value="Phone">Phone</option>
                             <option value="Custom">Custom Text...</option>
                         </select>
-                        <button type="button" onclick="window.addEditFormatTag()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-plus"></i></button>
+                        <button type="button" onclick="window.addEditFormatTag()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded-lg text-xs font-bold transition-colors"><i class="fa-solid fa-plus"></i> Add</button>
                     </div>
                 </div>
             </div>
@@ -417,7 +417,7 @@
 
     <!-- UI Scripts for Admin & Dynamic Forms -->
     <script>
-        // সিকিউরিটি ইমেইল (আপনার আসল অ্যাডমিন ইমেইল দিন, নয়তো আপনি নিজেই লগইন করতে পারবেন না)
+        // সিকিউরিটি ইমেইল (আপনার আসল অ্যাডমিন ইমেইল দিন)
         const AUTHORIZED_ADMIN_EMAIL = "admin@microtaskpro.com"; 
 
         window.togglePassword = () => {
@@ -525,7 +525,7 @@
             if(window.editFormatArray.length === 0) { 
                 if(t.require2FA) window.editFormatArray.push('2FA');
                 if(t.requireCookies) window.editFormatArray.push('Cookies');
-                if(window.editFormatArray.length === 0) window.editFormatArray = ['Email', 'Password']; 
+                if(window.editFormatArray.length === 0) window.editFormatArray = ['Email', 'Password']; // fallback
             }
             window.renderFormatTags('edit-format-tags-container', window.editFormatArray);
 
@@ -760,7 +760,7 @@
                             data.formatArray.forEach(f => { formatHtml += `<span class="text-[8px] bg-slate-800 text-slate-400 px-1 rounded mx-0.5 border border-slate-700">${f}</span>`; });
                         }
                         
-                        html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm fade-in mb-3"><div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400">Reward: ৳${data.reward}</p><div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div></div></div><span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide select-all">${data.password || 'No Pass'}</span></div><div class="flex gap-2"><button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 p-2 rounded-lg hover:bg-indigo-500/20 text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit Task</button><button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20 px-4 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                        html += `<div class="bg-[#1e293b] p-4 rounded-xl border border-slate-700 shadow-sm fade-in mb-3"><div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-brands fa-${data.platform || 'facebook'}"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400">Reward: ৳${data.reward}</p><div class="mt-1 flex flex-wrap gap-1">${formatHtml}</div></div></div><span class="bg-[#0f172a] text-slate-400 border border-slate-700 px-2 py-1 rounded text-[10px] font-bold tracking-wide">${data.password || 'No Pass'}</span></div><div class="flex gap-2"><button onclick="window.openEditTask('${docSnap.id}')" class="flex-1 text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 p-2 rounded-lg hover:bg-indigo-500/20 text-xs font-bold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit Task</button><button onclick="window.deleteDocDB('tasks', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2 rounded-lg hover:bg-rose-500/20 px-4 transition-colors"><i class="fa-solid fa-trash"></i></button></div></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -796,7 +796,7 @@
                     let html = '';
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-xl bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-48 mt-0.5">${data.msg}</p></div></div><button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div>`;
+                        html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-32">${data.msg}</p></div></div><button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 p-2.5 rounded-lg hover:bg-rose-500/20 transition-colors"><i class="fa-solid fa-trash"></i></button></div>`;
                     }); list.innerHTML = html;
                 }
             });
@@ -813,7 +813,7 @@
                         if(data.isActive) activeCount++;
                         const statusColor = data.isActive ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-500 bg-slate-800 border-slate-700';
                         const toggleTxt = data.isActive ? 'Disable' : 'Enable';
-                        const toggleColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
+                        const toggleColor = data.isActive ? 'text-amber-400 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20' : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-500/20';
                         
                         html += `<div class="bg-[#1e293b] p-3 rounded-xl border border-slate-700 flex justify-between items-center shadow-sm fade-in"><div class="flex items-center gap-3"><div class="h-8 w-8 rounded-lg ${statusColor} border flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div><h3 class="font-bold text-sm text-white capitalize">${data.name}</h3></div><div class="flex gap-2"><button onclick="window.togglePaymentDB('${docSnap.id}', ${!data.isActive})" class="text-xs px-3 py-1.5 border rounded-lg ${toggleColor} font-bold transition-colors">${toggleTxt}</button><button onclick="window.deleteDocDB('payment_methods', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-500/20"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`;
                     }); list.innerHTML = html;
