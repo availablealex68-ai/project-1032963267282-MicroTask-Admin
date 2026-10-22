@@ -167,7 +167,7 @@
                     <i class="fa-solid fa-bullhorn text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Notices</span>
                 </button>
                 
-                <!-- RENAMED TO SETTINGS -->
+                <!-- SETTINGS -->
                 <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all mt-auto border-t border-slate-700/50 pt-5 group">
                     <i class="fa-solid fa-sliders text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Settings</span>
                 </button>
@@ -307,7 +307,7 @@
                                         <button type="button" onclick="window.addFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
                                         <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
                                         <button type="button" onclick="window.addFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
-                                    </div>
+                    </div>
                                     
                                     <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
                                     <div class="flex gap-3 mb-5">
@@ -764,7 +764,7 @@
         }
 
         // ==========================================
-        // STRICT DYNAMIC SHEET RENDER LOGIC (FIXED PASSWORD ISSUE)
+        // STRICT DYNAMIC SHEET RENDER LOGIC
         // ==========================================
         window.renderSheetTable = () => {
             const filterId = document.getElementById('sheet-task-filter').value;
@@ -841,7 +841,6 @@
             submissions.forEach(sub => {
                 let row = headers.map(header => {
                     let val = '';
-                    // Fixed logic here as well
                     if (sub.submissionData && sub.submissionData[header] && String(sub.submissionData[header]).trim() !== '') {
                         val = sub.submissionData[header];
                     } else if (header.toLowerCase() === 'password') {
@@ -1288,14 +1287,14 @@
         }
 
         // ==========================================
-        // SMART REPORT SYSTEM (ANTI-HANG, CHUNK BATCH, PREVENT DOUBLE)
+        // SMART REPORT SYSTEM (ANTI-HANG, FAST AGGREGATION, PREVENT DOUBLE)
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
             const idsRaw = inputEl.value;
             if(!idsRaw.trim()) return await window.smartAlert("Please paste at least one Task ID.", "warning");
 
-            // Filter out empty strings and explicitly REMOVE DUPLICATE IDs so each is processed once
+            // Prevent duplicate IDs from being processed multiple times
             const shortIds = [...new Set(idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0))];
             if(shortIds.length === 0) return;
 
@@ -1307,9 +1306,9 @@
                 let opsInBatch = 0;
                 
                 let historyDocsToUpdate = {}; 
+                let userUpdates = {}; // Aggregator for user balance and task counts to prevent 500 error
 
                 for (const shortId of shortIds) {
-                    // Check if it exists in local arrays
                     let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
                     let foundInHistory = null;
                     let historyDocId = null;
@@ -1328,18 +1327,19 @@
                     let sub = foundInLive || foundInHistory;
                     
                     if (sub) {
-                        const userRef = doc(db, "users", sub.uid);
                         const taskObj = window.allTasksData.find(t => t.id === sub.taskId);
+
+                        // Track User Updates in memory instead of sending individually to Firebase
+                        if (!userUpdates[sub.uid]) {
+                            userUpdates[sub.uid] = { pendingTasks: 0, approvedTasks: 0, rejectedTasks: 0, balance: 0, totalEarned: 0 };
+                        }
 
                         if (action === 'approve') {
                             const reward = taskObj ? Number(taskObj.reward) : 0;
-                            currentBatch.update(userRef, {
-                                pendingTasks: increment(-1),
-                                approvedTasks: increment(1),
-                                balance: increment(reward),
-                                totalEarned: increment(reward)
-                            });
-                            opsInBatch++;
+                            userUpdates[sub.uid].pendingTasks -= 1;
+                            userUpdates[sub.uid].approvedTasks += 1;
+                            userUpdates[sub.uid].balance += reward;
+                            userUpdates[sub.uid].totalEarned += reward;
                             
                             const noticeRef = doc(collection(db, "notices"));
                             currentBatch.set(noticeRef, {
@@ -1352,11 +1352,8 @@
                             });
                             opsInBatch++;
                         } else {
-                            currentBatch.update(userRef, { 
-                                pendingTasks: increment(-1),
-                                rejectedTasks: increment(1)
-                            });
-                            opsInBatch++;
+                            userUpdates[sub.uid].pendingTasks -= 1;
+                            userUpdates[sub.uid].rejectedTasks += 1;
                             
                             const noticeRef = doc(collection(db, "notices"));
                             currentBatch.set(noticeRef, {
@@ -1370,12 +1367,11 @@
                             opsInBatch++;
                         }
                         
-                        // Remove from Firestore
+                        // Remove from Live Submissions or History
                         if(foundInLive) {
                             currentBatch.delete(doc(db, "task_submissions", sub.id));
                             opsInBatch++;
-                            
-                            // Remove from local variable immediately to prevent double processing
+                            // Remove from local memory immediately
                             window.allSubmissionsData = window.allSubmissionsData.filter(s => s.id !== sub.id);
                         } else if(foundInHistory) {
                             if(!historyDocsToUpdate[historyDocId]) {
@@ -1384,7 +1380,6 @@
                             }
                             historyDocsToUpdate[historyDocId].submissions = historyDocsToUpdate[historyDocId].submissions.filter(s => s.id !== sub.id);
                             
-                            // Remove locally
                             const hDataIndex = window.allHistoryData.findIndex(h => h.id === historyDocId);
                             if(hDataIndex > -1) {
                                 window.allHistoryData[hDataIndex].submissions = window.allHistoryData[hDataIndex].submissions.filter(s => s.id !== sub.id);
@@ -1393,9 +1388,9 @@
                         
                         processedCount++;
                         
-                        // Execute in chunks to avoid Firestore limits & unfreeze UI (Max 500 per batch)
-                        if (opsInBatch >= 400) {
-                            // Update history documents pending for this batch
+                        // Batch execution logic to avoid exceeding limits
+                        if (opsInBatch >= 300) {
+                            // Update collected history docs
                             for(let hId in historyDocsToUpdate) {
                                 let hObj = historyDocsToUpdate[hId];
                                 if(hObj.submissions.length === 0) {
@@ -1408,20 +1403,37 @@
                                 }
                                 opsInBatch++;
                             }
-                            historyDocsToUpdate = {}; // reset for next batch
+                            historyDocsToUpdate = {}; 
+
+                            // Update collected User stats
+                            for(let uid in userUpdates) {
+                                const u = userUpdates[uid];
+                                const userRef = doc(db, "users", uid);
+                                let updateObj = {};
+                                if(u.pendingTasks !== 0) updateObj.pendingTasks = increment(u.pendingTasks);
+                                if(u.approvedTasks !== 0) updateObj.approvedTasks = increment(u.approvedTasks);
+                                if(u.rejectedTasks !== 0) updateObj.rejectedTasks = increment(u.rejectedTasks);
+                                if(u.balance !== 0) updateObj.balance = increment(u.balance);
+                                if(u.totalEarned !== 0) updateObj.totalEarned = increment(u.totalEarned);
+                                
+                                if(Object.keys(updateObj).length > 0) {
+                                    currentBatch.update(userRef, updateObj);
+                                }
+                            }
+                            userUpdates = {}; // Clear after applying to batch
                             
                             await currentBatch.commit();
                             currentBatch = writeBatch(db);
                             opsInBatch = 0;
                             
-                            // Add slight delay to unblock the browser main thread
-                            await new Promise(r => setTimeout(r, 80));
+                            // Micro-delay to keep UI totally smooth and prevent browser freezing
+                            await new Promise(r => setTimeout(r, 100));
                         }
                     }
                 }
 
-                // Process leftovers that didn't reach batch limit
-                if(opsInBatch > 0 || Object.keys(historyDocsToUpdate).length > 0) {
+                // Process leftovers that didn't reach the 300 limit
+                if(opsInBatch > 0 || Object.keys(historyDocsToUpdate).length > 0 || Object.keys(userUpdates).length > 0) {
                     for(let hId in historyDocsToUpdate) {
                         let hObj = historyDocsToUpdate[hId];
                         if(hObj.submissions.length === 0) {
@@ -1433,6 +1445,22 @@
                             });
                         }
                     }
+                    
+                    for(let uid in userUpdates) {
+                        const u = userUpdates[uid];
+                        const userRef = doc(db, "users", uid);
+                        let updateObj = {};
+                        if(u.pendingTasks !== 0) updateObj.pendingTasks = increment(u.pendingTasks);
+                        if(u.approvedTasks !== 0) updateObj.approvedTasks = increment(u.approvedTasks);
+                        if(u.rejectedTasks !== 0) updateObj.rejectedTasks = increment(u.rejectedTasks);
+                        if(u.balance !== 0) updateObj.balance = increment(u.balance);
+                        if(u.totalEarned !== 0) updateObj.totalEarned = increment(u.totalEarned);
+                        
+                        if(Object.keys(updateObj).length > 0) {
+                            currentBatch.update(userRef, updateObj);
+                        }
+                    }
+
                     await currentBatch.commit();
                 }
 
@@ -1528,6 +1556,8 @@
             if(!confirmed) return await window.smartAlert("Database Reset Cancelled.", "info");
 
             try {
+                // To safely reset, we fetch all relevant documents and batch delete them.
+                // We also update all users to reset pending/approved/rejected task stats.
                 document.getElementById('global-loader').style.display = 'flex';
                 const loaderText = document.getElementById('global-loader').querySelector('p');
                 loaderText.innerText = "Formatting Database...";
