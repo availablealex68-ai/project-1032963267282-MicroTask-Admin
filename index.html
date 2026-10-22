@@ -167,17 +167,15 @@
                     <i class="fa-solid fa-bullhorn text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Notices</span>
                 </button>
                 
-                <!-- SETTINGS MOVED UP -->
-                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
+                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all mt-auto border-t border-slate-700/50 pt-5 group">
                     <i class="fa-solid fa-sliders text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Settings</span>
                 </button>
             </nav>
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto px-6 py-8 relative pb-28 custom-scrollbar">
-                <style>.custom-scrollbar::-webkit-scrollbar{width:6px;}.custom-scrollbar::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}</style>
                 
-                <!-- DASHBOARD PAGE (PRO STATS) -->
+                <!-- DASHBOARD PAGE -->
                 <section id="page-dashboard" class="admin-page active w-full max-w-5xl mx-auto">
                     <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-chart-line mr-3 text-indigo-400"></i> Analytics Overview</h2>
                     
@@ -292,7 +290,6 @@
                                     <input type="text" id="task-password" autocomplete="off" placeholder="Pass@123..." class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 text-white shadow-inner">
                                 </div>
 
-                                <!-- SMARTER Format Builder -->
                                 <div class="p-5 bg-[#0f172a] rounded-2xl border border-slate-700 shadow-inner">
                                     <label class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-4 block flex items-center">
                                         <i class="fa-solid fa-table-columns mr-2 text-lg"></i> Sheet Columns Setup (Strict Order)
@@ -307,7 +304,7 @@
                                         <button type="button" onclick="window.addFormatTag('Cookies')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Cookies</button>
                                         <button type="button" onclick="window.addFormatTag('Email')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Email</button>
                                         <button type="button" onclick="window.addFormatTag('Phone')" class="bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border border-slate-600"><i class="fa-solid fa-plus text-[10px] mr-1"></i>Phone</button>
-                    </div>
+                                    </div>
                                     
                                     <p class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-wider">2. Or Add Custom Field:</p>
                                     <div class="flex gap-3 mb-5">
@@ -317,7 +314,6 @@
 
                                     <p class="text-[10px] text-emerald-400 mb-2 uppercase font-bold tracking-wider border-t border-slate-700 pt-4"><i class="fa-solid fa-check-circle mr-1"></i> Final Active Format (Left to Right):</p>
                                     <div id="format-tags-container" class="flex flex-wrap gap-2 min-h-[45px] p-3 bg-[#1e293b] rounded-xl border border-slate-700 mb-1 shadow-inner">
-                                        <!-- Default formats injected here -->
                                     </div>
                                 </div>
 
@@ -363,7 +359,6 @@
                         <div class="flex flex-wrap items-center gap-3">
                             <select id="sheet-task-filter" onchange="window.renderSheetTable()" class="bg-[#111827] border border-slate-700 text-sm font-semibold rounded-xl px-4 py-2.5 text-slate-300 outline-none max-w-[250px] premium-shadow focus:border-indigo-500 transition-colors cursor-pointer">
                                 <option value="" disabled selected>Select a specific Task...</option>
-                                <!-- Options injected here -->
                             </select>
                             <button onclick="window.downloadCSV()" class="bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/30 px-4 py-2.5 rounded-xl text-sm font-bold transition-all premium-shadow flex items-center"><i class="fa-solid fa-download mr-2"></i> CSV</button>
                             <button id="btn-complete-today" onclick="window.completeTodaySheet()" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 px-4 py-2.5 rounded-xl text-sm font-bold transition-all premium-shadow flex items-center"><i class="fa-solid fa-check-double mr-2"></i> Complete Today</button>
@@ -423,7 +418,10 @@
                         </form>
                     </div>
 
-                    <h2 class="font-bold text-lg mb-4 text-white border-b border-slate-800 pb-2">Active Broadcasts</h2>
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
+                        <h2 class="font-bold text-lg text-white">Active Broadcasts</h2>
+                        <button onclick="window.deleteAllNotices()" class="bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-all"><i class="fa-solid fa-trash mr-1.5"></i> Delete All</button>
+                    </div>
                     <div id="admin-notice-list" class="space-y-4"><p class="text-sm text-slate-500 text-center mt-10">No notices sent.</p></div>
                 </section>
 
@@ -431,7 +429,7 @@
                 <section id="page-payments" class="admin-page w-full max-w-2xl mx-auto">
                     <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-sliders mr-3 text-cyan-400"></i> Settings & Control</h2>
                     
-                    <!-- NEW Support Links Section -->
+                    <!-- Support Links Section -->
                     <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
                         <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-headset text-blue-400 mr-2"></i> Support Links</h3>
                         <form autocomplete="off" onsubmit="event.preventDefault(); window.saveSupportLinksDB();">
@@ -455,7 +453,7 @@
                         </form>
                     </div>
 
-                    <!-- NEW Referral Settings -->
+                    <!-- Referral Settings -->
                     <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
                         <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-users text-violet-400 mr-2"></i> Referral Commission</h3>
                         <form autocomplete="off" onsubmit="event.preventDefault(); window.saveReferralRulesDB();">
@@ -711,7 +709,8 @@
         window.allTasksData = [];
         window.allSubmissionsData = [];
         window.allHistoryData = [];
-        window.referCommissionPercent = 10; // Default
+        window.allGlobalNotices = [];
+        window.referCommissionPercent = 10; 
 
         window.filterUsers = () => {
             const query = document.getElementById('search-user').value.toLowerCase();
@@ -801,7 +800,7 @@
         }
 
         // ==========================================
-        // STRICT DYNAMIC SHEET RENDER LOGIC
+        // STRICT DYNAMIC SHEET RENDER LOGIC 
         // ==========================================
         window.renderSheetTable = () => {
             const filterId = document.getElementById('sheet-task-filter').value;
@@ -881,7 +880,7 @@
                 });
                 
                 const shortId = sub.id.substring(0, 7).toUpperCase();
-                row.push(`"${shortId}"`);
+                row.push(`"${shortId}"`); 
                 
                 csvContent += row.join(",") + "\n";
             });
@@ -919,7 +918,9 @@
             document.body.appendChild(link); link.click(); link.remove();
         }
 
-        window.copyText = (text) => { navigator.clipboard.writeText(text); }
+        window.copyText = (text) => {
+            navigator.clipboard.writeText(text);
+        }
 
     </script>
 
@@ -1021,7 +1022,6 @@
                     const data = docSnap.data();
                     document.getElementById('global-task-toggle').checked = data.tasksEnabled ?? true; 
                     
-                    // NEW: Load Refer & Support Settings
                     window.referCommissionPercent = data.referCommission ?? 10;
                     document.getElementById('setting-ref-percent').value = window.referCommissionPercent;
                     document.getElementById('setting-wa-link').value = data.whatsappLink || '';
@@ -1088,7 +1088,7 @@
                                 <p class="text-xs text-slate-400 flex items-center gap-2">Account: <strong class="text-cyan-400 bg-cyan-900/20 px-2.5 py-1 rounded-md tracking-wider border border-cyan-500/30">${data.account}</strong> <button onclick="window.copyText('${data.account}')" class="text-slate-500 hover:text-white transition-colors" title="Copy"><i class="fa-regular fa-copy"></i></button></p>
                             </div>
                             <div class="flex gap-3">
-                                <button onclick="window.approveWithdrawDB('${docSnap.id}')" class="flex-1 bg-emerald-500/10 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500 hover:text-white border border-emerald-500/30 transition-all"><i class="fa-solid fa-check mr-1.5"></i> Approve</button>
+                                <button onclick="window.approveWithdrawDB('${docSnap.id}', '${data.uid}', ${data.amount}, '${data.method}')" class="flex-1 bg-emerald-500/10 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500 hover:text-white border border-emerald-500/30 transition-all"><i class="fa-solid fa-check mr-1.5"></i> Approve</button>
                                 <button onclick="window.rejectWithdrawDB('${docSnap.id}', '${data.uid}', ${data.amount})" class="flex-1 bg-rose-500/10 text-rose-400 py-3 rounded-xl text-xs font-bold hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all"><i class="fa-solid fa-xmark mr-1.5"></i> Reject</button>
                             </div>
                         </div>`;
@@ -1214,19 +1214,31 @@
                 }
             });
 
-            onSnapshot(collection(db, "notices"), (snapshot) => {
+            // FIXED: ONLY FETCH GLOBAL NOTICES FOR ADMIN PANNEL (DO NOT SHOW USER APPROVE/REJECT NOTICES)
+            const qNotices = query(collection(db, "notices"), where("isGlobal", "==", true));
+            onSnapshot(qNotices, (snapshot) => {
+                window.allGlobalNotices = [];
                 const list = document.getElementById('admin-notice-list');
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No notices sent.</p>`; } 
                 else {
                     let html = '';
-                    snapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
+                    let nArray = [];
+                    snapshot.forEach(docSnap => {
+                        let d = docSnap.data();
+                        d.id = docSnap.id;
+                        nArray.push(d);
+                    });
+                    
+                    nArray.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    window.allGlobalNotices = nArray;
+                    
+                    nArray.forEach((data) => {
                         html += `<div class="bg-[#111827] p-4 rounded-2xl border border-slate-700 flex justify-between items-center premium-shadow fade-in mb-3">
                             <div class="flex items-center gap-4">
                                 <div class="h-10 w-10 rounded-xl bg-${data.theme}-500/10 text-${data.theme}-400 flex items-center justify-center text-lg shadow-inner"><i class="fa-solid fa-bell"></i></div>
                                 <div><h3 class="font-bold text-sm text-white">${data.title}</h3><p class="text-[11px] text-slate-400 truncate w-48 mt-0.5">${data.msg}</p></div>
                             </div>
-                            <button onclick="window.deleteDocDB('notices', '${docSnap.id}')" class="text-rose-400 bg-rose-500/10 h-9 w-9 rounded-lg hover:bg-rose-600 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="window.deleteDocDB('notices', '${data.id}')" class="text-rose-400 bg-rose-500/10 h-9 w-9 rounded-lg hover:bg-rose-600 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
                         </div>`;
                     }); list.innerHTML = html;
                 }
@@ -1258,6 +1270,34 @@
                     }); list.innerHTML = html;
                 }
             });
+        }
+
+        // ==========================================
+        // NEW: DELETE ALL NOTICES
+        // ==========================================
+        window.deleteAllNotices = async () => {
+            if(!window.allGlobalNotices || window.allGlobalNotices.length === 0) return await window.smartAlert("No active broadcasts to delete!", "warning");
+            
+            const confirmed = await window.smartAlert("Are you sure you want to delete ALL active broadcasts?", "confirm");
+            if(!confirmed) return;
+            
+            try {
+                let currentBatch = writeBatch(db);
+                let ops = 0;
+                
+                for(let i=0; i<window.allGlobalNotices.length; i++) {
+                    currentBatch.delete(doc(db, "notices", window.allGlobalNotices[i].id));
+                    ops++;
+                    if(ops >= 400) {
+                        await currentBatch.commit();
+                        currentBatch = writeBatch(db);
+                        ops = 0;
+                    }
+                }
+                if(ops > 0) await currentBatch.commit();
+                
+                await window.smartAlert("All global notices deleted successfully.", "success");
+            } catch(e) { await window.smartAlert("Error deleting notices: " + e.message, "error"); }
         }
 
         // ==========================================
@@ -1360,7 +1400,7 @@
         }
 
         // ==========================================
-        // SMART REPORT SYSTEM (ANTI-HANG, FAST AGGREGATION, NEW REFERRAL LOGIC)
+        // SMART REPORT SYSTEM 
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
@@ -1380,7 +1420,7 @@
                 
                 let historyDocsToUpdate = {}; 
                 let userUpdates = {}; // Aggregator for user balance and task counts to prevent 500 error
-                let referrerUpdates = {}; // NEW: Aggregator for referrer commissions
+                let referrerUpdates = {}; // Aggregator for referrer commissions
 
                 for (const shortId of shortIds) {
                     let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
@@ -1616,7 +1656,6 @@
                     subs.forEach(s => {
                         if(task && task.formatArray) {
                             let passKey = task.formatArray.find(f => f.toLowerCase() === 'password');
-                            // Fixed: Only inject default pass if user omitted it
                             if(passKey && (!s.submissionData || !s.submissionData[passKey] || String(s.submissionData[passKey]).trim() === '')) {
                                 if(!s.submissionData) s.submissionData = {};
                                 s.submissionData[passKey] = task.password || '';
@@ -1661,7 +1700,7 @@
         }
 
         // ==========================================
-        // DANGER ZONE (ALL DATA RESET)
+        // DANGER ZONE: FACTORY RESET (Fixed 500 ops limit)
         // ==========================================
         window.factoryResetDB = async () => {
             const confirmed = await window.smartAlert("Type 'RESET ALL DATA' to permanently format tasks, sheets, notices & withdrawals. Users & Balances will remain.", "prompt", "RESET ALL DATA");
@@ -1672,35 +1711,36 @@
                 const loaderText = document.getElementById('global-loader').querySelector('p');
                 loaderText.innerText = "Formatting Database...";
 
-                const batch = writeBatch(db);
+                let batch = writeBatch(db);
+                let opsCount = 0;
                 
-                // 1. Delete Tasks
-                const tasksSnap = await getDocs(collection(db, "tasks"));
-                tasksSnap.forEach(d => batch.delete(d.ref));
-                
-                // 2. Delete Submissions
-                const subsSnap = await getDocs(collection(db, "task_submissions"));
-                subsSnap.forEach(d => batch.delete(d.ref));
+                const commitBatchIfNeeded = async (force = false) => {
+                    if (opsCount >= 400 || (force && opsCount > 0)) {
+                        await batch.commit();
+                        batch = writeBatch(db);
+                        opsCount = 0;
+                    }
+                };
 
-                // 3. Delete Sheet History
-                const histSnap = await getDocs(collection(db, "sheet_history"));
-                histSnap.forEach(d => batch.delete(d.ref));
+                const deleteCollection = async (colName) => {
+                    const snap = await getDocs(collection(db, colName));
+                    for (const d of snap.docs) {
+                        batch.delete(d.ref);
+                        opsCount++;
+                        await commitBatchIfNeeded();
+                    }
+                };
 
-                // 4. Delete Notices
-                const notSnap = await getDocs(collection(db, "notices"));
-                notSnap.forEach(d => batch.delete(d.ref));
+                await deleteCollection("tasks");
+                await deleteCollection("task_submissions");
+                await deleteCollection("sheet_history");
+                await deleteCollection("notices");
+                await deleteCollection("withdrawals");
+                await deleteCollection("kyc_requests");
 
-                // 5. Delete Withdrawals
-                const withSnap = await getDocs(collection(db, "withdrawals"));
-                withSnap.forEach(d => batch.delete(d.ref));
-
-                // 6. Delete KYC Requests
-                const kycSnap = await getDocs(collection(db, "kyc_requests"));
-                kycSnap.forEach(d => batch.delete(d.ref));
-
-                // 7. Reset User Stats (Keeps balance, totalEarned, totalWithdrawn)
+                // Update users safely without reaching batch limits
                 const usersSnap = await getDocs(collection(db, "users"));
-                usersSnap.forEach(d => {
+                for (const d of usersSnap.docs) {
                     batch.update(d.ref, {
                         pendingTasks: 0,
                         approvedTasks: 0,
@@ -1709,9 +1749,11 @@
                         kycVerified: false,
                         kycStatus: 'unverified'
                     });
-                });
+                    opsCount++;
+                    await commitBatchIfNeeded();
+                }
 
-                await batch.commit();
+                await commitBatchIfNeeded(true);
                 
                 document.getElementById('global-loader').style.display = 'none';
                 await window.smartAlert("Factory Reset Complete! Database is fresh.", "success");
@@ -1762,8 +1804,27 @@
             catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
 
-        window.approveWithdrawDB = async (docId) => { 
-            try { await updateDoc(doc(db, "withdrawals", docId), { status: 'paid' }); await window.smartAlert("Withdrawal marked as Paid!", "success"); } 
+        // ==========================================
+        // UPDATED: WITHDRAWAL SUCCESS & REJECT NOTICE
+        // ==========================================
+        window.approveWithdrawDB = async (docId, uid, amount, method) => { 
+            try { 
+                const batch = writeBatch(db);
+                batch.update(doc(db, "withdrawals", docId), { status: 'paid' }); 
+                
+                const noticeRef = doc(collection(db, "notices"));
+                batch.set(noticeRef, {
+                    title: "Withdrawal Successful 💰",
+                    msg: `Your withdrawal request for ৳${amount} via ${method} has been successfully paid. Check your account!`,
+                    theme: "emerald",
+                    targetUid: uid,
+                    isGlobal: false,
+                    createdAt: serverTimestamp()
+                });
+
+                await batch.commit();
+                await window.smartAlert("Withdrawal marked as Paid & Notice sent!", "success"); 
+            } 
             catch(e) { await window.smartAlert("Error: " + e.message, "error"); } 
         }
 
