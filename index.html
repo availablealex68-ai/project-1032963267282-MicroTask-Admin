@@ -764,7 +764,7 @@
         }
 
         // ==========================================
-        // STRICT DYNAMIC SHEET RENDER LOGIC
+        // STRICT DYNAMIC SHEET RENDER LOGIC (FIXED PASSWORD ISSUE)
         // ==========================================
         window.renderSheetTable = () => {
             const filterId = document.getElementById('sheet-task-filter').value;
@@ -803,11 +803,13 @@
                 bodyHTML += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors">`;
                 headers.forEach(h => {
                     let val = '-';
-                    // Auto-inject Password if column requires it
-                    if (h.toLowerCase() === 'password') {
-                        val = task.password || '-';
-                    } else if (sub.submissionData && sub.submissionData[h] !== undefined) {
+                    // Fixed Password Overwrite logic:
+                    // If user submitted their own password, use that.
+                    // If it's missing or empty, use the Admin default.
+                    if (sub.submissionData && sub.submissionData[h] && String(sub.submissionData[h]).trim() !== '') {
                         val = sub.submissionData[h];
+                    } else if (h.toLowerCase() === 'password') {
+                        val = task.password || '-';
                     }
                     bodyHTML += `<td><div class="max-w-[200px] truncate select-all font-medium" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
                 });
@@ -839,8 +841,12 @@
             submissions.forEach(sub => {
                 let row = headers.map(header => {
                     let val = '';
-                    if(header.toLowerCase() === 'password') val = task.password || '';
-                    else val = (sub.submissionData && sub.submissionData[header] !== undefined) ? sub.submissionData[header] : '';
+                    // Fixed logic here as well
+                    if (sub.submissionData && sub.submissionData[header] && String(sub.submissionData[header]).trim() !== '') {
+                        val = sub.submissionData[header];
+                    } else if (header.toLowerCase() === 'password') {
+                        val = task.password || '';
+                    }
                     return `"${String(val).replace(/"/g, '""')}"`;
                 });
                 
@@ -910,7 +916,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Auto Logout FIX
         setPersistence(auth, browserLocalPersistence).catch(console.error);
 
         onAuthStateChanged(auth, async (user) => {
@@ -1283,23 +1288,28 @@
         }
 
         // ==========================================
-        // SMART REPORT SYSTEM (APPROVE / REJECT)
+        // SMART REPORT SYSTEM (ANTI-HANG, CHUNK BATCH, PREVENT DOUBLE)
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
             const idsRaw = inputEl.value;
             if(!idsRaw.trim()) return await window.smartAlert("Please paste at least one Task ID.", "warning");
 
-            const shortIds = idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0);
+            // Filter out empty strings and explicitly REMOVE DUPLICATE IDs so each is processed once
+            const shortIds = [...new Set(idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0))];
             if(shortIds.length === 0) return;
 
             window.setButtonLoading(`btn-${action}`, true, 'Processing...', 'fa-solid fa-spinner');
 
             try {
-                const batch = writeBatch(db);
                 let processedCount = 0;
+                let currentBatch = writeBatch(db);
+                let opsInBatch = 0;
+                
+                let historyDocsToUpdate = {}; 
 
                 for (const shortId of shortIds) {
+                    // Check if it exists in local arrays
                     let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
                     let foundInHistory = null;
                     let historyDocId = null;
@@ -1323,14 +1333,16 @@
 
                         if (action === 'approve') {
                             const reward = taskObj ? Number(taskObj.reward) : 0;
-                            batch.update(userRef, {
+                            currentBatch.update(userRef, {
                                 pendingTasks: increment(-1),
                                 approvedTasks: increment(1),
                                 balance: increment(reward),
                                 totalEarned: increment(reward)
                             });
+                            opsInBatch++;
+                            
                             const noticeRef = doc(collection(db, "notices"));
-                            batch.set(noticeRef, {
+                            currentBatch.set(noticeRef, {
                                 title: "Task Approved 🟢",
                                 msg: `Task ID [${shortId}] submitted by you has been approved! Reward added.`,
                                 theme: "emerald",
@@ -1338,13 +1350,16 @@
                                 isGlobal: false,
                                 createdAt: serverTimestamp()
                             });
+                            opsInBatch++;
                         } else {
-                            batch.update(userRef, { 
+                            currentBatch.update(userRef, { 
                                 pendingTasks: increment(-1),
                                 rejectedTasks: increment(1)
                             });
+                            opsInBatch++;
+                            
                             const noticeRef = doc(collection(db, "notices"));
-                            batch.set(noticeRef, {
+                            currentBatch.set(noticeRef, {
                                 title: "Task Rejected 🔴",
                                 msg: `Task ID [${shortId}] was rejected due to incorrect submission details.`,
                                 theme: "rose",
@@ -1352,33 +1367,80 @@
                                 isGlobal: false,
                                 createdAt: serverTimestamp()
                             });
+                            opsInBatch++;
                         }
                         
+                        // Remove from Firestore
                         if(foundInLive) {
-                            batch.delete(doc(db, "task_submissions", sub.id));
+                            currentBatch.delete(doc(db, "task_submissions", sub.id));
+                            opsInBatch++;
+                            
+                            // Remove from local variable immediately to prevent double processing
+                            window.allSubmissionsData = window.allSubmissionsData.filter(s => s.id !== sub.id);
                         } else if(foundInHistory) {
-                            const hRef = doc(db, "sheet_history", historyDocId);
-                            const hData = window.allHistoryData.find(h => h.id === historyDocId);
-                            const updatedSubs = hData.submissions.filter(s => s.id !== sub.id);
-                            if(updatedSubs.length === 0) {
-                                batch.delete(hRef);
-                            } else {
-                                batch.update(hRef, {
-                                    submissions: updatedSubs,
-                                    recordCount: updatedSubs.length
-                                });
+                            if(!historyDocsToUpdate[historyDocId]) {
+                                const hData = window.allHistoryData.find(h => h.id === historyDocId);
+                                historyDocsToUpdate[historyDocId] = { ref: doc(db, "sheet_history", historyDocId), submissions: [...hData.submissions] };
+                            }
+                            historyDocsToUpdate[historyDocId].submissions = historyDocsToUpdate[historyDocId].submissions.filter(s => s.id !== sub.id);
+                            
+                            // Remove locally
+                            const hDataIndex = window.allHistoryData.findIndex(h => h.id === historyDocId);
+                            if(hDataIndex > -1) {
+                                window.allHistoryData[hDataIndex].submissions = window.allHistoryData[hDataIndex].submissions.filter(s => s.id !== sub.id);
                             }
                         }
+                        
                         processedCount++;
+                        
+                        // Execute in chunks to avoid Firestore limits & unfreeze UI (Max 500 per batch)
+                        if (opsInBatch >= 400) {
+                            // Update history documents pending for this batch
+                            for(let hId in historyDocsToUpdate) {
+                                let hObj = historyDocsToUpdate[hId];
+                                if(hObj.submissions.length === 0) {
+                                    currentBatch.delete(hObj.ref);
+                                } else {
+                                    currentBatch.update(hObj.ref, {
+                                        submissions: hObj.submissions,
+                                        recordCount: hObj.submissions.length
+                                    });
+                                }
+                                opsInBatch++;
+                            }
+                            historyDocsToUpdate = {}; // reset for next batch
+                            
+                            await currentBatch.commit();
+                            currentBatch = writeBatch(db);
+                            opsInBatch = 0;
+                            
+                            // Add slight delay to unblock the browser main thread
+                            await new Promise(r => setTimeout(r, 80));
+                        }
                     }
                 }
 
+                // Process leftovers that didn't reach batch limit
+                if(opsInBatch > 0 || Object.keys(historyDocsToUpdate).length > 0) {
+                    for(let hId in historyDocsToUpdate) {
+                        let hObj = historyDocsToUpdate[hId];
+                        if(hObj.submissions.length === 0) {
+                            currentBatch.delete(hObj.ref);
+                        } else {
+                            currentBatch.update(hObj.ref, {
+                                submissions: hObj.submissions,
+                                recordCount: hObj.submissions.length
+                            });
+                        }
+                    }
+                    await currentBatch.commit();
+                }
+
                 if(processedCount > 0) {
-                    await batch.commit();
                     await window.smartAlert(`Successfully ${action}d ${processedCount} tasks!`, "success");
                     inputEl.value = '';
                 } else {
-                    await window.smartAlert("No matching Task IDs found. Check if the ID is correct.", "error");
+                    await window.smartAlert("No matching Task IDs found. They were already processed, incorrect, or deleted.", "error");
                 }
             } catch (e) { await window.smartAlert("Error processing: " + e.message, "error"); }
             
@@ -1414,7 +1476,8 @@
                     subs.forEach(s => {
                         if(task && task.formatArray) {
                             let passKey = task.formatArray.find(f => f.toLowerCase() === 'password');
-                            if(passKey && (!s.submissionData || !s.submissionData[passKey])) {
+                            // Fixed: Only inject default pass if user omitted it
+                            if(passKey && (!s.submissionData || !s.submissionData[passKey] || String(s.submissionData[passKey]).trim() === '')) {
                                 if(!s.submissionData) s.submissionData = {};
                                 s.submissionData[passKey] = task.password || '';
                             }
@@ -1465,8 +1528,6 @@
             if(!confirmed) return await window.smartAlert("Database Reset Cancelled.", "info");
 
             try {
-                // To safely reset, we fetch all relevant documents and batch delete them.
-                // We also update all users to reset pending/approved/rejected task stats.
                 document.getElementById('global-loader').style.display = 'flex';
                 const loaderText = document.getElementById('global-loader').querySelector('p');
                 loaderText.innerText = "Formatting Database...";
@@ -1588,6 +1649,12 @@
                 await batch.commit();
                 await window.smartAlert("Withdrawal Rejected & Refunded!", "success");
             } catch(e) { await window.smartAlert("Error: " + e.message, "error"); }
+        }
+
+        window.logoutAdmin = async () => {
+            document.getElementById('global-loader').style.display = 'flex';
+            document.getElementById('global-loader').querySelector('p').innerText = "Terminating Session...";
+            try { await signOut(auth); window.location.reload(); } catch(e) { window.location.reload(); }
         }
 
     </script>
