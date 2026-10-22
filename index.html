@@ -167,8 +167,8 @@
                     <i class="fa-solid fa-bullhorn text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Notices</span>
                 </button>
                 
-                <!-- SETTINGS -->
-                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all mt-auto border-t border-slate-700/50 pt-5 group">
+                <!-- SETTINGS MOVED UP -->
+                <button id="nav-payments" onclick="window.switchAdminTab('payments')" class="admin-nav-item flex md:flex-row flex-col items-center justify-center md:justify-start px-5 py-3.5 mx-3 rounded-xl text-slate-400 hover:bg-slate-800/80 border border-transparent transition-all group">
                     <i class="fa-solid fa-sliders text-xl md:mr-4 mb-1 md:mb-0 w-6 text-center group-hover:scale-110 transition-transform"></i><span class="text-[10px] md:text-sm font-bold uppercase md:capitalize tracking-wider md:tracking-normal">Settings</span>
                 </button>
             </nav>
@@ -429,24 +429,60 @@
 
                 <!-- SETTINGS & PAYMENTS PAGE -->
                 <section id="page-payments" class="admin-page w-full max-w-2xl mx-auto">
-                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-sliders mr-3 text-cyan-400"></i> Settings & Payments</h2>
+                    <h2 class="font-black text-2xl mb-6 text-white flex items-center tracking-tight"><i class="fa-solid fa-sliders mr-3 text-cyan-400"></i> Settings & Control</h2>
                     
+                    <!-- NEW Support Links Section -->
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
+                        <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-headset text-blue-400 mr-2"></i> Support Links</h3>
+                        <form autocomplete="off" onsubmit="event.preventDefault(); window.saveSupportLinksDB();">
+                            <div class="space-y-4 mb-5">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">WhatsApp Link</label>
+                                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-cyan-500 transition-colors">
+                                        <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i>
+                                        <input type="text" id="setting-wa-link" placeholder="https://wa.me/..." class="w-full bg-transparent text-sm focus:outline-none text-white ml-3">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Telegram Link</label>
+                                    <div class="relative flex items-center bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-cyan-500 transition-colors">
+                                        <i class="fa-brands fa-telegram text-blue-400 text-lg"></i>
+                                        <input type="text" id="setting-tg-link" placeholder="https://t.me/..." class="w-full bg-transparent text-sm focus:outline-none text-white ml-3">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" id="btn-save-support" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg flex justify-center items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Save Links</button>
+                        </form>
+                    </div>
+
+                    <!-- NEW Referral Settings -->
+                    <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
+                        <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-users text-violet-400 mr-2"></i> Referral Commission</h3>
+                        <form autocomplete="off" onsubmit="event.preventDefault(); window.saveReferralRulesDB();">
+                            <div class="mb-5">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Commission Percentage (%)</label>
+                                <input type="number" id="setting-ref-percent" placeholder="e.g. 10" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-violet-500 text-white shadow-inner">
+                            </div>
+                            <button type="submit" id="btn-save-referral" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-violet-900/30 flex justify-center items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Update Commission</button>
+                        </form>
+                    </div>
+
                     <!-- Withdraw Settings -->
                     <div class="bg-[#111827] p-8 rounded-3xl border border-slate-700 premium-shadow mb-8">
                         <h3 class="font-bold text-lg text-white mb-5 flex items-center"><i class="fa-solid fa-money-check-dollar text-emerald-400 mr-2"></i> Withdraw Rules</h3>
                         <form autocomplete="off" onsubmit="event.preventDefault(); window.saveWithdrawRulesDB();">
                             <div class="flex gap-4 mb-4">
                                 <div class="w-1/2">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Min Withdraw (৳)</label>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Min Withdraw (৳)</label>
                                     <input type="number" id="setting-min-with" placeholder="100" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white shadow-inner">
                                 </div>
                                 <div class="w-1/2">
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Max Withdraw (৳)</label>
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Max Withdraw (৳)</label>
                                     <input type="number" id="setting-max-with" placeholder="5000" class="w-full bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white shadow-inner">
                                 </div>
                             </div>
                             <div class="mb-5">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Withdraw Instructions</label>
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Withdraw Instructions</label>
                                 <textarea id="setting-with-inst" placeholder="Write rules for users..." class="w-full h-24 bg-[#0f172a] border border-slate-700 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-cyan-500 text-white resize-none shadow-inner"></textarea>
                             </div>
                             <button type="submit" id="btn-save-rules" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all text-sm shadow-lg shadow-cyan-900/30 flex justify-center items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Save Rules</button>
@@ -675,6 +711,7 @@
         window.allTasksData = [];
         window.allSubmissionsData = [];
         window.allHistoryData = [];
+        window.referCommissionPercent = 10; // Default
 
         window.filterUsers = () => {
             const query = document.getElementById('search-user').value.toLowerCase();
@@ -786,7 +823,6 @@
                 return;
             }
 
-            // Extract EXACT headers order from Admin setup
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             
             let headHTML = '';
@@ -803,9 +839,6 @@
                 bodyHTML += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors">`;
                 headers.forEach(h => {
                     let val = '-';
-                    // Fixed Password Overwrite logic:
-                    // If user submitted their own password, use that.
-                    // If it's missing or empty, use the Admin default.
                     if (sub.submissionData && sub.submissionData[h] && String(sub.submissionData[h]).trim() !== '') {
                         val = sub.submissionData[h];
                     } else if (h.toLowerCase() === 'password') {
@@ -814,7 +847,6 @@
                     bodyHTML += `<td><div class="max-w-[200px] truncate select-all font-medium" title="${String(val).replace(/"/g, '&quot;')}">${val}</div></td>`;
                 });
                 
-                // Smart Short Task ID (7 Chars)
                 const shortId = sub.id.substring(0, 7).toUpperCase();
                 bodyHTML += `<td><span class="text-[11px] text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-md font-mono select-all font-bold tracking-widest border border-indigo-500/30 shadow-inner">${shortId}</span></td>`;
                 bodyHTML += `<td><button onclick="window.deleteDocDB('task_submissions', '${sub.id}')" class="text-rose-400 hover:text-white hover:bg-rose-500 h-8 w-8 rounded-lg flex items-center justify-center transition-all"><i class="fa-solid fa-trash"></i></button></td>`;
@@ -833,7 +865,6 @@
             const task = window.allTasksData.find(t => t.id === filterId);
             const taskName = task ? task.title.replace(/ /g, '_') : "Unknown_Task";
             
-            // Extract EXACT headers
             let headers = task && task.formatArray ? [...task.formatArray] : [];
             let csvHeaders = [...headers, "Task ID"];
             let csvContent = "data:text/csv;charset=utf-8," + csvHeaders.join(",") + "\n";
@@ -850,7 +881,7 @@
                 });
                 
                 const shortId = sub.id.substring(0, 7).toUpperCase();
-                row.push(`"${shortId}"`); // Append Task ID
+                row.push(`"${shortId}"`);
                 
                 csvContent += row.join(",") + "\n";
             });
@@ -866,7 +897,6 @@
             const history = window.allHistoryData.find(h => h.id === historyId);
             if(!history || !history.submissions || history.submissions.length === 0) return await window.smartAlert("No data available.", "warning");
             
-            // Use saved format from history
             let headers = history.formatArray && history.formatArray.length > 0 ? history.formatArray : [];
             let csvHeaders = [...headers, "Task ID"];
             
@@ -889,9 +919,7 @@
             document.body.appendChild(link); link.click(); link.remove();
         }
 
-        window.copyText = (text) => {
-            navigator.clipboard.writeText(text);
-        }
+        window.copyText = (text) => { navigator.clipboard.writeText(text); }
 
     </script>
 
@@ -970,7 +998,7 @@
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-4">
                                 <div class="h-12 w-12 bg-slate-800 rounded-full border-2 border-slate-600 flex items-center justify-center text-slate-400 text-xl"><i class="fa-solid fa-user"></i></div>
-                                <div><h3 class="font-bold text-sm text-white">${u.name || 'Unknown'} ${banBadge}</h3><p class="text-[11px] text-slate-400 mt-1">${u.email}</p></div>
+                                <div><h3 class="font-bold text-sm text-white">${u.name || 'Unknown'} ${banBadge}</h3><p class="text-[11px] text-slate-400 mt-1">${u.email}</p><p class="text-[9px] text-violet-400 mt-1 font-mono uppercase tracking-widest">Code: ${u.referCode || 'N/A'}</p></div>
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] text-slate-400 uppercase font-bold">Balance</p>
@@ -989,7 +1017,16 @@
 
         function loadDatabaseLive() {
             onSnapshot(doc(db, "app_settings", "global"), (docSnap) => {
-                if(docSnap.exists()) { document.getElementById('global-task-toggle').checked = docSnap.data().tasksEnabled ?? true; }
+                if(docSnap.exists()) { 
+                    const data = docSnap.data();
+                    document.getElementById('global-task-toggle').checked = data.tasksEnabled ?? true; 
+                    
+                    // NEW: Load Refer & Support Settings
+                    window.referCommissionPercent = data.referCommission ?? 10;
+                    document.getElementById('setting-ref-percent').value = window.referCommissionPercent;
+                    document.getElementById('setting-wa-link').value = data.whatsappLink || '';
+                    document.getElementById('setting-tg-link').value = data.telegramLink || '';
+                }
             });
 
             onSnapshot(doc(db, "app_settings", "withdraw"), (docSnap) => {
@@ -1195,7 +1232,7 @@
                 }
             });
 
-            onSnapshot(collection(db, "payment_methods"), (snapshot) => {
+            onSnapshot(query(collection(db, "payment_methods"), where("isActive", "==", true)), (snapshot) => {
                 const list = document.getElementById('admin-payment-list');
                 let activeCount = 0;
                 if(snapshot.empty) { list.innerHTML = `<p class="text-sm text-slate-500 text-center mt-5">No methods added.</p>`; } 
@@ -1224,18 +1261,54 @@
         }
 
         // ==========================================
+        // NEW: SAVE SUPPORT LINKS & REFERRAL RULES
+        // ==========================================
+        window.saveSupportLinksDB = async () => {
+            const waLink = document.getElementById('setting-wa-link').value.trim();
+            const tgLink = document.getElementById('setting-tg-link').value.trim();
+
+            window.setButtonLoading('btn-save-support', true, 'Saving...', 'fa-solid fa-spinner');
+            try {
+                const docRef = doc(db, "app_settings", "global");
+                const snap = await getDoc(docRef); 
+                if(snap.exists()) { 
+                    await updateDoc(docRef, { whatsappLink: waLink, telegramLink: tgLink }); 
+                } else { 
+                    await setDoc(docRef, { whatsappLink: waLink, telegramLink: tgLink }); 
+                }
+                window.setButtonLoading('btn-save-support', false, 'Save Links', 'fa-solid fa-floppy-disk');
+                await window.smartAlert("Support Links Updated Successfully!", "success");
+            } catch(e) { 
+                window.setButtonLoading('btn-save-support', false, 'Save Links', 'fa-solid fa-floppy-disk');
+                await window.smartAlert("Error: " + e.message, "error"); 
+            }
+        }
+
+        window.saveReferralRulesDB = async () => {
+            const percent = Number(document.getElementById('setting-ref-percent').value);
+            if(percent < 0 || percent > 100) return await window.smartAlert("Invalid percentage!", "warning");
+
+            window.setButtonLoading('btn-save-referral', true, 'Updating...', 'fa-solid fa-spinner');
+            try {
+                const docRef = doc(db, "app_settings", "global");
+                const snap = await getDoc(docRef); 
+                if(snap.exists()) { 
+                    await updateDoc(docRef, { referCommission: percent }); 
+                } else { 
+                    await setDoc(docRef, { referCommission: percent }); 
+                }
+                window.setButtonLoading('btn-save-referral', false, 'Update Commission', 'fa-solid fa-floppy-disk');
+                await window.smartAlert("Referral Commission Updated!", "success");
+            } catch(e) { 
+                window.setButtonLoading('btn-save-referral', false, 'Update Commission', 'fa-solid fa-floppy-disk');
+                await window.smartAlert("Error: " + e.message, "error"); 
+            }
+        }
+
+        // ==========================================
         // ADD / UPDATE / DELETE DB FUNCTIONS
         // ==========================================
         
-        window.toggleGlobalTasks = async (status) => {
-            try { 
-                const docRef = doc(db, "app_settings", "global");
-                const snap = await getDoc(docRef); 
-                if(snap.exists()){ await updateDoc(docRef, { tasksEnabled: status }); } 
-                else { await setDoc(docRef, { tasksEnabled: status }); }
-            } catch(e) { await window.smartAlert("Error: " + e.message, "error"); document.getElementById('global-task-toggle').checked = !status; }
-        }
-
         window.toggleBanUserDB = async (uid, status) => {
             const confirmed = await window.smartAlert(`Are you sure you want to ${status ? 'BAN' : 'UNBAN'} this user?`, "confirm");
             if(!confirmed) return;
@@ -1287,14 +1360,14 @@
         }
 
         // ==========================================
-        // SMART REPORT SYSTEM (ANTI-HANG, FAST AGGREGATION, PREVENT DOUBLE)
+        // SMART REPORT SYSTEM (ANTI-HANG, FAST AGGREGATION, NEW REFERRAL LOGIC)
         // ==========================================
         window.processReport = async (action) => {
             const inputEl = document.getElementById(action === 'approve' ? 'approve-ids' : 'reject-ids');
             const idsRaw = inputEl.value;
             if(!idsRaw.trim()) return await window.smartAlert("Please paste at least one Task ID.", "warning");
 
-            // Prevent duplicate IDs from being processed multiple times
+            // Filter out empty strings and explicitly REMOVE DUPLICATE IDs so each is processed once
             const shortIds = [...new Set(idsRaw.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id.length > 0))];
             if(shortIds.length === 0) return;
 
@@ -1307,6 +1380,7 @@
                 
                 let historyDocsToUpdate = {}; 
                 let userUpdates = {}; // Aggregator for user balance and task counts to prevent 500 error
+                let referrerUpdates = {}; // NEW: Aggregator for referrer commissions
 
                 for (const shortId of shortIds) {
                     let foundInLive = window.allSubmissionsData.find(s => s.id.substring(0, 7).toUpperCase() === shortId);
@@ -1328,8 +1402,8 @@
                     
                     if (sub) {
                         const taskObj = window.allTasksData.find(t => t.id === sub.taskId);
+                        const userObj = window.allUsersData.find(u => u.id === sub.uid);
 
-                        // Track User Updates in memory instead of sending individually to Firebase
                         if (!userUpdates[sub.uid]) {
                             userUpdates[sub.uid] = { pendingTasks: 0, approvedTasks: 0, rejectedTasks: 0, balance: 0, totalEarned: 0 };
                         }
@@ -1340,6 +1414,22 @@
                             userUpdates[sub.uid].approvedTasks += 1;
                             userUpdates[sub.uid].balance += reward;
                             userUpdates[sub.uid].totalEarned += reward;
+                            
+                            // NEW REFERRAL COMMISSION LOGIC
+                            if(userObj && userObj.referredBy) {
+                                const referrerObj = window.allUsersData.find(u => u.referCode === userObj.referredBy);
+                                if(referrerObj) {
+                                    const commission = (reward * window.referCommissionPercent) / 100;
+                                    if(commission > 0) {
+                                        if(!referrerUpdates[referrerObj.id]) referrerUpdates[referrerObj.id] = { balance: 0, totalEarned: 0, commissionGenerated: 0 };
+                                        referrerUpdates[referrerObj.id].balance += commission;
+                                        referrerUpdates[referrerObj.id].totalEarned += commission;
+                                        // Update the worker's commission contribution to the referrer
+                                        if(!userUpdates[sub.uid].commissionGenerated) userUpdates[sub.uid].commissionGenerated = 0;
+                                        userUpdates[sub.uid].commissionGenerated += commission;
+                                    }
+                                }
+                            }
                             
                             const noticeRef = doc(collection(db, "notices"));
                             currentBatch.set(noticeRef, {
@@ -1415,12 +1505,24 @@
                                 if(u.rejectedTasks !== 0) updateObj.rejectedTasks = increment(u.rejectedTasks);
                                 if(u.balance !== 0) updateObj.balance = increment(u.balance);
                                 if(u.totalEarned !== 0) updateObj.totalEarned = increment(u.totalEarned);
+                                if(u.commissionGenerated !== undefined && u.commissionGenerated !== 0) updateObj.commissionGenerated = increment(u.commissionGenerated);
                                 
                                 if(Object.keys(updateObj).length > 0) {
                                     currentBatch.update(userRef, updateObj);
                                 }
                             }
                             userUpdates = {}; // Clear after applying to batch
+
+                            // Apply Referrer Updates
+                            for(let rId in referrerUpdates) {
+                                const r = referrerUpdates[rId];
+                                const refUserDoc = doc(db, "users", rId);
+                                currentBatch.update(refUserDoc, {
+                                    balance: increment(r.balance),
+                                    totalEarned: increment(r.totalEarned)
+                                });
+                            }
+                            referrerUpdates = {};
                             
                             await currentBatch.commit();
                             currentBatch = writeBatch(db);
@@ -1432,8 +1534,8 @@
                     }
                 }
 
-                // Process leftovers that didn't reach the 300 limit
-                if(opsInBatch > 0 || Object.keys(historyDocsToUpdate).length > 0 || Object.keys(userUpdates).length > 0) {
+                // Process leftovers that didn't reach the batch limit
+                if(opsInBatch > 0 || Object.keys(historyDocsToUpdate).length > 0 || Object.keys(userUpdates).length > 0 || Object.keys(referrerUpdates).length > 0) {
                     for(let hId in historyDocsToUpdate) {
                         let hObj = historyDocsToUpdate[hId];
                         if(hObj.submissions.length === 0) {
@@ -1455,10 +1557,20 @@
                         if(u.rejectedTasks !== 0) updateObj.rejectedTasks = increment(u.rejectedTasks);
                         if(u.balance !== 0) updateObj.balance = increment(u.balance);
                         if(u.totalEarned !== 0) updateObj.totalEarned = increment(u.totalEarned);
+                        if(u.commissionGenerated !== undefined && u.commissionGenerated !== 0) updateObj.commissionGenerated = increment(u.commissionGenerated);
                         
                         if(Object.keys(updateObj).length > 0) {
                             currentBatch.update(userRef, updateObj);
                         }
+                    }
+
+                    for(let rId in referrerUpdates) {
+                        const r = referrerUpdates[rId];
+                        const refUserDoc = doc(db, "users", rId);
+                        currentBatch.update(refUserDoc, {
+                            balance: increment(r.balance),
+                            totalEarned: increment(r.totalEarned)
+                        });
                     }
 
                     await currentBatch.commit();
@@ -1556,8 +1668,6 @@
             if(!confirmed) return await window.smartAlert("Database Reset Cancelled.", "info");
 
             try {
-                // To safely reset, we fetch all relevant documents and batch delete them.
-                // We also update all users to reset pending/approved/rejected task stats.
                 document.getElementById('global-loader').style.display = 'flex';
                 const loaderText = document.getElementById('global-loader').querySelector('p');
                 loaderText.innerText = "Formatting Database...";
